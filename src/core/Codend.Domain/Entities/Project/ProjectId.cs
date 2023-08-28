@@ -1,5 +1,5 @@
 using Codend.Domain.Core.Abstractions;
 
-namespace Codend.Domain.Entities.Project;
+namespace Codend.Domain.Entities;
 
 public record struct ProjectId(Guid Value) : IEntityId<Guid>;

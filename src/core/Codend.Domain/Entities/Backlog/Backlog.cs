@@ -1,10 +1,14 @@
 using Codend.Domain.Core.Primitives;
 
-namespace Codend.Domain.Entities.Backlog;
+namespace Codend.Domain.Entities;
 
 public class Backlog : Entity<BacklogId>
 {
-    public Backlog(BacklogId id) : base(id)
+    private Backlog(BacklogId id) : base(id)
     {
     }
+
+    public ProjectId ProjectId { get; set; }
+
+    public virtual List<ProjectTask> ProjectTasks { get; set; }
 }

@@ -1,7 +1,7 @@
 using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Primitives;
 
-namespace Codend.Domain.Entities.ProjectTask;
+namespace Codend.Domain.Entities;
 
 public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEntity
 {
@@ -11,4 +11,6 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
     public DateTime DeletedOn { get; }
     public bool Deleted { get; }
+
+    public BacklogId BacklogId { get; set; }
 }
