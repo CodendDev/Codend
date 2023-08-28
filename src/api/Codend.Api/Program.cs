@@ -1,4 +1,5 @@
 using Codend.Application;
+using Codend.Infrastructure;
 using Codend.Persistence;
 using Codend.Presentation;
 
@@ -11,6 +12,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services
     .AddApplication()
+    .AddInfrastructure(builder.Configuration)
     .AddPersistence(builder.Configuration)
     .AddPresentation();
 

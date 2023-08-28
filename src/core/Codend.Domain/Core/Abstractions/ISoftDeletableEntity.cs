@@ -6,9 +6,9 @@
 public interface ISoftDeletableEntity
 {
     /// <summary>
-    /// Gets the date the entity was deleted on.
+    /// Gets the date in UTC when the entity was deleted on.
     /// </summary>
-    DateTime DeletedOn { get; }
+    DateTime DeletedOnUtc { get; }
 
     /// <summary>
     /// Gets a value indicating whether the entity has been deleted.

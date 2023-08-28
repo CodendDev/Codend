@@ -9,7 +9,7 @@ public class Sprint : Entity<SprintId>, ISoftDeletableEntity
     {
     }
 
-    public DateTime DeletedOn { get; }
+    public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
 
     public ProjectId ProjectId { get; set; }

@@ -21,6 +21,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\core\Codend.Application\Codend.Application.csproj" />
+      <ProjectReference Include="..\..\core\Codend.Infrastructure\Codend.Infrastructure.csproj" />
       <ProjectReference Include="..\..\core\Codend.Persistence\Codend.Persistence.csproj" />
       <ProjectReference Include="..\..\core\Codend.Presentation\Codend.Presentation.csproj" />
     </ItemGroup>

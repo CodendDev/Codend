@@ -9,7 +9,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     {
     }
 
-    public DateTime DeletedOn { get; }
+    public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
 
     public BacklogId BacklogId { get; set; }
