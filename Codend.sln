@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api", "api", "{F32720B2-D1B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codend.Api", "src\api\Codend.Api\Codend.Api.csproj", "{A4AF3683-8BD8-4DEA-9F87-5E4007223A4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codend.Infrastructure", "src\core\Codend.Infrastructure\Codend.Infrastructure.csproj", "{9AACD9FE-6FF4-4B8A-8A53-EBC64D044434}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,7 @@ Global
 		{03F4108F-C344-42DF-809E-6E460FFA8282} = {5F854B30-5C9E-484E-AD59-6EB15CEE2C79}
 		{F32720B2-D1BE-483A-B075-32DB0C867899} = {D9C5A8BF-6B39-467C-8AE7-413F7C10B044}
 		{A4AF3683-8BD8-4DEA-9F87-5E4007223A4E} = {F32720B2-D1BE-483A-B075-32DB0C867899}
+		{9AACD9FE-6FF4-4B8A-8A53-EBC64D044434} = {5F854B30-5C9E-484E-AD59-6EB15CEE2C79}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E79B0EEC-5CA0-4B8D-8E88-580F62C1AF14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,5 +47,9 @@ Global
 		{A4AF3683-8BD8-4DEA-9F87-5E4007223A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4AF3683-8BD8-4DEA-9F87-5E4007223A4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4AF3683-8BD8-4DEA-9F87-5E4007223A4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AACD9FE-6FF4-4B8A-8A53-EBC64D044434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AACD9FE-6FF4-4B8A-8A53-EBC64D044434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AACD9FE-6FF4-4B8A-8A53-EBC64D044434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AACD9FE-6FF4-4B8A-8A53-EBC64D044434}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

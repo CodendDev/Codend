@@ -16,6 +16,7 @@
 
 
     <ItemGroup>
+      <ProjectReference Include="..\Codend.Application\Codend.Application.csproj" />
       <ProjectReference Include="..\Codend.Domain\Codend.Domain.csproj" />
     </ItemGroup>
 

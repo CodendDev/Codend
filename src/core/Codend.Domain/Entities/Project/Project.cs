@@ -9,7 +9,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     {
     }
 
-    public DateTime DeletedOn { get; }
+    public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
 
     public virtual Backlog Backlog { get; set; }
