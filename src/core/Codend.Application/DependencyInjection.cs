@@ -12,7 +12,9 @@ namespace Codend.Application
         /// <returns>The same service collection.</returns>
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddMediatR(typeof(DependencyInjection).Assembly);
+            var assembly = typeof(DependencyInjection).Assembly;
+            
+            services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
             return services;
         }
     }
