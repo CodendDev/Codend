@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Codend.Application
 {
@@ -11,6 +12,7 @@ namespace Codend.Application
         /// <returns>The same service collection.</returns>
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
+            services.AddMediatR(typeof(DependencyInjection).Assembly);
             return services;
         }
     }
