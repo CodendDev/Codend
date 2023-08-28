@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
 
-namespace Codend.Application.Abstractions.Messaging.Queries;
+namespace Codend.Application.Core.Abstractions.Messaging.Queries;
 
 /// <summary>
 /// Interface of query handler

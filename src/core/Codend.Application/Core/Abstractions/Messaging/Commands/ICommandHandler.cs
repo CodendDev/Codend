@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
 
-namespace Codend.Application.Abstractions.Messaging.Commands;
+namespace Codend.Application.Core.Abstractions.Messaging.Commands;
 
 /// <summary>
 /// Interface of command handler without response type
@@ -16,6 +16,7 @@ public interface ICommandHandler<TCommand> : IRequestHandler<TCommand, Result> w
 /// </summary>
 /// <typeparam name="TCommand">Type of handled command</typeparam>
 /// <typeparam name="TResposne">Result response type</typeparam>
-public interface ICommandHandler<TCommand, TResposne> : IRequestHandler<TCommand, Result<TResposne>> where TCommand : ICommand<TResposne>
+public interface ICommandHandler<TCommand, TResposne> : IRequestHandler<TCommand, Result<TResposne>>
+    where TCommand : ICommand<TResposne>
 {
 }

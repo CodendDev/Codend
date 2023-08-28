@@ -1,6 +1,6 @@
 ﻿using Codend.Application.Core.Abstractions.Common;
 
-namespace Codend.Infrastructure.common;
+namespace Codend.Infrastructure.Common;
 
 /// <summary>
 /// Represents the machine date time service.

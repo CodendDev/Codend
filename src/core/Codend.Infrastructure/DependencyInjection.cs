@@ -1,5 +1,5 @@
 ﻿using Codend.Application.Core.Abstractions.Common;
-using Codend.Infrastructure.common;
+using Codend.Infrastructure.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

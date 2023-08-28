@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
 
-namespace Codend.Application.Abstractions.Messaging.Commands;
+namespace Codend.Application.Core.Abstractions.Messaging.Commands;
 
 public interface ICommand : IRequest<Result>
 {
