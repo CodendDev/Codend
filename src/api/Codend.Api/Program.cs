@@ -1,3 +1,4 @@
+using Codend.Api.Extensions;
 using Codend.Application;
 using Codend.Infrastructure;
 using Codend.Persistence;
@@ -29,5 +30,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MigrateDatabase<CodendApplicationDbContext>();
 
 app.Run();
