@@ -1,4 +1,5 @@
 using Codend.Application;
+using Codend.Infrastructure;
 using Codend.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services
     .AddApplication()
+    .AddInfrastructure(builder.Configuration)
     .AddPersistence(builder.Configuration);
 
 var app = builder.Build();

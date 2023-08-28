@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using Codend.Application.Core.Abstractions.Common;
 using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Events;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -9,14 +11,16 @@ namespace Codend.Persistence;
 public sealed class CodendApplicationDbContext : DbContext
 {
     private readonly IDateTime _dateTime;
+    private readonly IMediator _mediator;
 
     public CodendApplicationDbContext()
     {
     }
 
-    public CodendApplicationDbContext(DbContextOptions options, IDateTime dateTime) : base(options)
+    public CodendApplicationDbContext(DbContextOptions options, IDateTime dateTime, IMediator mediator) : base(options)
     {
         _dateTime = dateTime;
+        _mediator = mediator;
     }
 
     /// <inheritdoc /> 
@@ -77,12 +81,36 @@ public sealed class CodendApplicationDbContext : DbContext
         }
     }
 
+    /// <summary>
+    /// Publishes and then clears all the domain events that exist within the current transaction.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    private async Task PublishDomainEvents(CancellationToken cancellationToken)
+    {
+        List<EntityEntry<IAggregate>> aggregateRoots = ChangeTracker
+            .Entries<IAggregate>()
+            .Where(entityEntry => entityEntry.Entity.DomainEvents.Any())
+            .ToList();
+
+        List<DomainEvent> domainEvents = aggregateRoots
+            .SelectMany(entityEntry => entityEntry.Entity.DomainEvents)
+            .ToList();
+
+        aggregateRoots.ForEach(entityEntry => entityEntry.Entity.ClearDomainEvents());
+
+        IEnumerable<Task> tasks = domainEvents.Select(domainEvent => _mediator.Publish(domainEvent, cancellationToken));
+
+        await Task.WhenAll(tasks);
+    }
+
     /// <inheritdoc /> 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var utcNow = _dateTime.UtcNow;
         UpdateSoftDeletableEntities(utcNow);
 
-        return base.SaveChangesAsync(cancellationToken);
+        await PublishDomainEvents(cancellationToken);
+
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }
