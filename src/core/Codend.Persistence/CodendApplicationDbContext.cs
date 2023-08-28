@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Codend.Application.Core.Abstractions.Common;
+using Codend.Application.Core.Abstractions.Data;
 using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Events;
 using MediatR;
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Codend.Persistence;
 
-public sealed class CodendApplicationDbContext : DbContext
+public sealed class CodendApplicationDbContext : DbContext, IUnitOfWork
 {
     private readonly IDateTime _dateTime;
     private readonly IMediator _mediator;

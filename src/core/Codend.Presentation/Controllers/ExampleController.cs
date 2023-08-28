@@ -1,4 +1,5 @@
-﻿using Codend.Presentation.Infrastructure;
+﻿using Codend.Application.Core.Abstractions.Data;
+using Codend.Presentation.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,8 +7,11 @@ namespace Codend.Presentation.Controllers;
 
 public class ExampleController : ApiController
 {
-    public ExampleController(IMediator mediator) : base(mediator)
+    private readonly IUnitOfWork _unitOfWork;
+
+    public ExampleController(IMediator mediator, IUnitOfWork unitOfWork) : base(mediator)
     {
+        _unitOfWork = unitOfWork;
     }
 
     [HttpGet("test-ok")]
@@ -15,7 +19,7 @@ public class ExampleController : ApiController
     {
         return Ok();
     }
-    
+
     [HttpGet("test-bad-request")]
     public IActionResult TestBadRequest()
     {

@@ -14,4 +14,8 @@
 
 
 
+    <ItemGroup>
+      <ProjectReference Include="..\Codend.Application\Codend.Application.csproj" />
+    </ItemGroup>
+
 </Project>
