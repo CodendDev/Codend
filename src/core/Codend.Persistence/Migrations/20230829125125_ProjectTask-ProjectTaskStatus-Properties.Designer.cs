@@ -4,6 +4,7 @@ using Codend.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codend.Persistence.Migrations
 {
     [DbContext(typeof(CodendApplicationDbContext))]
-    partial class CodendApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230829125125_ProjectTask-ProjectTaskStatus-Properties")]
+    partial class ProjectTaskProjectTaskStatusProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,10 +140,6 @@ namespace Codend.Persistence.Migrations
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ReleaseDate")
-                        .HasPrecision(0)
-                        .HasColumnType("datetime2(0)");
 
                     b.HasKey("Id");
 
@@ -332,70 +331,6 @@ namespace Codend.Persistence.Migrations
                         .WithMany("ProjectVersions")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.OwnsOne("Codend.Domain.ValueObjects.ProjectVersionChangelog", "Changelog", b1 =>
-                        {
-                            b1.Property<Guid>("ProjectVersionId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Changelog")
-                                .IsRequired()
-                                .HasMaxLength(3000)
-                                .HasColumnType("nvarchar(3000)")
-                                .HasColumnName("Changelog");
-
-                            b1.HasKey("ProjectVersionId");
-
-                            b1.ToTable("ProjectVersion");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProjectVersionId");
-                        });
-
-                    b.OwnsOne("Codend.Domain.ValueObjects.ProjectVersionName", "VersionName", b1 =>
-                        {
-                            b1.Property<Guid>("ProjectVersionId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
-                                .HasColumnName("VersionName");
-
-                            b1.HasKey("ProjectVersionId");
-
-                            b1.ToTable("ProjectVersion");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProjectVersionId");
-                        });
-
-                    b.OwnsOne("Codend.Domain.ValueObjects.ProjectVersionTag", "VersionTag", b1 =>
-                        {
-                            b1.Property<Guid>("ProjectVersionId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Tag")
-                                .IsRequired()
-                                .HasMaxLength(20)
-                                .HasColumnType("nvarchar(20)")
-                                .HasColumnName("VersionTag");
-
-                            b1.HasKey("ProjectVersionId");
-
-                            b1.ToTable("ProjectVersion");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProjectVersionId");
-                        });
-
-                    b.Navigation("Changelog");
-
-                    b.Navigation("VersionName");
-
-                    b.Navigation("VersionTag")
                         .IsRequired();
                 });
 

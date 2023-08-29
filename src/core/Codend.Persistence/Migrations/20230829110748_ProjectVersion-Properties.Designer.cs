@@ -4,6 +4,7 @@ using Codend.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codend.Persistence.Migrations
 {
     [DbContext(typeof(CodendApplicationDbContext))]
-    partial class CodendApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230829110748_ProjectVersion-Properties")]
+    partial class ProjectVersionProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,6 +46,22 @@ namespace Codend.Persistence.Migrations
                     b.ToTable("DomainEvent");
                 });
 
+            modelBuilder.Entity("Codend.Domain.Entities.Backlog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId")
+                        .IsUnique();
+
+                    b.ToTable("Backlog");
+                });
+
             modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
                 {
                     b.Property<Guid>("Id")
@@ -63,7 +82,7 @@ namespace Codend.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("AssigneeId")
+                    b.Property<Guid>("BacklogId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Deleted")
@@ -75,54 +94,20 @@ namespace Codend.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DueDate");
-
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int")
-                        .HasColumnName("ProjectTaskPriority");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("SprintId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("StatusId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("BacklogId");
 
                     b.HasIndex("SprintId");
-
-                    b.HasIndex("StatusId");
 
                     b.ToTable("ProjectTask");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("ProjectTask");
 
                     b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("Codend.Domain.Entities.ProjectTaskStatus", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ProjectTaskStatus");
                 });
 
             modelBuilder.Entity("Codend.Domain.Entities.ProjectVersion", b =>
@@ -187,6 +172,15 @@ namespace Codend.Persistence.Migrations
                         .HasForeignKey("ProjectTaskId");
                 });
 
+            modelBuilder.Entity("Codend.Domain.Entities.Backlog", b =>
+                {
+                    b.HasOne("Codend.Domain.Entities.Project", null)
+                        .WithOne("Backlog")
+                        .HasForeignKey("Codend.Domain.Entities.Backlog", "ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
                 {
                     b.OwnsOne("Codend.Domain.ValueObjects.ProjectDescription", "ProjectDescription", b1 =>
@@ -235,95 +229,15 @@ namespace Codend.Persistence.Migrations
 
             modelBuilder.Entity("Codend.Domain.Entities.ProjectTask", b =>
                 {
-                    b.HasOne("Codend.Domain.Entities.Project", null)
+                    b.HasOne("Codend.Domain.Entities.Backlog", null)
                         .WithMany("ProjectTasks")
-                        .HasForeignKey("ProjectId")
+                        .HasForeignKey("BacklogId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Codend.Domain.Entities.Sprint", null)
                         .WithMany("SprintProjectTasks")
                         .HasForeignKey("SprintId");
-
-                    b.HasOne("Codend.Domain.Entities.ProjectTaskStatus", null)
-                        .WithMany()
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.OwnsOne("Codend.Domain.ValueObjects.ProjectTaskDescription", "Description", b1 =>
-                        {
-                            b1.Property<Guid>("ProjectTaskId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Description")
-                                .IsRequired()
-                                .HasMaxLength(2000)
-                                .HasColumnType("nvarchar(2000)")
-                                .HasColumnName("Description");
-
-                            b1.HasKey("ProjectTaskId");
-
-                            b1.ToTable("ProjectTask");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProjectTaskId");
-                        });
-
-                    b.OwnsOne("Codend.Domain.ValueObjects.ProjectTaskName", "Name", b1 =>
-                        {
-                            b1.Property<Guid>("ProjectTaskId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("nvarchar(150)")
-                                .HasColumnName("Name");
-
-                            b1.HasKey("ProjectTaskId");
-
-                            b1.ToTable("ProjectTask");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProjectTaskId");
-                        });
-
-                    b.Navigation("Description");
-
-                    b.Navigation("Name")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Codend.Domain.Entities.ProjectTaskStatus", b =>
-                {
-                    b.HasOne("Codend.Domain.Entities.Project", null)
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.OwnsOne("Codend.Domain.ValueObjects.ProjectTaskStatusName", "Name", b1 =>
-                        {
-                            b1.Property<Guid>("ProjectTaskStatusId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("nvarchar(150)")
-                                .HasColumnName("Name");
-
-                            b1.HasKey("ProjectTaskStatusId");
-
-                            b1.ToTable("ProjectTaskStatus");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProjectTaskStatusId");
-                        });
-
-                    b.Navigation("Name")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codend.Domain.Entities.ProjectVersion", b =>
@@ -408,11 +322,17 @@ namespace Codend.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Codend.Domain.Entities.Backlog", b =>
+                {
+                    b.Navigation("ProjectTasks");
+                });
+
             modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
                 {
-                    b.Navigation("DomainEvents");
+                    b.Navigation("Backlog")
+                        .IsRequired();
 
-                    b.Navigation("ProjectTasks");
+                    b.Navigation("DomainEvents");
 
                     b.Navigation("ProjectVersions");
 
