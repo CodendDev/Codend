@@ -23,6 +23,4 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
-    
-    public virtual Project Project { get; private set; }
 }

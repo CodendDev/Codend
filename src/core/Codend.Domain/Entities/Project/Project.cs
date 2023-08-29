@@ -18,7 +18,6 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     public virtual List<ProjectVersion> ProjectVersions { get; private set; }
 
     public virtual List<Sprint> Sprints { get; private set; }
-    public virtual List<ProjectTaskStatus> ProjectTaskStatuses { get; private set; }
 
     public ProjectName ProjectName { get; private set; }
 
