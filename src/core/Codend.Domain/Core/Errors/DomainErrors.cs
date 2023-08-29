@@ -51,4 +51,16 @@ public static class DomainErrors
             }
         }
     }
+
+
+    public static class ProjectVersionChangelog
+    {
+        public class DescriptionTooLong : DomainError
+        {
+            public DescriptionTooLong()
+                : base("ProjectVersionChangelog.NameTooLong", "Given changelog is too long.")
+            {
+            }
+        }
+    }
 }
