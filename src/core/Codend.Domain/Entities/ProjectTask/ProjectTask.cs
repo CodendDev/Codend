@@ -17,13 +17,12 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     public ProjectTaskPriority Priority { get; private set; }
     public ProjectTaskStatusId StatusId { get; private set; }
     public DateTime? DueDate { get; private set; }
-    public UserId? AssigneeId { get; private set; }
     public UserId OwnerId { get; private set; }
+    public UserId? AssigneeId { get; private set; }
+    public ProjectId ProjectId { get; private set; }
     
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
-
-    public ProjectId ProjectId { get; set; }
     
-    public virtual ProjectTaskStatus Status { get; private set; }
+    public virtual Project Project { get; private set; }
 }

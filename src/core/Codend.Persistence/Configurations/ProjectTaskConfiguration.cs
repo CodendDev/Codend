@@ -18,7 +18,8 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
     {
         builder.ConfigureKeyId((Guid guid) => new ProjectTaskId(guid));
 
-        builder.OwnsOne(projectTask => projectTask.Name,
+        builder
+            .OwnsOne(projectTask => projectTask.Name,
             projectTaskNameBuilder =>
             {
                 projectTaskNameBuilder.WithOwner();
@@ -29,7 +30,8 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
                     .IsRequired();
             });
 
-        builder.OwnsOne(projectTask => projectTask.Description,
+        builder
+            .OwnsOne(projectTask => projectTask.Description,
             projectNameBuilder =>
             {
                 projectNameBuilder.WithOwner();
@@ -48,8 +50,8 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
             .IsRequired();
 
         builder
-            .HasOne(projectTask => projectTask.Status)
-            .WithMany(status => status.ProjectTasks)
+            .HasOne<ProjectTaskStatus>()
+            .WithMany()
             .HasForeignKey(projectTask => projectTask.StatusId)
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);

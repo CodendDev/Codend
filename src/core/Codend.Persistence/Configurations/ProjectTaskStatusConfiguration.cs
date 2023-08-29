@@ -26,8 +26,5 @@ internal sealed class ProjectTaskStatusConfiguration : IEntityTypeConfiguration<
                     .HasMaxLength(ProjectTaskName.MaxLength)
                     .IsRequired();
             });
-
-        builder
-            .HasOne(projectTaskStatus => projectTaskStatus.Project);
     }
 }

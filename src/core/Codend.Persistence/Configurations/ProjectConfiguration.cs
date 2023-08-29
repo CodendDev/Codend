@@ -60,5 +60,11 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
                     .HasColumnName(nameof(Project.ProjectDescription))
                     .HasMaxLength(ProjectDescription.MaxLength);
             });
+
+        builder
+            .HasMany(project => project.ProjectTaskStatuses)
+            .WithOne()
+            .HasForeignKey(status => status.ProjectId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
