@@ -8,7 +8,7 @@ namespace Codend.Domain.ValueObjects;
 /// <summary>
 /// Project name value object.
 /// </summary>
-public class ProjectName : ValueObject
+public sealed class ProjectName : ValueObject
 {
     /// <summary>
     /// Maximum name length.

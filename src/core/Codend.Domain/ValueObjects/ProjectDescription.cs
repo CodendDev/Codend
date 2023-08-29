@@ -5,7 +5,10 @@ using FluentResults;
 
 namespace Codend.Domain.ValueObjects;
 
-public class ProjectDescription : ValueObject
+/// <summary>
+/// Project description value object.
+/// </summary>
+public sealed class ProjectDescription : ValueObject
 {
     /// <summary>
     /// Maximum description length.
