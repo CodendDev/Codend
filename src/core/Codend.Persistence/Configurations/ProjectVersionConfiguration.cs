@@ -28,5 +28,16 @@ internal sealed class ProjectVersionConfiguration : IEntityTypeConfiguration<Pro
                     .HasColumnName(nameof(ProjectVersion.Changelog))
                     .HasMaxLength(ProjectVersionChangelog.MaxLength);
             });
+
+        builder.OwnsOne(projectVersion => projectVersion.VersionName,
+            projectVersionBuilder =>
+            {
+                projectVersionBuilder.WithOwner();
+
+                projectVersionBuilder
+                    .Property(name => name.Name)
+                    .HasColumnName(nameof(ProjectVersion.VersionName))
+                    .HasMaxLength(ProjectVersionName.MaxLength);
+            });
     }
 }
