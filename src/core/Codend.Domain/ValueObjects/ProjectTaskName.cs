@@ -18,7 +18,7 @@ public sealed class ProjectTaskName : ValueObject
     /// <summary>
     /// ProjectTaskName value.
     /// </summary>
-    private string Name { get; }
+    public string Name { get; }
 
     private ProjectTaskName(string name)
     {
