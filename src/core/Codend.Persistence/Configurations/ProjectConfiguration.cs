@@ -32,7 +32,7 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder
             .HasMany(project => project.Sprints)
             .WithOne()
-            .HasForeignKey(projectVersion => projectVersion.ProjectId)
+            .HasForeignKey(sprint => sprint.ProjectId)
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
 
@@ -60,5 +60,11 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
                     .HasColumnName(nameof(Project.ProjectDescription))
                     .HasMaxLength(ProjectDescription.MaxLength);
             });
+
+        builder
+            .HasMany<ProjectTaskStatus>()
+            .WithOne()
+            .HasForeignKey(status => status.ProjectId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
