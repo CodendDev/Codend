@@ -34,8 +34,8 @@ public sealed class ProjectName : ValueObject
     {
         return Result
             .Ok(new ProjectName(name))
-            .Ensure(() => string.IsNullOrEmpty(name), new DomainErrors.ProjectName.NullOrEmpty())
-            .Ensure(() => name.Length > MaxLength, new DomainErrors.ProjectName.NameTooLong());
+            .Ensure(() => !string.IsNullOrEmpty(name), new DomainErrors.ProjectName.NullOrEmpty())
+            .Ensure(() => name.Length < MaxLength, new DomainErrors.ProjectName.NameTooLong());
     }
 
     /// <inheritdoc />
