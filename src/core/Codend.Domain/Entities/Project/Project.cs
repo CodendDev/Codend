@@ -13,7 +13,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
 
-    public virtual Backlog Backlog { get; private set; }
+    public virtual List<ProjectTask> ProjectTasks { get; private set; }
 
     public virtual List<ProjectVersion> ProjectVersions { get; private set; }
 

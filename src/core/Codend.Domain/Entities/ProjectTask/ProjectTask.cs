@@ -12,5 +12,5 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
 
-    public BacklogId BacklogId { get; set; }
+    public ProjectId ProjectId { get; set; }
 }
