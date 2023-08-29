@@ -46,7 +46,7 @@ public static class DomainErrors
         public class DescriptionTooLong : DomainError
         {
             public DescriptionTooLong()
-                : base("ProjectDescription.NameTooLong", "Given description is too long.")
+                : base("ProjectDescription.DescriptionTooLong", "Given description is too long.")
             {
             }
         }
@@ -61,7 +61,7 @@ public static class DomainErrors
         public class DescriptionTooLong : DomainError
         {
             public DescriptionTooLong()
-                : base("ProjectVersionChangelog.NameTooLong", "Given changelog is too long.")
+                : base("ProjectVersionChangelog.DescriptionTooLong", "Given changelog is too long.")
             {
             }
         }
@@ -84,6 +84,28 @@ public static class DomainErrors
         {
             public NullOrEmpty()
                 : base("ProjectVersionName.NullOrEmpty", "Given name is null or empty.")
+            {
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Project version tag domain errors.
+    /// </summary>
+    public static class ProjectVersionTag
+    {
+        public class TagTooLong : DomainError
+        {
+            public TagTooLong()
+                : base("ProjectVersionTag.TagTooLong", "Given tag is too long.")
+            {
+            }
+        }
+
+        public class NullOrEmpty : DomainError
+        {
+            public NullOrEmpty()
+                : base("ProjectVersionTag.NullOrEmpty", "Given tag is null or empty.")
             {
             }
         }

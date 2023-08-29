@@ -16,6 +16,10 @@ public class ProjectVersion : Entity<ProjectVersionId>, ISoftDeletableEntity
     public ProjectId ProjectId { get; private set; }
 
     public ProjectVersionName? VersionName { get; private set; }
-    
+
+    public ProjectVersionTag VersionTag { get; private set; }
+
+    public DateTime ReleaseDate { get; private set; }
+
     public ProjectVersionChangelog? Changelog { get; private set; }
 }
