@@ -1,4 +1,5 @@
 ﻿using Codend.Domain.Entities;
+using Codend.Domain.ValueObjects;
 using Codend.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -14,6 +15,31 @@ internal sealed class SprintConfiguration : IEntityTypeConfiguration<Sprint>
     public void Configure(EntityTypeBuilder<Sprint> builder)
     {
         builder.ConfigureKeyId((Guid guid) => new SprintId(guid));
+        
+        builder
+            .OwnsOne(sprint => sprint.Period,
+            sprintBuilder =>
+            {
+                sprintBuilder
+                    .Property(period => period.StartDate)
+                    .HasColumnName(nameof(SprintPeriod.StartDate))
+                    .IsRequired();
+                
+                sprintBuilder
+                    .Property(period => period.EndDate)
+                    .HasColumnName(nameof(SprintPeriod.EndDate))
+                    .IsRequired();
+            });
+        
+        builder
+            .OwnsOne(sprint => sprint.Goal,
+            sprintBuilder =>
+            {
+                sprintBuilder
+                    .Property(period => period.Goal)
+                    .HasColumnName(nameof(Sprint.Goal))
+                    .HasMaxLength(SprintGoal.MaxLength);
+            });
 
         builder.ConfigureSoftDeletableEntity();
     }
