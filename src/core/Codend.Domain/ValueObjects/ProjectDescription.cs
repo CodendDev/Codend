@@ -34,7 +34,7 @@ public sealed class ProjectDescription : ValueObject
     {
         return Result
             .Ok(new ProjectDescription(name))
-            .Ensure(() => name.Length > MaxLength, new DomainErrors.ProjectDescription.DescriptionTooLong());
+            .Ensure(() => name.Length < MaxLength, new DomainErrors.ProjectDescription.DescriptionTooLong());
     }
 
     /// <inheritdoc />

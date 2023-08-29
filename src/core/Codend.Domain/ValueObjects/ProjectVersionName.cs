@@ -29,7 +29,7 @@ public sealed class ProjectVersionName : ValueObject
     {
         return Result
             .Ok(new ProjectVersionName(name))
-            .Ensure(() => string.IsNullOrEmpty(name), new DomainErrors.ProjectVersionName.NullOrEmpty())
+            .Ensure(() => !string.IsNullOrEmpty(name), new DomainErrors.ProjectVersionName.NullOrEmpty())
             .Ensure(() => name.Length < MaxLength, new DomainErrors.ProjectVersionName.NameTooLong());
     }
 

@@ -16,7 +16,7 @@ public static class ResultExtensions
     {
         try
         {
-            if (!predicate())
+            if (predicate())
             {
                 return result;
             }

@@ -34,7 +34,7 @@ public sealed class ProjectVersionTag : ValueObject
     {
         return Result
             .Ok(new ProjectVersionTag(tag))
-            .Ensure(() => string.IsNullOrEmpty(tag), new DomainErrors.ProjectVersionTag.NullOrEmpty())
+            .Ensure(() => !string.IsNullOrEmpty(tag), new DomainErrors.ProjectVersionTag.NullOrEmpty())
             .Ensure(() => tag.Length < MaxLength, new DomainErrors.ProjectVersionTag.TagTooLong());
     }
 
