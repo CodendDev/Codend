@@ -1,4 +1,5 @@
 ﻿using Codend.Domain.Entities;
+using Codend.Domain.ValueObjects;
 using Codend.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -16,11 +17,10 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.ConfigureKeyId((Guid guid) => new ProjectId(guid));
 
         builder
-            .HasOne<Backlog>(project => project.Backlog)
+            .HasMany(project => project.ProjectTasks)
             .WithOne()
-            .HasForeignKey<Backlog>(backlog => backlog.ProjectId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(projectTask => projectTask.ProjectId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder
             .HasMany(project => project.ProjectVersions)
@@ -37,5 +37,28 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.ConfigureSoftDeletableEntity();
+
+        builder.OwnsOne(project => project.ProjectName,
+            projectNameBuilder =>
+            {
+                projectNameBuilder.WithOwner();
+
+                projectNameBuilder
+                    .Property(projectName => projectName.Name)
+                    .HasColumnName(nameof(Project.ProjectName))
+                    .HasMaxLength(ProjectName.MaxLength)
+                    .IsRequired();
+            });
+
+        builder.OwnsOne(project => project.ProjectDescription,
+            projectDescriptionBuilder =>
+            {
+                projectDescriptionBuilder.WithOwner();
+
+                projectDescriptionBuilder
+                    .Property(projectDescription => projectDescription.Description)
+                    .HasColumnName(nameof(Project.ProjectDescription))
+                    .HasMaxLength(ProjectDescription.MaxLength);
+            });
     }
 }

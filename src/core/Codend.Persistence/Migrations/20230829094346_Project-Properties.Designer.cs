@@ -4,6 +4,7 @@ using Codend.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codend.Persistence.Migrations
 {
     [DbContext(typeof(CodendApplicationDbContext))]
-    partial class CodendApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230829094346_Project-Properties")]
+    partial class ProjectProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,6 +46,22 @@ namespace Codend.Persistence.Migrations
                     b.ToTable("DomainEvent");
                 });
 
+            modelBuilder.Entity("Codend.Domain.Entities.Backlog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId")
+                        .IsUnique();
+
+                    b.ToTable("Backlog");
+                });
+
             modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
                 {
                     b.Property<Guid>("Id")
@@ -63,6 +82,9 @@ namespace Codend.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("BacklogId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("Deleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -72,15 +94,12 @@ namespace Codend.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("SprintId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("BacklogId");
 
                     b.HasIndex("SprintId");
 
@@ -149,6 +168,15 @@ namespace Codend.Persistence.Migrations
                         .HasForeignKey("ProjectTaskId");
                 });
 
+            modelBuilder.Entity("Codend.Domain.Entities.Backlog", b =>
+                {
+                    b.HasOne("Codend.Domain.Entities.Project", null)
+                        .WithOne("Backlog")
+                        .HasForeignKey("Codend.Domain.Entities.Backlog", "ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
                 {
                     b.OwnsOne("Codend.Domain.ValueObjects.ProjectDescription", "ProjectDescription", b1 =>
@@ -197,9 +225,9 @@ namespace Codend.Persistence.Migrations
 
             modelBuilder.Entity("Codend.Domain.Entities.ProjectTask", b =>
                 {
-                    b.HasOne("Codend.Domain.Entities.Project", null)
+                    b.HasOne("Codend.Domain.Entities.Backlog", null)
                         .WithMany("ProjectTasks")
-                        .HasForeignKey("ProjectId")
+                        .HasForeignKey("BacklogId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -226,11 +254,17 @@ namespace Codend.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Codend.Domain.Entities.Backlog", b =>
+                {
+                    b.Navigation("ProjectTasks");
+                });
+
             modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
                 {
-                    b.Navigation("DomainEvents");
+                    b.Navigation("Backlog")
+                        .IsRequired();
 
-                    b.Navigation("ProjectTasks");
+                    b.Navigation("DomainEvents");
 
                     b.Navigation("ProjectVersions");
 
