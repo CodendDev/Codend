@@ -4,6 +4,7 @@ using Codend.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codend.Persistence.Migrations
 {
     [DbContext(typeof(CodendApplicationDbContext))]
-    partial class CodendApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230830092624_Sprint-Properties")]
+    partial class SprintProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,10 +82,6 @@ namespace Codend.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DueDate");
 
-                    b.Property<long?>("EstimatedTime")
-                        .HasPrecision(0)
-                        .HasColumnType("bigint");
-
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
 
@@ -95,9 +94,6 @@ namespace Codend.Persistence.Migrations
 
                     b.Property<Guid>("StatusId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<long?>("StoryPoints")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
