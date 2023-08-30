@@ -44,8 +44,8 @@ internal sealed class SprintConfiguration : IEntityTypeConfiguration<Sprint>
                 });
 
         builder
-            .HasMany<ProjectTask>()
-            .WithMany()
+            .HasMany(sprint => sprint.SprintProjectTasks)
+            .WithMany(task => task.AssignedToSprints)
             .UsingEntity("SprintProjectTask");
 
         builder.ConfigureSoftDeletableEntity();
