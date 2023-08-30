@@ -23,6 +23,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     public UserId OwnerId { get; private set; }
     public UserId? AssigneeId { get; private set; }
     public ProjectId ProjectId { get; private set; }
+    public virtual List<Sprint> AssignedToSprints { get; private set; }
     public TimeSpan? EstimatedTime { get; private set; }
     public uint? StoryPoints { get; private set; }
 }
