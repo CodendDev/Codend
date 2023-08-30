@@ -21,27 +21,27 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
 
         builder
             .OwnsOne(projectTask => projectTask.Name,
-            projectTaskNameBuilder =>
-            {
-                projectTaskNameBuilder.WithOwner();
+                projectTaskNameBuilder =>
+                {
+                    projectTaskNameBuilder.WithOwner();
 
-                projectTaskNameBuilder.Property(projectTaskName => projectTaskName.Name)
-                    .HasColumnName(nameof(ProjectTask.Name))
-                    .HasMaxLength(ProjectTaskName.MaxLength)
-                    .IsRequired();
-            });
+                    projectTaskNameBuilder.Property(projectTaskName => projectTaskName.Name)
+                        .HasColumnName(nameof(ProjectTask.Name))
+                        .HasMaxLength(ProjectTaskName.MaxLength)
+                        .IsRequired();
+                });
 
         builder
             .OwnsOne(projectTask => projectTask.Description,
-            projectNameBuilder =>
-            {
-                projectNameBuilder.WithOwner();
+                projectNameBuilder =>
+                {
+                    projectNameBuilder.WithOwner();
 
-                projectNameBuilder.Property(projectTaskName => projectTaskName.Description)
-                    .HasColumnName(nameof(ProjectTask.Description))
-                    .HasMaxLength(ProjectTaskDescription.MaxLength)
-                    .IsRequired();
-            });
+                    projectNameBuilder.Property(projectTaskName => projectTaskName.Description)
+                        .HasColumnName(nameof(ProjectTask.Description))
+                        .HasMaxLength(ProjectTaskDescription.MaxLength)
+                        .IsRequired();
+                });
 
         builder
             .Property(projectTask => projectTask.Priority)
@@ -78,5 +78,8 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
             .Property(projectTask => projectTask.EstimatedTime)
             .HasConversion(new TimeSpanToTicksConverter())
             .HasPrecision(0);
+
+        builder
+            .Property(projectTask => projectTask.StoryPoints);
     }
 }
