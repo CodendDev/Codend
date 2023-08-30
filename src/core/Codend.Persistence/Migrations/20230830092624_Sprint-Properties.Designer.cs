@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codend.Persistence.Migrations
 {
     [DbContext(typeof(CodendApplicationDbContext))]
-    [Migration("20230830090255_Sprint-Properties")]
+    [Migration("20230830092624_Sprint-Properties")]
     partial class SprintProperties
     {
         /// <inheritdoc />
@@ -92,17 +92,12 @@ namespace Codend.Persistence.Migrations
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("SprintId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("StatusId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
-
-                    b.HasIndex("SprintId");
 
                     b.HasIndex("StatusId");
 
@@ -173,6 +168,21 @@ namespace Codend.Persistence.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Sprint");
+                });
+
+            modelBuilder.Entity("ProjectTaskSprint", b =>
+                {
+                    b.Property<Guid>("AssignedToSprintsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SprintProjectTasksId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AssignedToSprintsId", "SprintProjectTasksId");
+
+                    b.HasIndex("SprintProjectTasksId");
+
+                    b.ToTable("ProjectTaskSprint");
                 });
 
             modelBuilder.Entity("SprintProjectTask", b =>
@@ -261,10 +271,6 @@ namespace Codend.Persistence.Migrations
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("Codend.Domain.Entities.Sprint", null)
-                        .WithMany("SprintProjectTasks")
-                        .HasForeignKey("SprintId");
 
                     b.HasOne("Codend.Domain.Entities.ProjectTaskStatus", null)
                         .WithMany()
@@ -476,6 +482,21 @@ namespace Codend.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ProjectTaskSprint", b =>
+                {
+                    b.HasOne("Codend.Domain.Entities.Sprint", null)
+                        .WithMany()
+                        .HasForeignKey("AssignedToSprintsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Codend.Domain.Entities.ProjectTask", null)
+                        .WithMany()
+                        .HasForeignKey("SprintProjectTasksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SprintProjectTask", b =>
                 {
                     b.HasOne("Codend.Domain.Entities.ProjectTask", null)
@@ -505,11 +526,6 @@ namespace Codend.Persistence.Migrations
             modelBuilder.Entity("Codend.Domain.Entities.ProjectTask", b =>
                 {
                     b.Navigation("DomainEvents");
-                });
-
-            modelBuilder.Entity("Codend.Domain.Entities.Sprint", b =>
-                {
-                    b.Navigation("SprintProjectTasks");
                 });
 #pragma warning restore 612, 618
         }

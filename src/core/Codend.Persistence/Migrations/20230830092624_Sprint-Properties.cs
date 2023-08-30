@@ -11,6 +11,18 @@ namespace Codend.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_ProjectTask_Sprint_SprintId",
+                table: "ProjectTask");
+
+            migrationBuilder.DropIndex(
+                name: "IX_ProjectTask_SprintId",
+                table: "ProjectTask");
+
+            migrationBuilder.DropColumn(
+                name: "SprintId",
+                table: "ProjectTask");
+
             migrationBuilder.AddColumn<DateTime>(
                 name: "DeletedOnUtc",
                 table: "Sprint",
@@ -41,35 +53,29 @@ namespace Codend.Persistence.Migrations
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
-            migrationBuilder.AddColumn<string>(
-                name: "Changelog",
-                table: "ProjectVersion",
-                type: "nvarchar(3000)",
-                maxLength: 3000,
-                nullable: true);
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "ReleaseDate",
-                table: "ProjectVersion",
-                type: "datetime2(0)",
-                precision: 0,
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
-
-            migrationBuilder.AddColumn<string>(
-                name: "VersionName",
-                table: "ProjectVersion",
-                type: "nvarchar(50)",
-                maxLength: 50,
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "VersionTag",
-                table: "ProjectVersion",
-                type: "nvarchar(20)",
-                maxLength: 20,
-                nullable: false,
-                defaultValue: "");
+            migrationBuilder.CreateTable(
+                name: "ProjectTaskSprint",
+                columns: table => new
+                {
+                    AssignedToSprintsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SprintProjectTasksId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectTaskSprint", x => new { x.AssignedToSprintsId, x.SprintProjectTasksId });
+                    table.ForeignKey(
+                        name: "FK_ProjectTaskSprint_ProjectTask_SprintProjectTasksId",
+                        column: x => x.SprintProjectTasksId,
+                        principalTable: "ProjectTask",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectTaskSprint_Sprint_AssignedToSprintsId",
+                        column: x => x.AssignedToSprintsId,
+                        principalTable: "Sprint",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateTable(
                 name: "SprintProjectTask",
@@ -96,6 +102,11 @@ namespace Codend.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProjectTaskSprint_SprintProjectTasksId",
+                table: "ProjectTaskSprint",
+                column: "SprintProjectTasksId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SprintProjectTask_SprintId",
                 table: "SprintProjectTask",
                 column: "SprintId");
@@ -104,6 +115,9 @@ namespace Codend.Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ProjectTaskSprint");
+
             migrationBuilder.DropTable(
                 name: "SprintProjectTask");
 
@@ -123,21 +137,23 @@ namespace Codend.Persistence.Migrations
                 name: "StartDate",
                 table: "Sprint");
 
-            migrationBuilder.DropColumn(
-                name: "Changelog",
-                table: "ProjectVersion");
+            migrationBuilder.AddColumn<Guid>(
+                name: "SprintId",
+                table: "ProjectTask",
+                type: "uniqueidentifier",
+                nullable: true);
 
-            migrationBuilder.DropColumn(
-                name: "ReleaseDate",
-                table: "ProjectVersion");
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectTask_SprintId",
+                table: "ProjectTask",
+                column: "SprintId");
 
-            migrationBuilder.DropColumn(
-                name: "VersionName",
-                table: "ProjectVersion");
-
-            migrationBuilder.DropColumn(
-                name: "VersionTag",
-                table: "ProjectVersion");
+            migrationBuilder.AddForeignKey(
+                name: "FK_ProjectTask_Sprint_SprintId",
+                table: "ProjectTask",
+                column: "SprintId",
+                principalTable: "Sprint",
+                principalColumn: "Id");
         }
     }
 }
