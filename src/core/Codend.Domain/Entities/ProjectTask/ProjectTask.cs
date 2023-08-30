@@ -1,7 +1,6 @@
 using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Enums;
 using Codend.Domain.Core.Primitives;
-using Codend.Domain.Entities.User;
 using Codend.Domain.ValueObjects;
 
 namespace Codend.Domain.Entities;

@@ -1,6 +1,5 @@
 ﻿using Codend.Domain.Core.Enums;
 using Codend.Domain.Entities;
-using Codend.Domain.Entities.User;
 using Codend.Domain.ValueObjects;
 using Codend.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
