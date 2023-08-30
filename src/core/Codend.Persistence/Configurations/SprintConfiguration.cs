@@ -23,11 +23,13 @@ internal sealed class SprintConfiguration : IEntityTypeConfiguration<Sprint>
                 sprintBuilder
                     .Property(period => period.StartDate)
                     .HasColumnName(nameof(SprintPeriod.StartDate))
+                    .HasPrecision(0)
                     .IsRequired();
                 
                 sprintBuilder
                     .Property(period => period.EndDate)
                     .HasColumnName(nameof(SprintPeriod.EndDate))
+                    .HasPrecision(0)
                     .IsRequired();
             });
         

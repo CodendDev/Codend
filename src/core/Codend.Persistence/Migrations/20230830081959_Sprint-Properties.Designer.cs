@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codend.Persistence.Migrations
 {
     [DbContext(typeof(CodendApplicationDbContext))]
-    [Migration("20230829160942_Sprint-Properties")]
+    [Migration("20230830081959_Sprint-Properties")]
     partial class SprintProperties
     {
         /// <inheritdoc />
@@ -438,11 +438,13 @@ namespace Codend.Persistence.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<DateTime>("EndDate")
-                                .HasColumnType("datetime2")
+                                .HasPrecision(0)
+                                .HasColumnType("datetime2(0)")
                                 .HasColumnName("EndDate");
 
                             b1.Property<DateTime>("StartDate")
-                                .HasColumnType("datetime2")
+                                .HasPrecision(0)
+                                .HasColumnType("datetime2(0)")
                                 .HasColumnName("StartDate");
 
                             b1.HasKey("SprintId");

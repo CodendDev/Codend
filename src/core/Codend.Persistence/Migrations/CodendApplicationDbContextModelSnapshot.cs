@@ -435,11 +435,13 @@ namespace Codend.Persistence.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<DateTime>("EndDate")
-                                .HasColumnType("datetime2")
+                                .HasPrecision(0)
+                                .HasColumnType("datetime2(0)")
                                 .HasColumnName("EndDate");
 
                             b1.Property<DateTime>("StartDate")
-                                .HasColumnType("datetime2")
+                                .HasPrecision(0)
+                                .HasColumnType("datetime2(0)")
                                 .HasColumnName("StartDate");
 
                             b1.HasKey("SprintId");

@@ -37,7 +37,7 @@ public sealed class SprintPeriod : ValueObject
     {
         return Result
             .Ok(new SprintPeriod(startDate, endDate))
-            .Ensure(() => startDate.CompareTo(endDate) < 0, new DomainErrors.ProjectVersionTag.TagTooLong());
+            .Ensure(() => startDate.CompareTo(endDate) < 0, new DomainErrors.SprintPeriod.StartDateAfterEndDate());
     }
 
     protected override IEnumerable<object> GetAtomicValues()
