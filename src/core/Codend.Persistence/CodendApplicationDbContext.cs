@@ -93,7 +93,7 @@ public sealed class CodendApplicationDbContext : DbContext, IUnitOfWork
             .Where(entityEntry => entityEntry.Entity.DomainEvents.Any())
             .ToList();
 
-        List<DomainEvent> domainEvents = aggregateRoots
+        List<IDomainEvent> domainEvents = aggregateRoots
             .SelectMany(entityEntry => entityEntry.Entity.DomainEvents)
             .ToList();
 

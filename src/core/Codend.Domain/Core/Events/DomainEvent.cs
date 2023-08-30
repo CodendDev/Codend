@@ -1,3 +1,8 @@
-﻿namespace Codend.Domain.Core.Events;
+﻿using Codend.Domain.Core.Abstractions;
+using MediatR;
 
-public record DomainEvent(Guid Id);
+namespace Codend.Domain.Core.Events;
+
+public abstract class DomainEvent : IDomainEvent
+{
+}
