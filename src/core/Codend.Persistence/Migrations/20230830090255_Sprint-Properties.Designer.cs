@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codend.Persistence.Migrations
 {
     [DbContext(typeof(CodendApplicationDbContext))]
-    [Migration("20230830081959_Sprint-Properties")]
+    [Migration("20230830090255_Sprint-Properties")]
     partial class SprintProperties
     {
         /// <inheritdoc />
@@ -173,6 +173,21 @@ namespace Codend.Persistence.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Sprint");
+                });
+
+            modelBuilder.Entity("SprintProjectTask", b =>
+                {
+                    b.Property<Guid>("ProjectTaskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SprintId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ProjectTaskId", "SprintId");
+
+                    b.HasIndex("SprintId");
+
+                    b.ToTable("SprintProjectTask");
                 });
 
             modelBuilder.Entity("Codend.Domain.Entities.BugFixProjectTask", b =>
@@ -458,6 +473,21 @@ namespace Codend.Persistence.Migrations
                     b.Navigation("Goal");
 
                     b.Navigation("Period")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SprintProjectTask", b =>
+                {
+                    b.HasOne("Codend.Domain.Entities.ProjectTask", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Codend.Domain.Entities.Sprint", null)
+                        .WithMany()
+                        .HasForeignKey("SprintId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

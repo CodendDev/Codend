@@ -7,12 +7,19 @@ namespace Codend.Domain.Core.Errors;
 /// </summary>
 public static class DomainErrors
 {
+    /// <summary>
+    /// Domain error base class.
+    /// </summary>
     public abstract class DomainError : Error
     {
+        public string ErrorCode { get; }
+
         protected DomainError(string errorCode, string message)
         {
             Metadata.Add("ErrorCode", errorCode);
             Metadata.Add("Message", message);
+            ErrorCode = errorCode;
+            Message = message;
         }
     }
 
@@ -143,7 +150,7 @@ public static class DomainErrors
             }
         }
     }
-    
+
     /// <summary>
     /// Project version tag domain errors.
     /// </summary>

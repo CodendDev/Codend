@@ -172,6 +172,21 @@ namespace Codend.Persistence.Migrations
                     b.ToTable("Sprint");
                 });
 
+            modelBuilder.Entity("SprintProjectTask", b =>
+                {
+                    b.Property<Guid>("ProjectTaskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SprintId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ProjectTaskId", "SprintId");
+
+                    b.HasIndex("SprintId");
+
+                    b.ToTable("SprintProjectTask");
+                });
+
             modelBuilder.Entity("Codend.Domain.Entities.BugFixProjectTask", b =>
                 {
                     b.HasBaseType("Codend.Domain.Entities.ProjectTask");
@@ -455,6 +470,21 @@ namespace Codend.Persistence.Migrations
                     b.Navigation("Goal");
 
                     b.Navigation("Period")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SprintProjectTask", b =>
+                {
+                    b.HasOne("Codend.Domain.Entities.ProjectTask", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Codend.Domain.Entities.Sprint", null)
+                        .WithMany()
+                        .HasForeignKey("SprintId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

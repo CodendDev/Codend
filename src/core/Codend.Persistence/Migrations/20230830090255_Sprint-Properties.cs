@@ -70,11 +70,43 @@ namespace Codend.Persistence.Migrations
                 maxLength: 20,
                 nullable: false,
                 defaultValue: "");
+
+            migrationBuilder.CreateTable(
+                name: "SprintProjectTask",
+                columns: table => new
+                {
+                    ProjectTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SprintId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SprintProjectTask", x => new { x.ProjectTaskId, x.SprintId });
+                    table.ForeignKey(
+                        name: "FK_SprintProjectTask_ProjectTask_ProjectTaskId",
+                        column: x => x.ProjectTaskId,
+                        principalTable: "ProjectTask",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SprintProjectTask_Sprint_SprintId",
+                        column: x => x.SprintId,
+                        principalTable: "Sprint",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SprintProjectTask_SprintId",
+                table: "SprintProjectTask",
+                column: "SprintId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "SprintProjectTask");
+
             migrationBuilder.DropColumn(
                 name: "DeletedOnUtc",
                 table: "Sprint");
