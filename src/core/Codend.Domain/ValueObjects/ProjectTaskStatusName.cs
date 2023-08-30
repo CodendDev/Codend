@@ -2,21 +2,23 @@
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Core.Primitives;
 using FluentResults;
+using NameNullOrEmpty = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus.NameNullOrEmpty;
+using NameTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus.NameTooLong;
 
 namespace Codend.Domain.ValueObjects;
 
 /// <summary>
-/// ProjectTaskStatus name.
+/// ProjectTaskStatus name value object.
 /// </summary>
 public sealed class ProjectTaskStatusName : ValueObject
 {
     /// <summary>
-    /// Maximum ProjectTaskStatus lenghth.
+    /// Maximum ProjectTaskStatus length.
     /// </summary>
-    public const int MaxLength = 100;
+    public const int MaxLength = 150;
 
     /// <summary>
-    /// ProjetTaskStatus value.
+    /// ProjectTaskStatus value.
     /// </summary>
     public string Name { get; }
 
@@ -26,16 +28,17 @@ public sealed class ProjectTaskStatusName : ValueObject
     }
 
     /// <summary>
-    /// Creates new ProjectTaskStatusName value object with given <paramref name="name"/> string.
-    /// Additionaly it checkes whether the maximum length is not exceeded and string value is not null/empty.
+    /// Creates new <see cref="ProjectTaskStatusName"/> value object with given <paramref name="name"/> string.
+    /// Additionally checks whether the maximum length is exceeded or string value is not null or empty.
     /// </summary>
     /// <param name="name">Name for the ProjectTaskStatus.</param>
-    /// <returns>Result of the create operation. Returns ProjestTaskStatusName or an error.</returns>
+    /// <returns>The <see cref="Result"/> of creation. Contains <see cref="ProjectTaskStatusName"/> or an <see cref="DomainErrors.DomainError"/>.</returns>
     public static Result<ProjectTaskStatusName> Create(string name)
     {
-        return Result.Ok(new ProjectTaskStatusName(name))
-            .Ensure(() => !string.IsNullOrEmpty(name), new DomainErrors.ProjectTaskStatus.NameNullOrEmpty())
-            .Ensure(() => name.Length < MaxLength, new DomainErrors.ProjectTaskStatus.NameTooLong());
+        return Result
+            .Ok(new ProjectTaskStatusName(name))
+            .Ensure<ProjectTaskStatusName, NameNullOrEmpty>(() => !string.IsNullOrEmpty(name))
+            .Ensure<ProjectTaskStatusName, NameTooLong>(() => name.Length < MaxLength);
     }
 
     protected override IEnumerable<object> GetAtomicValues()
