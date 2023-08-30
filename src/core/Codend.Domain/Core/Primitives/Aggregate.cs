@@ -1,5 +1,4 @@
 ﻿using Codend.Domain.Core.Abstractions;
-using Codend.Domain.Core.Events;
 
 namespace Codend.Domain.Core.Primitives;
 

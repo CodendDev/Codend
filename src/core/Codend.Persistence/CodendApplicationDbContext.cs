@@ -2,7 +2,6 @@
 using Codend.Application.Core.Abstractions.Common;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Domain.Core.Abstractions;
-using Codend.Domain.Core.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -104,7 +103,7 @@ public sealed class CodendApplicationDbContext : DbContext, IUnitOfWork
         await Task.WhenAll(tasks);
     }
 
-    /// <inheritdoc /> 
+    /// <inheritdoc cref="DbContext.SaveChangesAsync(System.Threading.CancellationToken)" /> 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var utcNow = _dateTime.UtcNow;
