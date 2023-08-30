@@ -22,4 +22,8 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     public ProjectName ProjectName { get; private set; }
 
     public ProjectDescription? ProjectDescription { get; private set; }
+
+    public UserId OwnerId { get; private set; }
+
+    public virtual List<User> ProjectMembers { get; private set; }
 }
