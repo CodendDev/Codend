@@ -2,11 +2,12 @@
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Core.Primitives;
 using FluentResults;
+using DescriptionTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionChangelog.DescriptionTooLong;
 
 namespace Codend.Domain.ValueObjects;
 
 /// <summary>
-/// Project version changelog.
+/// Project version changelog value object.
 /// </summary>
 public sealed class ProjectVersionChangelog : ValueObject
 {
@@ -29,12 +30,12 @@ public sealed class ProjectVersionChangelog : ValueObject
     /// Creates <see cref="ProjectVersionChangelog" /> instance.
     /// </summary>
     /// <param name="changelog">Changelog value.</param>
-    /// <returns>The result of project version changelog creation. Returns project version changelog or an error.</returns>
+    /// <returns>The <see cref="Result"/> of creation. Contains <see cref="ProjectVersionChangelog"/> or an <see cref="DomainErrors.DomainError"/>.</returns>
     public static Result<ProjectVersionChangelog> Create(string changelog)
     {
         return Result
             .Ok(new ProjectVersionChangelog(changelog))
-            .Ensure(() => changelog.Length < MaxLength, new DomainErrors.ProjectVersionChangelog.DescriptionTooLong());
+            .Ensure<ProjectVersionChangelog, DescriptionTooLong>(() => changelog.Length < MaxLength);
     }
 
     /// <inheritdoc />
