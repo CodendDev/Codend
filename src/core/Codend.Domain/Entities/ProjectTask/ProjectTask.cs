@@ -11,7 +11,10 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     protected ProjectTask(ProjectTaskId id) : base(id)
     {
     }
-    
+
+    public DateTime DeletedOnUtc { get; }
+    public bool Deleted { get; }
+
     public ProjectTaskName Name { get; private set; }
     public ProjectTaskDescription? Description { get; private set; }
     public ProjectTaskPriority Priority { get; private set; }
@@ -20,7 +23,5 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     public UserId OwnerId { get; private set; }
     public UserId? AssigneeId { get; private set; }
     public ProjectId ProjectId { get; private set; }
-    
-    public DateTime DeletedOnUtc { get; }
-    public bool Deleted { get; }
+    public TimeSpan? EstimatedTime { get; private set; }
 }

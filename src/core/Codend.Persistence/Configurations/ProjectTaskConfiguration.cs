@@ -5,6 +5,7 @@ using Codend.Domain.ValueObjects;
 using Codend.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Codend.Persistence.Configurations;
 
@@ -72,5 +73,10 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
                 assigneeGuidId => new UserId(assigneeGuidId));
 
         builder.ConfigureSoftDeletableEntity();
+
+        builder
+            .Property(projectTask => projectTask.EstimatedTime)
+            .HasConversion(new TimeSpanToTicksConverter())
+            .HasPrecision(0);
     }
 }
