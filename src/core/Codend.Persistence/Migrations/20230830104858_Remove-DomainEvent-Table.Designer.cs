@@ -35,7 +35,12 @@ namespace Codend.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Project");
                 });
@@ -166,6 +171,21 @@ namespace Codend.Persistence.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("ProjectMember", b =>
+                {
+                    b.Property<Guid>("ParticipatingInProjectsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProjectMembersId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ParticipatingInProjectsId", "ProjectMembersId");
+
+                    b.HasIndex("ProjectMembersId");
+
+                    b.ToTable("ProjectMember");
+                });
+
             modelBuilder.Entity("SprintProjectTask", b =>
                 {
                     b.Property<Guid>("AssignedToSprintsId")
@@ -190,6 +210,12 @@ namespace Codend.Persistence.Migrations
 
             modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
                 {
+                    b.HasOne("Codend.Domain.Entities.User", null)
+                        .WithMany("ProjectsOwned")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.OwnsOne("Codend.Domain.ValueObjects.ProjectDescription", "ProjectDescription", b1 =>
                         {
                             b1.Property<Guid>("ProjectId")
@@ -452,6 +478,21 @@ namespace Codend.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ProjectMember", b =>
+                {
+                    b.HasOne("Codend.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ParticipatingInProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Codend.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectMembersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SprintProjectTask", b =>
                 {
                     b.HasOne("Codend.Domain.Entities.Sprint", null)
@@ -474,6 +515,11 @@ namespace Codend.Persistence.Migrations
                     b.Navigation("ProjectVersions");
 
                     b.Navigation("Sprints");
+                });
+
+            modelBuilder.Entity("Codend.Domain.Entities.User", b =>
+                {
+                    b.Navigation("ProjectsOwned");
                 });
 #pragma warning restore 612, 618
         }
