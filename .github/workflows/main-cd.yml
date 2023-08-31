@@ -3,6 +3,8 @@ name: Push image on Azure repository
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
 
 env:
@@ -69,7 +71,7 @@ jobs:
           TRIVY_USERNAME: ${{ secrets.AZURE_REGISTRY_USERNAME }}
           TRIVY_PASSWORD: ${{ secrets.AZURE_REGISTRY_TOKEN }}
 
-  push-image:
+  push-release-image:
     name: Push image on Azure registry
     needs: [ "unit-tests", "scan-cves" ]
     runs-on: ubuntu-latest
