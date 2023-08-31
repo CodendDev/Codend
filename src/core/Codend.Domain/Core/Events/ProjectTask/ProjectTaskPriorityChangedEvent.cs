@@ -2,7 +2,7 @@
 using Codend.Domain.Core.Enums;
 using Codend.Domain.Entities;
 
-namespace Codend.Domain.Core.Events.ProjectTask;
+namespace Codend.Domain.Core.Events;
 
 /// <summary>
 /// Domain event raised after ProjectTaskPriority has been changed.

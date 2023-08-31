@@ -2,7 +2,7 @@
 using Codend.Domain.Entities;
 using Codend.Domain.ValueObjects;
 
-namespace Codend.Domain.Core.Events.ProjectTask;
+namespace Codend.Domain.Core.Events;
 
 /// <summary>
 /// Domain event raised after ProjectTaskDescription has been changed.
