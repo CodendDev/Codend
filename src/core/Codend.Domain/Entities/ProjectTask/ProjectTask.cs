@@ -1,7 +1,9 @@
 using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Enums;
+using Codend.Domain.Core.Events.ProjectTask;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.ValueObjects;
+using FluentResults;
 
 namespace Codend.Domain.Entities;
 
@@ -25,4 +27,136 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     public virtual List<Sprint> AssignedToSprints { get; private set; }
     public TimeSpan? EstimatedTime { get; private set; }
     public uint? StoryPoints { get; private set; }
+
+    /// <summary>
+    /// Edits name of the ProjectTask, and validates new name.
+    /// </summary>
+    /// <param name="name">New name.</param>
+    /// <returns>Ok result with ProjectTaskName object or an error.</returns>
+    public Result<ProjectTaskName> EditName(string name)
+    {
+        var result = ProjectTaskName.Create(name);
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        Name = result.Value;
+
+        var evt = new ProjectTaskNameEditedEvent(result.Value, Id);
+        Raise(evt);
+
+        return result;
+    }
+
+    /// <summary>
+    /// Edits description of the ProjectTask, and validates new description.
+    /// </summary>
+    /// <param name="description">New description.</param>
+    /// <returns>Ok result with ProjectTaskDescription object or an error.</returns>
+    public Result<ProjectTaskDescription> EditDescription(string description)
+    {
+        var result = ProjectTaskDescription.Create(description);
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        Description = result.Value;
+
+        var evt = new ProjectTaskDescriptionEditedEvent(result.Value, Id);
+        Raise(evt);
+
+        return result;
+    }
+
+    /// <summary>
+    /// Changes ProjectTask priority to one of <see cref="ProjectTaskPriority"/>
+    /// </summary>
+    /// <param name="priority">New priority.</param>
+    /// <returns>Ok result with ProjectTaskPriority object.</returns>
+    public Result<ProjectTaskPriority> ChangePriority(ProjectTaskPriority priority)
+    {
+        Priority = priority;
+
+        var evt = new ProjectTaskPriorityChangedEvent(priority, Id);
+        Raise(evt);
+
+        return Result.Ok(priority);
+    }
+    
+    /// <summary>
+    /// Changes ProjectTask status id to one of Project defined or default statuses.
+    /// </summary>
+    /// <param name="statusId">New status id.</param>
+    /// <returns>Ok result with ProjectTaskStatusId object.</returns>
+    public Result<ProjectTaskStatusId> ChangeStatus(ProjectTaskStatusId statusId)
+    {
+        StatusId = statusId;
+
+        var evt = new ProjectTaskStatusIdChangedEvent(statusId, Id);
+        Raise(evt);
+
+        return Result.Ok(statusId);
+    }
+    
+    /// <summary>
+    /// Changes ProjectTask dueDate.
+    /// </summary>
+    /// <param name="dueDate">New dueDate.</param>
+    /// <returns>Ok result with DateTime object.</returns>
+    public Result<DateTime> SetDueDate(DateTime dueDate)
+    {
+        DueDate = dueDate;
+
+        var evt = new ProjectTaskDueDateSetEvent(dueDate, Id);
+        Raise(evt);
+
+        return Result.Ok(dueDate);
+    }
+    
+    /// <summary>
+    /// Changes ProjectTask assignee.
+    /// </summary>
+    /// <param name="assigneeId">New assigneeId.</param>
+    /// <returns>Ok result with UserId object.</returns>
+    public Result<UserId> AssigneeUser(UserId assigneeId)
+    {
+        AssigneeId = assigneeId;
+
+        var evt = new ProjectTaskUserAssignedEvent(assigneeId, Id);
+        Raise(evt);
+
+        return Result.Ok(assigneeId);
+    }
+    
+    /// <summary>
+    /// Edits ProjectTask estimated time.
+    /// </summary>
+    /// <param name="estimatedTime">New estimatedTime.</param>
+    /// <returns>Ok result with TimeSpan object.</returns>
+    public Result<TimeSpan> EditEstimatedTime(TimeSpan estimatedTime)
+    {
+        EstimatedTime = estimatedTime;
+
+        var evt = new ProjectTaskEstimatedTimeEditedEvent(estimatedTime, Id);
+        Raise(evt);
+
+        return Result.Ok(estimatedTime);
+    }
+    
+    /// <summary>
+    /// Edits ProjectTask story points.
+    /// </summary>
+    /// <param name="storyPoints">New story points.</param>
+    /// <returns>Ok result with uint object.</returns>
+    public Result<uint> EditStoryPoints(uint storyPoints)
+    {
+        StoryPoints = storyPoints;
+
+        var evt = new ProjectTaskStoryPointsEditedEvent(storyPoints, Id);
+        Raise(evt);
+
+        return Result.Ok(storyPoints);
+    }
 }
