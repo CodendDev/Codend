@@ -1,7 +1,7 @@
 ﻿using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 
-namespace Codend.Domain.Core.Events.ProjectTask;
+namespace Codend.Domain.Core.Events;
 
 /// <summary>
 /// Domain event raised after AssigneeId has been changed.

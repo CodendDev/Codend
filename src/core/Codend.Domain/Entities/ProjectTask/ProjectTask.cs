@@ -1,6 +1,6 @@
 using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Enums;
-using Codend.Domain.Core.Events.ProjectTask;
+using Codend.Domain.Core.Events;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.ValueObjects;
 using FluentResults;

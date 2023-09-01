@@ -54,4 +54,16 @@ public static class ResultExtensions
 
         return result.WithError(new TError());
     }
+    
+    /// <summary>
+    /// Merges given result of type <typeparamref name="T"/> with other results <see cref="Result"/>
+    /// </summary>
+    /// <param name="result"> instance. </param>
+    /// <param name="results">Results to be merged into instance.</param>
+    /// <typeparam name="T">Result type.</typeparam>
+    /// <returns><see cref="Result"/> of type <typeparamref name="T"/> with merged errors and successes.</returns>
+    public static Result<T> MergeReasons<T>(this Result<T> result, params Result[] results)
+    {
+        return result.WithReasons(results.Merge().Reasons);
+    }
 }
