@@ -20,4 +20,6 @@ public sealed class PostgresCodendDbContext : CodendApplicationDbContext
     {
         optionsBuilder.UseNpgsql();
     }
+
+    public override string Provider => "PostgreSQL";
 }

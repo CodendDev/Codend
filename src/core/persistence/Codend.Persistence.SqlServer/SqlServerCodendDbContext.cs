@@ -20,4 +20,6 @@ public sealed class SqlServerCodendDbContext : CodendApplicationDbContext
     {
         optionsBuilder.UseSqlServer();
     }
+
+    public override string Provider => "SqlServer";
 }

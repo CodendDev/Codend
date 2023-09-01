@@ -8,10 +8,12 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Codend.Persistence;
 
-public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork
+public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigratable
 {
     private readonly IDateTime _dateTime;
     private readonly IMediator _mediator;
+    
+    public abstract string Provider { get; }
 
     protected CodendApplicationDbContext()
     {

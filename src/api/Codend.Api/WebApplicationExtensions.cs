@@ -1,28 +1,16 @@
-﻿using Codend.Api.Extensions;
-using Codend.Persistence.Postgres;
-using Codend.Persistence.SqlServer;
+﻿using Codend.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Api;
 
 public static class WebApplicationExtensions
 {
-    public static string MigrateDatabase(this WebApplication app)
+    public static string MigrateDatabase(this IApplicationBuilder app)
     {
-        var database = "";
+        using var scope = app.ApplicationServices.GetService<IServiceScopeFactory>()!.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<IMigratable>();
+        dbContext.Database.Migrate();
 
-        try
-        {
-            app.MigrateDatabase<SqlServerCodendDbContext>();
-            app.Logger.Log(LogLevel.Information, "Using SqlServer.");
-            database = "SqlServer";
-        }
-        catch (InvalidOperationException)
-        {
-            app.MigrateDatabase<PostgresCodendDbContext>();
-            app.Logger.Log(LogLevel.Information, "Using PostgreSQL.");
-            database = "PostgreSQL";
-        }
-
-        return database;
+        return dbContext.Provider;
     }
 }

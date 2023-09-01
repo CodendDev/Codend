@@ -16,9 +16,8 @@ builder.Services.AddSwaggerGen();
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
+    .AddDatabase(builder.Configuration)
     .AddPresentation();
-
-var databaseType = builder.Services.AddDatabase(builder.Configuration);
 
 var app = builder.Build();
 
