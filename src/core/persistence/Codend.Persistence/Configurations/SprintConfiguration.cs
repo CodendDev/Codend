@@ -44,7 +44,7 @@ internal sealed class SprintConfiguration : IEntityTypeConfiguration<Sprint>
                 });
 
         builder
-            .HasMany(sprint => sprint.SprintProjectTasks)
+            .HasMany(sprint => sprint.Tasks)
             .WithMany(task => task.AssignedToSprints)
             .UsingEntity("SprintProjectTask");
 

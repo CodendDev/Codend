@@ -17,13 +17,13 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.ConfigureKeyId((Guid guid) => new ProjectId(guid));
 
         builder
-            .HasMany(project => project.ProjectTasks)
+            .HasMany(project => project.Tasks)
             .WithOne()
             .HasForeignKey(projectTask => projectTask.ProjectId)
             .OnDelete(DeleteBehavior.NoAction);
 
         builder
-            .HasMany(project => project.ProjectVersions)
+            .HasMany(project => project.Versions)
             .WithOne()
             .HasForeignKey(projectVersion => projectVersion.ProjectId)
             .IsRequired()
@@ -38,26 +38,26 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         builder.ConfigureSoftDeletableEntity();
 
-        builder.OwnsOne(project => project.ProjectName,
+        builder.OwnsOne(project => project.Name,
             projectNameBuilder =>
             {
                 projectNameBuilder.WithOwner();
 
                 projectNameBuilder
                     .Property(projectName => projectName.Name)
-                    .HasColumnName(nameof(Project.ProjectName))
+                    .HasColumnName(nameof(Project.Name))
                     .HasMaxLength(ProjectName.MaxLength)
                     .IsRequired();
             });
 
-        builder.OwnsOne(project => project.ProjectDescription,
+        builder.OwnsOne(project => project.Description,
             projectDescriptionBuilder =>
             {
                 projectDescriptionBuilder.WithOwner();
 
                 projectDescriptionBuilder
                     .Property(projectDescription => projectDescription.Description)
-                    .HasColumnName(nameof(Project.ProjectDescription))
+                    .HasColumnName(nameof(Project.Description))
                     .HasMaxLength(ProjectDescription.MaxLength);
             });
 
@@ -75,7 +75,7 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .OnDelete(DeleteBehavior.NoAction);
 
         builder
-            .HasMany(project => project.ProjectMembers)
+            .HasMany(project => project.Members)
             .WithMany(user => user.ParticipatingInProjects)
             .UsingEntity("ProjectMember");
     }

@@ -15,7 +15,7 @@ public class Sprint : Entity<SprintId>, ISoftDeletableEntity
     public SprintPeriod Period { get; private set; }
     public SprintGoal? Goal { get; private set; }
     public ProjectId ProjectId { get; private set; }
-    public virtual List<ProjectTask> SprintProjectTasks { get; private set; }
+    public virtual List<ProjectTask> Tasks { get; private set; }
 
     public DateTime DeletedOnUtc { get; private set; }
     public bool Deleted { get; }
