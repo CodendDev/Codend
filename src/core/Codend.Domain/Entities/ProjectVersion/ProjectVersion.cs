@@ -14,15 +14,10 @@ public class ProjectVersion : Entity<ProjectVersionId>, ISoftDeletableEntity
 
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
-
     public ProjectId ProjectId { get; private set; }
-
-    public ProjectVersionName? VersionName { get; private set; }
-
-    public ProjectVersionTag VersionTag { get; private set; }
-
+    public ProjectVersionName? Name { get; private set; }
+    public ProjectVersionTag Tag { get; private set; }
     public DateTime ReleaseDate { get; private set; }
-
     public ProjectVersionChangelog? Changelog { get; private set; }
 
     /// <summary>
@@ -46,13 +41,13 @@ public class ProjectVersion : Entity<ProjectVersionId>, ISoftDeletableEntity
         var projectVersionChangelog =
             versionChangelog is null ? null : ProjectVersionChangelog.Create(versionChangelog);
 
-        projectVersion.VersionTag = projectVersionTag.ValueOrDefault;
+        projectVersion.Tag = projectVersionTag.ValueOrDefault;
         if (projectVersionName is null)
         {
-            projectVersion.VersionName = null;
+            projectVersion.Name = null;
             projectVersionName = Result.Ok();
         }
-        else projectVersion.VersionName = projectVersionName.ValueOrDefault;
+        else projectVersion.Name = projectVersionName.ValueOrDefault;
 
         if (projectVersionChangelog is null)
         {
@@ -82,8 +77,8 @@ public class ProjectVersion : Entity<ProjectVersionId>, ISoftDeletableEntity
         var projectVersionName = ProjectVersionName.Create(versionName);
         var projectVersionChangelog = ProjectVersionChangelog.Create(versionChangelog);
 
-        VersionTag = projectVersionTag.ValueOrDefault;
-        VersionName = projectVersionName.ValueOrDefault;
+        Tag = projectVersionTag.ValueOrDefault;
+        Name = projectVersionName.ValueOrDefault;
         Changelog = projectVersionChangelog.ValueOrDefault;
 
         return Result.Ok(this)

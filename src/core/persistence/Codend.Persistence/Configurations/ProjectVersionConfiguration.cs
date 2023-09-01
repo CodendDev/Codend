@@ -29,25 +29,25 @@ internal sealed class ProjectVersionConfiguration : IEntityTypeConfiguration<Pro
                     .HasMaxLength(ProjectVersionChangelog.MaxLength);
             });
 
-        builder.OwnsOne(projectVersion => projectVersion.VersionName,
+        builder.OwnsOne(projectVersion => projectVersion.Name,
             projectVersionBuilder =>
             {
                 projectVersionBuilder.WithOwner();
 
                 projectVersionBuilder
                     .Property(name => name.Name)
-                    .HasColumnName(nameof(ProjectVersion.VersionName))
+                    .HasColumnName(nameof(ProjectVersion.Name))
                     .HasMaxLength(ProjectVersionName.MaxLength);
             });
 
-        builder.OwnsOne(projectVersion => projectVersion.VersionTag,
+        builder.OwnsOne(projectVersion => projectVersion.Tag,
             projectVersionBuilder =>
             {
                 projectVersionBuilder.WithOwner();
 
                 projectVersionBuilder
                     .Property(tag => tag.Tag)
-                    .HasColumnName(nameof(ProjectVersion.VersionTag))
+                    .HasColumnName(nameof(ProjectVersion.Tag))
                     .HasMaxLength(ProjectVersionTag.MaxLength)
                     .IsRequired();
             });

@@ -11,28 +11,13 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
 {
     private Project() : base(new ProjectId(Guid.NewGuid()))
     {
-        ProjectTasks = new List<ProjectTask>();
-        ProjectVersions = new List<ProjectVersion>();
-        Sprints = new List<Sprint>();
-        ProjectMembers = new List<User>();
     }
 
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
-
-    public virtual List<ProjectTask> ProjectTasks { get; private set; }
-
-    public virtual List<ProjectVersion> ProjectVersions { get; private set; }
-
-    public virtual List<Sprint> Sprints { get; private set; }
-
-    public ProjectName ProjectName { get; private set; }
-
-    public ProjectDescription? ProjectDescription { get; private set; }
-
+    public ProjectName Name { get; private set; }
+    public ProjectDescription? Description { get; private set; }
     public UserId OwnerId { get; private set; }
-
-    public virtual List<User> ProjectMembers { get; private set; }
 
     /// <summary>
     /// Edits name and description of the Project, and validates new name.
@@ -52,8 +37,8 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
             return result;
         }
 
-        ProjectName = resultName.Value;
-        ProjectDescription = resultDescription.Value;
+        Name = resultName.Value;
+        Description = resultDescription.Value;
 
         var evt = new ProjectEditedEvent(resultName.Value, resultDescription.Value, Id);
         Raise(evt);
