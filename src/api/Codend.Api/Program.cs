@@ -31,6 +31,17 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MigrateDatabase<CodendApplicationDbContext>();
+try
+{
+    app.MigrateDatabase<SqlServerCodendDbContext>();
+    app.Logger.Log(LogLevel.Information, "Using SqlServer.");
+}
+catch (InvalidOperationException)
+{
+    app.MigrateDatabase<PostgresCodendDbContext>();
+    app.Logger.Log(LogLevel.Information, "Using PostgreSQL.");
+}
+
+app.MapGet("", () => "Hello :)");
 
 app.Run();

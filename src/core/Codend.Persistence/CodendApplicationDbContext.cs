@@ -8,25 +8,20 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Codend.Persistence;
 
-public sealed class CodendApplicationDbContext : DbContext, IUnitOfWork
+public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork
 {
     private readonly IDateTime _dateTime;
     private readonly IMediator _mediator;
 
-    public CodendApplicationDbContext()
+    protected CodendApplicationDbContext()
     {
     }
 
-    public CodendApplicationDbContext(DbContextOptions options, IDateTime dateTime, IMediator mediator) : base(options)
+    protected CodendApplicationDbContext(DbContextOptions options, IDateTime dateTime, IMediator mediator) :
+        base(options)
     {
         _dateTime = dateTime;
         _mediator = mediator;
-    }
-
-    /// <inheritdoc /> 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer();
     }
 
     /// <inheritdoc /> 
