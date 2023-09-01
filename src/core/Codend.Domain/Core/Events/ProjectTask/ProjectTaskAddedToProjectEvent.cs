@@ -4,11 +4,11 @@ using Codend.Domain.Entities;
 namespace Codend.Domain.Core.Events;
 
 /// <summary>
-/// Domain event raised after deleting task from project.
+/// Domain event raised after adding new task to project.
 /// </summary>
-public class ProjectTaskDeletedEvent : IDomainEvent
+public class ProjectTaskAddedToProjectEvent : IDomainEvent
 {
-    public ProjectTaskDeletedEvent(Entities.ProjectTask projectTask, ProjectId projectId)
+    public ProjectTaskAddedToProjectEvent(Entities.ProjectTask projectTask, ProjectId projectId)
     {
         ProjectTask = projectTask;
         ProjectId = projectId;
