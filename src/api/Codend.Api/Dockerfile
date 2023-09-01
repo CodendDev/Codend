@@ -11,6 +11,10 @@ COPY . .
 WORKDIR "/src/src/api/Codend.Api"
 RUN dotnet build "Codend.Api.csproj" -c Release -o /app/build
 
+FROM build AS test
+WORKDIR /src
+ENTRYPOINT ["dotnet", "test"]
+
 FROM build AS publish
 RUN dotnet publish "Codend.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
