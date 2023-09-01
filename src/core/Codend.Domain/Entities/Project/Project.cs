@@ -136,6 +136,13 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
         return result;
     }
 
+    /// <summary>
+    /// Creates new sprint.
+    /// </summary>
+    /// <param name="startDate">Sprint startDane.</param>
+    /// <param name="endDate">Sprint endDate.</param>
+    /// <param name="goal">Sprint goal.</param>
+    /// <returns>Ok result with Sprint object or an error.</returns>
     public Result<Sprint> CreateSprint(DateTime startDate, DateTime endDate, string? goal)
     {
         var result = Sprint.Create(Id, startDate, endDate, goal);
