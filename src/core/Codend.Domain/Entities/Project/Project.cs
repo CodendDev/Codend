@@ -11,28 +11,13 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
 {
     private Project() : base(new ProjectId(Guid.NewGuid()))
     {
-        Tasks = new List<ProjectTask>();
-        Versions = new List<ProjectVersion>();
-        Sprints = new List<Sprint>();
-        Members = new List<User>();
     }
 
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
-
-    public virtual List<ProjectTask> Tasks { get; private set; }
-
-    public virtual List<ProjectVersion> Versions { get; private set; }
-
-    public virtual List<Sprint> Sprints { get; private set; }
-
     public ProjectName Name { get; private set; }
-
     public ProjectDescription? Description { get; private set; }
-
     public UserId OwnerId { get; private set; }
-
-    public virtual List<User> Members { get; private set; }
 
     /// <summary>
     /// Edits name and description of the Project, and validates new name.

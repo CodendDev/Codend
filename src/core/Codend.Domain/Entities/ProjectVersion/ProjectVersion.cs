@@ -14,15 +14,10 @@ public class ProjectVersion : Entity<ProjectVersionId>, ISoftDeletableEntity
 
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
-
     public ProjectId ProjectId { get; private set; }
-
     public ProjectVersionName? Name { get; private set; }
-
     public ProjectVersionTag Tag { get; private set; }
-
     public DateTime ReleaseDate { get; private set; }
-
     public ProjectVersionChangelog? Changelog { get; private set; }
 
     /// <summary>

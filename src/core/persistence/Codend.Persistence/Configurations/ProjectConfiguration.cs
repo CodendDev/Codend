@@ -17,20 +17,20 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.ConfigureKeyId((Guid guid) => new ProjectId(guid));
 
         builder
-            .HasMany(project => project.Tasks)
+            .HasMany<ProjectTask>()
             .WithOne()
             .HasForeignKey(projectTask => projectTask.ProjectId)
             .OnDelete(DeleteBehavior.NoAction);
 
         builder
-            .HasMany(project => project.Versions)
+            .HasMany<ProjectVersion>()
             .WithOne()
             .HasForeignKey(projectVersion => projectVersion.ProjectId)
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
 
         builder
-            .HasMany(project => project.Sprints)
+            .HasMany<Sprint>()
             .WithOne()
             .HasForeignKey(sprint => sprint.ProjectId)
             .IsRequired()
@@ -75,7 +75,7 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .OnDelete(DeleteBehavior.NoAction);
 
         builder
-            .HasMany(project => project.Members)
+            .HasMany<User>()
             .WithMany(user => user.ParticipatingInProjects)
             .UsingEntity("ProjectMember");
     }

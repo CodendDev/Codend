@@ -12,7 +12,6 @@ public class ProjectTaskStatus : Entity<ProjectTaskStatusId>
     }
 
     public ProjectTaskStatusName Name { get; private set; }
-
     public ProjectId ProjectId { get; private set; }
 
     /// <summary>
