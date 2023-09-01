@@ -1,9 +1,12 @@
 ﻿using Codend.Application.Core.Abstractions.Data;
+using Codend.Persistence;
+using Codend.Persistence.Postgres;
+using Codend.Persistence.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Codend.Persistence;
+namespace Codend.Database;
 
 public static class DependencyInjection
 {
@@ -12,9 +15,8 @@ public static class DependencyInjection
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="configuration">The configuration.</param>
-    /// <exception cref="ArgumentNullException"></exception>
     /// <returns>The same service collection.</returns>
-    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         // Add Postgres
         var postgresConnectionString = configuration.GetConnectionString("PostgresDatabase");
@@ -26,7 +28,7 @@ public static class DependencyInjection
         }
 
         // Add SqlServer
-        var sqlServerConnectionString = configuration.GetConnectionString("Database");
+        var sqlServerConnectionString = configuration.GetConnectionString("SqlServerDatabase");
         if (!string.IsNullOrEmpty(sqlServerConnectionString))
         {
             services.AddCodendDbContext<SqlServerCodendDbContext>(
@@ -40,11 +42,13 @@ public static class DependencyInjection
     private static IServiceCollection AddCodendDbContext<T>(
         this IServiceCollection services,
         Action<DbContextOptionsBuilder> optionsAction)
-        where T : DbContext, IUnitOfWork
+        where T : DbContext, IUnitOfWork, IMigratable
     {
         services.AddDbContext<T>(optionsAction);
 
         services.AddScoped<IUnitOfWork, T>();
+
+        services.AddScoped<IMigratable, T>();
 
         return services;
     }

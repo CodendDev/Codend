@@ -1,7 +1,9 @@
+using System.Reflection;
+using Codend.Api;
 using Codend.Api.Extensions;
 using Codend.Application;
+using Codend.Database;
 using Codend.Infrastructure;
-using Codend.Persistence;
 using Codend.Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
-    .AddPersistence(builder.Configuration)
+    .AddDatabase(builder.Configuration)
     .AddPresentation();
 
 var app = builder.Build();
@@ -31,6 +33,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MigrateDatabase<CodendApplicationDbContext>();
+var database = app.MigrateDatabase();
+
+app.MapGet("", () => $"Hello {database}");
 
 app.Run();

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\persistence\Codend.Persistence.Postgres\Codend.Persistence.Postgres.csproj" />
+      <ProjectReference Include="..\persistence\Codend.Persistence.SqlServer\Codend.Persistence.SqlServer.csproj" />
+    </ItemGroup>
+
+</Project>
