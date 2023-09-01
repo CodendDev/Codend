@@ -1,11 +1,10 @@
 ﻿using Codend.Application.Core.Abstractions.Common;
-using Codend.Application.Core.Abstractions.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Codend.Persistence;
+namespace Codend.Persistence.SqlServer;
 
-public sealed class SqlServerCodendDbContext : CodendApplicationDbContext, IUnitOfWork
+public sealed class SqlServerCodendDbContext : CodendApplicationDbContext
 {
     public SqlServerCodendDbContext()
     {
