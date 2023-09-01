@@ -1,5 +1,4 @@
 ﻿using Codend.Domain.Core.Abstractions;
-using Codend.Domain.Core.Events;
 
 namespace Codend.Domain.Core.Primitives;
 
@@ -9,16 +8,16 @@ public abstract class Aggregate<TKey> : Entity<TKey>, IAggregate
     {
     }
 
-    private readonly List<DomainEvent> _domainEvents = new();
+    private readonly List<IDomainEvent> _domainEvents = new();
 
-    public IReadOnlyCollection<DomainEvent> DomainEvents => this._domainEvents;
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => this._domainEvents;
 
     public void ClearDomainEvents()
     {
         _domainEvents.Clear();
     }
 
-    protected void Raise(DomainEvent domainEvent)
+    protected void Raise(IDomainEvent domainEvent)
     {
         this._domainEvents.Add(domainEvent);
     }

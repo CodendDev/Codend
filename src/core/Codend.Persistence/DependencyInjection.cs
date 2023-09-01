@@ -12,14 +12,40 @@ public static class DependencyInjection
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="configuration">The configuration.</param>
+    /// <exception cref="ArgumentNullException"></exception>
     /// <returns>The same service collection.</returns>
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
-        var databaseConnectionString = configuration.GetConnectionString("database");
-        services.AddDbContext<CodendApplicationDbContext>(options => options.UseSqlServer(databaseConnectionString));
+        // Add Postgres
+        var postgresConnectionString = configuration.GetConnectionString("PostgresDatabase");
+        if (!string.IsNullOrEmpty(postgresConnectionString))
+        {
+            services.AddCodendDbContext<PostgresCodendDbContext>(
+                options => options.UseNpgsql(postgresConnectionString));
+            return services;
+        }
 
-        services.AddScoped<IUnitOfWork, CodendApplicationDbContext>();
-        
+        // Add SqlServer
+        var sqlServerConnectionString = configuration.GetConnectionString("Database");
+        if (!string.IsNullOrEmpty(sqlServerConnectionString))
+        {
+            services.AddCodendDbContext<SqlServerCodendDbContext>(
+                options => options.UseSqlServer(sqlServerConnectionString));
+            return services;
+        }
+
+        throw new NullReferenceException("Database connection string can't be null.");
+    }
+
+    private static IServiceCollection AddCodendDbContext<T>(
+        this IServiceCollection services,
+        Action<DbContextOptionsBuilder> optionsAction)
+        where T : DbContext, IUnitOfWork
+    {
+        services.AddDbContext<T>(optionsAction);
+
+        services.AddScoped<IUnitOfWork, T>();
+
         return services;
     }
 }

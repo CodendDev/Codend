@@ -2,16 +2,17 @@
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Core.Primitives;
 using FluentResults;
+using DescriptionTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskDescription.DescriptionTooLong;
 
 namespace Codend.Domain.ValueObjects;
 
 /// <summary>
-/// ProjectTask description.
+/// ProjectTask description value object.
 /// </summary>
 public sealed class ProjectTaskDescription : ValueObject
 {
     /// <summary>
-    /// Maximum description lenghth.
+    /// Maximum description length.
     /// </summary>
     public const int MaxLength = 2000;
 
@@ -26,15 +27,16 @@ public sealed class ProjectTaskDescription : ValueObject
     }
 
     /// <summary>
-    /// Creates new ProjectTaskDescription value object with given <paramref name="description"/> string.
-    /// Additionaly it checkes whether the maximum length is not exceeded and string value is not null/empty.
+    /// Creates new <see cref="ProjectTaskDescription"/> value object with given <paramref name="description"/> string.
+    /// Additionally checks whether the maximum length is exceeded.
     /// </summary>
-    /// <param name="description">Description for the new ProjectTaskDescription.</param>
-    /// <returns>Result of the create operation. Returns ProjetTaskDescription or an error.</returns>
+    /// <param name="description">Description for the new <see cref="ProjectTaskDescription"/>.</param>
+    /// <returns>The <see cref="Result"/> of creation. Contains <see cref="ProjectTaskDescription"/> or an <see cref="DomainErrors.DomainError"/>.</returns>
     public static Result<ProjectTaskDescription> Create(string description)
     {
-        return Result.Ok(new ProjectTaskDescription(description))
-            .Ensure(() => description.Length < MaxLength, new DomainErrors.ProjectTaskDescription.DescriptionTooLong());
+        return Result
+            .Ok(new ProjectTaskDescription(description))
+            .Ensure<ProjectTaskDescription, DescriptionTooLong>(() => description.Length < MaxLength);
     }
 
     protected override IEnumerable<object> GetAtomicValues()

@@ -2,6 +2,7 @@
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Core.Primitives;
 using FluentResults;
+using DescriptionTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectDescription.DescriptionTooLong;
 
 namespace Codend.Domain.ValueObjects;
 
@@ -29,12 +30,12 @@ public sealed class ProjectDescription : ValueObject
     /// Creates <see cref="ProjectDescription"/> instance.
     /// </summary>
     /// <param name="name">Description value.</param>
-    /// <returns>The result of creation. Returns project description or an error.</returns>
+    /// <returns>The <see cref="Result"/> of creation. Contains <see cref="ProjectDescription"/> or an <see cref="DomainErrors.DomainError"/>.</returns>
     public static Result<ProjectDescription> Create(string name)
     {
         return Result
             .Ok(new ProjectDescription(name))
-            .Ensure(() => name.Length < MaxLength, new DomainErrors.ProjectDescription.DescriptionTooLong());
+            .Ensure<ProjectDescription, DescriptionTooLong>(() => name.Length < MaxLength);
     }
 
     /// <inheritdoc />

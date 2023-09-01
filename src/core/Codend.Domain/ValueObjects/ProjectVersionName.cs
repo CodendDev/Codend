@@ -2,11 +2,13 @@
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Core.Primitives;
 using FluentResults;
+using NullOrEmpty = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionName.NullOrEmpty;
+using NameTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionName.NameTooLong;
 
 namespace Codend.Domain.ValueObjects;
 
 /// <summary>
-/// Project version name.
+/// Project version name value object.
 /// </summary>
 public sealed class ProjectVersionName : ValueObject
 {
@@ -25,12 +27,17 @@ public sealed class ProjectVersionName : ValueObject
         Name = name;
     }
 
+    /// <summary>
+    /// Creates <see cref="ProjectVersionName" /> instance.
+    /// </summary>
+    /// <param name="name">Project version name value.</param>
+    /// <returns>The <see cref="Result"/> of creation. Contains <see cref="ProjectVersionName"/> or an <see cref="DomainErrors.DomainError"/>.</returns>
     public static Result<ProjectVersionName> Create(string name)
     {
         return Result
             .Ok(new ProjectVersionName(name))
-            .Ensure(() => !string.IsNullOrEmpty(name), new DomainErrors.ProjectVersionName.NullOrEmpty())
-            .Ensure(() => name.Length < MaxLength, new DomainErrors.ProjectVersionName.NameTooLong());
+            .Ensure<ProjectVersionName, NullOrEmpty>(() => !string.IsNullOrEmpty(name))
+            .Ensure<ProjectVersionName, NameTooLong>(() => name.Length < MaxLength);
     }
 
     /// <inheritdoc />

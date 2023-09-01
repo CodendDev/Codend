@@ -7,12 +7,19 @@ namespace Codend.Domain.Core.Errors;
 /// </summary>
 public static class DomainErrors
 {
+    /// <summary>
+    /// Domain error base class.
+    /// </summary>
     public abstract class DomainError : Error
     {
+        public string ErrorCode { get; }
+
         protected DomainError(string errorCode, string message)
         {
             Metadata.Add("ErrorCode", errorCode);
             Metadata.Add("Message", message);
+            ErrorCode = errorCode;
+            Message = message;
         }
     }
 
@@ -143,7 +150,7 @@ public static class DomainErrors
             }
         }
     }
-    
+
     /// <summary>
     /// Project version tag domain errors.
     /// </summary>
@@ -161,6 +168,42 @@ public static class DomainErrors
         {
             public NullOrEmpty()
                 : base("ProjectVersionTag.NullOrEmpty", "Given tag is null or empty.")
+            {
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Sprint period domain errors.
+    /// </summary>
+    public static class SprintPeriod
+    {
+        public class StartDateAfterEndDate : DomainError
+        {
+            public StartDateAfterEndDate()
+                : base("SprintPeriod.StartDateAfterEndDate", "Start date must be before end date.")
+            {
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Sprint goal domain errors.
+    /// </summary>
+    public static class SprintGoal
+    {
+        public class GoalTooLong : DomainError
+        {
+            public GoalTooLong()
+                : base("SprintGoal.GoalTooLong", "Given goal is too long.")
+            {
+            }
+        }
+
+        public class NullOrEmpty : DomainError
+        {
+            public NullOrEmpty()
+                : base("SprintGoal.NullOrEmpty", "Given goal is null or empty.")
             {
             }
         }
