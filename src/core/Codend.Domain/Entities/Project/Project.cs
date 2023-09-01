@@ -1,5 +1,6 @@
 using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Events;
+using Codend.Domain.Core.Extensions;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.ValueObjects;
 using FluentResults;
@@ -8,7 +9,7 @@ namespace Codend.Domain.Entities;
 
 public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
 {
-    public Project() : base(new ProjectId(Guid.NewGuid()))
+    private Project() : base(new ProjectId(Guid.NewGuid()))
     {
         ProjectTasks = new List<ProjectTask>();
         ProjectVersions = new List<ProjectVersion>();
@@ -34,42 +35,27 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     public virtual List<User> ProjectMembers { get; private set; }
 
     /// <summary>
-    /// Edits name of the Project, and validates new name.
+    /// Edits name and description of the Project, and validates new name.
     /// </summary>
     /// <param name="name">New name.</param>
+    /// <param name="description">New description</param>
     /// <returns>Ok result with ProjectName object or an error.</returns>
-    public Result<ProjectName> EditName(string name)
+    public Result<Project> EditProject(string name, string description)
     {
-        var result = ProjectName.Create(name);
+        var resultName = ProjectName.Create(name);
+        var resultDescription = ProjectDescription.Create(description);
+
+        var result = Result.Ok(this).MergeReasons(resultName.ToResult(), resultDescription.ToResult());
+
         if (result.IsFailed)
         {
             return result;
         }
 
-        ProjectName = result.Value;
+        ProjectName = resultName.Value;
+        ProjectDescription = resultDescription.Value;
 
-        var evt = new ProjectNameEditedEvent(result.Value, Id);
-        Raise(evt);
-
-        return result;
-    }
-
-    /// <summary>
-    /// Edits Project description, and validates new desc.
-    /// </summary>
-    /// <param name="description">New description.</param>
-    /// <returns>Ok result with ProjectDescription object or an error.</returns>
-    public Result<ProjectDescription> EditDescription(string description)
-    {
-        var result = ProjectDescription.Create(description);
-        if (result.IsFailed)
-        {
-            return result;
-        }
-
-        ProjectDescription = result.Value;
-
-        var evt = new ProjectDescriptionEditedEvent(result.Value, Id);
+        var evt = new ProjectEditedEvent(resultName.Value, resultDescription.Value, Id);
         Raise(evt);
 
         return result;
@@ -81,7 +67,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// <param name="task">Task to be added.</param>
     public void AddTask(ProjectTask task)
     {
-        var evt = new ProjectTaskAddedEvent(task, Id);
+        var evt = new ProjectTaskAddedToProjectEvent(task, Id);
         Raise(evt);
     }
 
@@ -91,7 +77,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// <param name="task">Task to be deleted.</param>
     public void DeleteTask(ProjectTask task)
     {
-        var evt = new ProjectTaskDeletedEvent(task, Id);
+        var evt = new ProjectTaskDeletedFromProjectEvent(task, Id);
         Raise(evt);
     }
 
@@ -183,6 +169,75 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     public void RemoveTaskFromSprint(Sprint sprint, ProjectTask task)
     {
         var evt = new ProjectTaskRemovedFromSprintEvent(sprint, task);
+        Raise(evt);
+    }
+
+    /// <summary>
+    /// Adds user to project.
+    /// </summary>
+    /// <param name="user">User to be added.</param>
+    public void AddUserToProject(User user)
+    {
+        var evt = new UserAddedToProjectEvent(user, Id);
+        Raise(evt);
+    }
+
+    /// <summary>
+    /// Removes user from project.
+    /// </summary>
+    /// <param name="user">User to be removed.</param>
+    public void RemoveUserFromProject(User user)
+    {
+        var evt = new UserRemovedFromProjectEvent(user, Id);
+        Raise(evt);
+    }
+
+    /// <summary>
+    /// Creates and adds projectTask status to project
+    /// </summary>
+    /// <param name="statusName">Name for the new status.</param>
+    public Result<ProjectTaskStatus> AddProjectTaskStatusToProject(string statusName)
+    {
+        var result = ProjectTaskStatus.Create(Id, statusName);
+
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        var evt = new ProjectTaskStatusAddedToProjectEvent(result.Value, Id);
+        Raise(evt);
+
+        return result;
+    }
+
+    /// <summary>
+    /// Eddits projectTask status.
+    /// </summary>
+    /// <param name="status">Status to be edited.</param>
+    /// <param name="statusName">New status name.</param>
+    public Result<ProjectTaskStatus> EditProjectTaskStatus(ProjectTaskStatus status, string statusName)
+    {
+        var result = status.EditName(statusName);
+
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        var evt = new ProjectTaskStatusEditedEvent(result.Value, Id);
+        Raise(evt);
+
+        return result;
+    }
+
+    /// <summary>
+    /// Removes ProjectTaskStatus from project.
+    /// </summary>
+    /// <param name="status">Status to be removed.</param>
+    public void RemoveProjectTaskStatusFromProject(ProjectTaskStatus status)
+    {
+        var evt = new ProjectTaskStatusRemovedFromProjectEvent(status, Id);
         Raise(evt);
     }
 }

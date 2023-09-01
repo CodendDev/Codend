@@ -20,6 +20,14 @@ public class Sprint : Entity<SprintId>, ISoftDeletableEntity
     public DateTime DeletedOnUtc { get; private set; }
     public bool Deleted { get; }
 
+    /// <summary>
+    /// Creates new Sprint.
+    /// </summary>
+    /// <param name="projectId">Project Id it belongs to.</param>
+    /// <param name="startDate">Sprint startDate.</param>
+    /// <param name="endDate">Sprint endDate.</param>
+    /// <param name="goal">[Optional] Sprint goal.</param>
+    /// <returns>Ok result with Sprint object or an error.</returns>
     public static Result<Sprint> Create(ProjectId projectId, DateTime startDate, DateTime endDate, string? goal)
     {
         var sprint = new Sprint()
