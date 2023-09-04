@@ -63,15 +63,17 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
             .HasColumnName(nameof(ProjectTask.DueDate));
 
         builder
-            .Property(projectTask => projectTask.OwnerId)
-            .HasConversion(ownerId => ownerId.Value,
-                ownerGuidId => new UserId(ownerGuidId))
-            .IsRequired();
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(projectTask => projectTask.OwnerId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder
-            .Property(projectTask => projectTask.AssigneeId)
-            .HasConversion(assigneeId => assigneeId.Value.Value,
-                assigneeGuidId => new UserId(assigneeGuidId));
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(projectTask => projectTask.AssigneeId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder
             .Property(projectTask => projectTask.EstimatedTime)
