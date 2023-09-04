@@ -188,20 +188,20 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// <summary>
     /// Adds user to project.
     /// </summary>
-    /// <param name="user">User to be added.</param>
-    public void AddUserToProject(User user)
+    /// <param name="userId">User to be added.</param>
+    public void AddUserToProject(UserId userId)
     {
-        var evt = new UserAddedToProjectEvent(user, Id);
+        var evt = new UserAddedToProjectEvent(userId, Id);
         Raise(evt);
     }
 
     /// <summary>
     /// Removes user from project.
     /// </summary>
-    /// <param name="user">User to be removed.</param>
-    public void RemoveUserFromProject(User user)
+    /// <param name="userId">User to be removed.</param>
+    public void RemoveUserFromProject(UserId userId)
     {
-        var evt = new UserRemovedFromProjectEvent(user, Id);
+        var evt = new UserRemovedFromProjectEvent(userId, Id);
         Raise(evt);
     }
 
@@ -225,7 +225,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     }
 
     /// <summary>
-    /// Eddits projectTask status.
+    /// Edits projectTask status.
     /// </summary>
     /// <param name="status">Status to be edited.</param>
     /// <param name="statusName">New status name.</param>

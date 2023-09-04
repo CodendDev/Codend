@@ -43,7 +43,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
             .HasColumnName(nameof(ProjectTaskPriority))
             .IsRequired();
 
-        builder
+        builder 
             .HasOne<ProjectTaskStatus>()
             .WithMany()
             .HasForeignKey(projectTask => projectTask.StatusId)
@@ -55,17 +55,10 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
             .HasColumnName(nameof(ProjectTask.DueDate));
 
         builder
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(projectTask => projectTask.OwnerId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.NoAction);
+            .HasUserIdProperty(projectTask => projectTask.OwnerId);
 
         builder
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(projectTask => projectTask.AssigneeId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .HasUserIdProperty(projectTask => projectTask.AssigneeId);
 
         builder
             .Property(projectTask => projectTask.EstimatedTime)

@@ -8,12 +8,12 @@ namespace Codend.Domain.Core.Events;
 /// </summary>
 public class UserRemovedFromProjectEvent : IDomainEvent
 {
-    public UserRemovedFromProjectEvent(User user, ProjectId projectId)
+    public UserRemovedFromProjectEvent(UserId user, ProjectId projectId)
     {
         User = user;
         ProjectId = projectId;
     }
     
-    public User User { get; set; }
+    public UserId User { get; set; }
     public ProjectId ProjectId { get; set; }
 }

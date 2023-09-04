@@ -5,5 +5,5 @@ namespace Codend.Infrastructure.Authentication;
 
 public class UserIdentityProvider : IUserIdentityProvider
 {
-    public UserId UserId { get; }
+    public UserId UserId { get; } = new UserId(Guid.NewGuid());
 }
