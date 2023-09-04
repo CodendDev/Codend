@@ -19,13 +19,33 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     public ProjectDescription Description { get; private set; }
     public UserId OwnerId { get; private set; }
 
+    public static Result<Project> Create(string name, string? description = null)
+    {
+        var project = new Project();
+
+        var resultName = ProjectName.Create(name);
+        var resultDescription = ProjectDescription.Create(description);
+
+        var result = Result.Ok(project).MergeReasons(resultName.ToResult(), resultDescription.ToResult());
+
+        if (result.IsFailed)
+        {
+            return result;
+        }
+        
+        project.Name = resultName.Value;
+        project.Description = resultDescription.Value;
+
+        return result;
+    }
+    
     /// <summary>
     /// Edits name and description of the Project, and validates new name.
     /// </summary>
     /// <param name="name">New name.</param>
     /// <param name="description">New description</param>
     /// <returns>Ok result with ProjectName object or an error.</returns>
-    public Result<Project> EditProject(string name, string description)
+    public Result<Project> Edit(string name, string description)
     {
         var resultName = ProjectName.Create(name);
         var resultDescription = ProjectDescription.Create(description);
@@ -40,7 +60,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
         Name = resultName.Value;
         Description = resultDescription.Value;
 
-        var evt = new ProjectEditedEvent(resultName.Value, resultDescription.Value, Id);
+        var evt = new ProjectEditedEvent(this);
         Raise(evt);
 
         return result;

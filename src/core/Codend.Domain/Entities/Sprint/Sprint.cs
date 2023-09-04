@@ -34,15 +34,10 @@ public class Sprint : Entity<SprintId>, ISoftDeletableEntity
         };
 
         var periodResult = SprintPeriod.Create(startDate, endDate);
-        var goalResult = goal is null ? null : SprintGoal.Create(goal);
+        var goalResult = SprintGoal.Create(goal);
 
         sprint.Period = periodResult.ValueOrDefault;
-        if (goalResult is null)
-        {
-            sprint.Goal = null;
-            goalResult = Result.Ok();
-        }
-        else sprint.Goal = goalResult.ValueOrDefault;
+        sprint.Goal = goalResult.ValueOrDefault;
 
         return Result.Ok(sprint)
             .MergeReasons(
