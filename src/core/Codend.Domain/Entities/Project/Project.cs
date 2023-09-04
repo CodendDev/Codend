@@ -16,7 +16,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
     public ProjectName Name { get; private set; }
-    public ProjectDescription? Description { get; private set; }
+    public ProjectDescription Description { get; private set; }
     public UserId OwnerId { get; private set; }
 
     /// <summary>
