@@ -36,11 +36,28 @@ internal static class ModelBuilderExtensions
     /// Configuration for entity which implements <see cref="ISoftDeletableEntity"/>.
     /// </summary>
     /// <param name="builder">The model builder.</param>
-    /// <typeparam name="T"><see cref="ISoftDeletableEntity"/> entity</typeparam>
+    /// <typeparam name="T"><see cref="ISoftDeletableEntity"/> entity.</typeparam>
     internal static void ConfigureSoftDeletableEntity<T>(this EntityTypeBuilder<T> builder)
         where T : class, ISoftDeletableEntity
     {
-        builder.Property(project => project.Deleted).HasDefaultValue(false);
-        builder.HasQueryFilter(project => !project.Deleted);
+        builder
+            .Property(entity => entity.DeletedOnUtc)
+            .HasPrecision(0);
+
+        builder.Property(entity => entity.Deleted).HasDefaultValue(false);
+        builder.HasQueryFilter(entity => !entity.Deleted);
+    }
+
+    /// <summary>
+    /// Configuration for entity which implements <see cref="ICreatableEntity"/>.
+    /// </summary>
+    /// <param name="builder">The model builder.</param>
+    /// <typeparam name="T"><see cref="ICreatableEntity"/> entity.</typeparam>
+    internal static void ConfigureCreatableEntity<T>(this EntityTypeBuilder<T> builder)
+        where T : class, ICreatableEntity
+    {
+        builder
+            .Property(entity => entity.CreatedOn)
+            .HasPrecision(0);
     }
 }

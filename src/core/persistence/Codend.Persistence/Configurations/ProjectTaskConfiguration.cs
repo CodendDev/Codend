@@ -17,6 +17,8 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
     public void Configure(EntityTypeBuilder<ProjectTask> builder)
     {
         builder.ConfigureKeyId((Guid guid) => new ProjectTaskId(guid));
+        builder.ConfigureSoftDeletableEntity();
+        builder.ConfigureCreatableEntity();
 
         builder
             .OwnsOne(projectTask => projectTask.Name,
@@ -70,8 +72,6 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
             .Property(projectTask => projectTask.AssigneeId)
             .HasConversion(assigneeId => assigneeId.Value.Value,
                 assigneeGuidId => new UserId(assigneeGuidId));
-
-        builder.ConfigureSoftDeletableEntity();
 
         builder
             .Property(projectTask => projectTask.EstimatedTime)

@@ -9,5 +9,5 @@ public interface IEntity<TKey>
     /// <summary>
     /// Entity identifier.
     /// </summary>
-    public TKey Id { get; set; }
+    public TKey Id { get; }
 }

@@ -27,10 +27,18 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
                     b.Property<bool>("Deleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
+
+                    b.Property<DateTime>("DeletedOnUtc")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
 
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uuid");
@@ -50,10 +58,18 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<Guid?>("AssigneeId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
                     b.Property<bool>("Deleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
+
+                    b.Property<DateTime>("DeletedOnUtc")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
@@ -101,6 +117,9 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
@@ -116,10 +135,18 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
                     b.Property<bool>("Deleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
+
+                    b.Property<DateTime>("DeletedOnUtc")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
@@ -140,13 +167,18 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
                     b.Property<bool>("Deleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
                     b.Property<DateTime>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
@@ -162,6 +194,9 @@ namespace Codend.Persistence.Postgres.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

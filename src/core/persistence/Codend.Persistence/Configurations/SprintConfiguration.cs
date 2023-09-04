@@ -15,7 +15,9 @@ internal sealed class SprintConfiguration : IEntityTypeConfiguration<Sprint>
     public void Configure(EntityTypeBuilder<Sprint> builder)
     {
         builder.ConfigureKeyId((Guid guid) => new SprintId(guid));
-
+        builder.ConfigureSoftDeletableEntity();
+        builder.ConfigureCreatableEntity();
+        
         builder
             .OwnsOne(sprint => sprint.Period,
                 sprintBuilder =>
@@ -47,7 +49,5 @@ internal sealed class SprintConfiguration : IEntityTypeConfiguration<Sprint>
             .HasMany<ProjectTask>()
             .WithMany()
             .UsingEntity("SprintProjectTask");
-
-        builder.ConfigureSoftDeletableEntity();
     }
 }
