@@ -5,7 +5,7 @@ namespace Codend.Domain.Core.Errors;
 /// <summary>
 /// Contains the domain errors.
 /// </summary>
-public static class DomainErrors
+public static partial class DomainErrors
 {
     /// <summary>
     /// Domain error base class.
@@ -172,7 +172,7 @@ public static class DomainErrors
             }
         }
     }
-    
+
     /// <summary>
     /// Sprint period domain errors.
     /// </summary>
@@ -186,7 +186,7 @@ public static class DomainErrors
             }
         }
     }
-    
+
     /// <summary>
     /// Sprint goal domain errors.
     /// </summary>

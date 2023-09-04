@@ -1,4 +1,5 @@
 using Codend.Application.Projects.Commands.CreateProject;
+using Codend.Application.Projects.Commands.DeleteProject;
 using Codend.Presentation.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -23,5 +24,17 @@ public class ProjectController : ApiController
         }
 
         return BadRequest(response.Errors);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete(DeleteProjectCommand command)
+    {
+        var response = await Mediator.Send(command);
+        if (response.IsSuccess)
+        {
+            return NoContent();
+        }
+
+        return NotFound();
     }
 }
