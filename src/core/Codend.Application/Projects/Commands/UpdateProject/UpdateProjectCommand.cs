@@ -27,7 +27,7 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand,
     public async Task<Result<Project>> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = await _projectRepository.GetByIdAsync(new ProjectId(request.ProjectId));
-        if (project == null)
+        if (project is null)
         {
             return Result.Fail(new ProjectNotFound());
         }

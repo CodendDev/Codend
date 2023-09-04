@@ -25,7 +25,7 @@ public class DeleteProjectCommandHandler : ICommandHandler<DeleteProjectCommand>
     public async Task<Result> Handle(DeleteProjectCommand request, CancellationToken cancellationToken)
     {
         var project = await _projectRepository.GetByIdAsync(new ProjectId(request.ProjectId));
-        if (project == null)
+        if (project is null)
         {
             return Result.Fail(new ProjectNotFound());
         }

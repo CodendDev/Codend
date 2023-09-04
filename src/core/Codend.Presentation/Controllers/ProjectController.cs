@@ -1,6 +1,7 @@
 using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
 using Codend.Application.Projects.Commands.UpdateProject;
+using Codend.Application.Projects.Queries.GetProjectById;
 using Codend.Presentation.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -49,5 +50,17 @@ public class ProjectController : ApiController
         }
 
         return BadRequest(response.Errors);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Get(GetProjectByIdQuery query)
+    {
+        var response = await Mediator.Send(query);
+        if (response.IsFailed)
+        {
+            return NotFound();
+        }
+
+        return Ok(response.Value);
     }
 }
