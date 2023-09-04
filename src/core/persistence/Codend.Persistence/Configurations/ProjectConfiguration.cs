@@ -59,15 +59,6 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .OnDelete(DeleteBehavior.NoAction);
 
         builder
-            .HasOne<User>()
-            .WithMany(user => user.ProjectsOwned)
-            .HasForeignKey(project => project.OwnerId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.NoAction);
-
-        builder
-            .HasMany<User>()
-            .WithMany(user => user.ParticipatingInProjects)
-            .UsingEntity("ProjectMember");
+            .HasUserIdProperty(project => project.OwnerId);
     }
 }

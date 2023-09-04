@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -59,5 +61,15 @@ internal static class ModelBuilderExtensions
         builder
             .Property(entity => entity.CreatedOn)
             .HasPrecision(0);
+    }
+
+    internal static void HasUserIdProperty<TEntity>(
+        this EntityTypeBuilder<TEntity> builder,
+        Expression<Func<TEntity, UserId>> propertyExpression)
+        where TEntity : class, IEntity
+    {
+        builder
+            .Property(propertyExpression)
+            .HasConversion(id => id.Value, value => new UserId(value));
     }
 }
