@@ -15,6 +15,8 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
     public void Configure(EntityTypeBuilder<Project> builder)
     {
         builder.ConfigureKeyId((Guid guid) => new ProjectId(guid));
+        builder.ConfigureSoftDeletableEntity();
+        builder.ConfigureCreatableEntity();
 
         builder
             .HasMany<ProjectTask>()
@@ -35,8 +37,6 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasForeignKey(sprint => sprint.ProjectId)
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
-
-        builder.ConfigureSoftDeletableEntity();
 
         builder.OwnsOne(project => project.Name,
             projectNameBuilder =>

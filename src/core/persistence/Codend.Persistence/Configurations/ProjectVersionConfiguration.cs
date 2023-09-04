@@ -15,9 +15,9 @@ internal sealed class ProjectVersionConfiguration : IEntityTypeConfiguration<Pro
     public void Configure(EntityTypeBuilder<ProjectVersion> builder)
     {
         builder.ConfigureKeyId((Guid guid) => new ProjectVersionId(guid));
-
         builder.ConfigureSoftDeletableEntity();
-
+        builder.ConfigureCreatableEntity();
+        
         builder.OwnsOne(projectVersion => projectVersion.Changelog,
             projectVersionBuilder =>
             {

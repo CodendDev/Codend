@@ -2,6 +2,7 @@
 using Codend.Application.Core.Abstractions.Common;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Primitives;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -12,7 +13,7 @@ public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigr
 {
     private readonly IDateTime _dateTime;
     private readonly IMediator _mediator;
-    
+
     public abstract string Provider { get; }
 
     protected CodendApplicationDbContext()
@@ -35,46 +36,64 @@ public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigr
     }
 
     /// <summary>
-    /// Updates the specified entity entry's referenced entries in the deleted state to the modified state.
+    /// Updates the specified entity entry's referenced entries.
     /// This method is recursive.
     /// </summary>
     /// <param name="entityEntry">The entity entry.</param>
-    private static void UpdateDeletedEntityEntryReferencesToUnchanged(EntityEntry entityEntry)
+    /// <param name="oldState">Entity current state.</param>
+    /// <param name="newState">The state which will be set.</param>
+    private static void UpdateEntityEntryReferences(EntityEntry entityEntry, EntityState oldState, EntityState newState)
     {
         if (!entityEntry.References.Any())
         {
             return;
         }
 
-        var references = entityEntry.References.Where(r => r.TargetEntry.State == EntityState.Deleted);
-        foreach (ReferenceEntry referenceEntry in references)
+        var references = entityEntry.References.Where(r => r.TargetEntry != null && r.TargetEntry.State == oldState);
+        foreach (var reference in references)
         {
-            referenceEntry.TargetEntry.State = EntityState.Unchanged;
-
-            UpdateDeletedEntityEntryReferencesToUnchanged(referenceEntry.TargetEntry);
-        }
-    }
-
-    /// <summary>
-    /// Updates the entities implementing <see cref="ISoftDeletableEntity"/> interface.
-    /// </summary>
-    /// <param name="time">The current date and time in UTC format.</param>
-    private void UpdateSoftDeletableEntities(DateTime time)
-    {
-        foreach (EntityEntry<ISoftDeletableEntity> entityEntry in ChangeTracker.Entries<ISoftDeletableEntity>())
-        {
-            if (entityEntry.State != EntityState.Deleted)
+            if (reference.TargetEntry == null)
             {
                 continue;
             }
 
+            reference.TargetEntry.State = newState;
+            UpdateEntityEntryReferences(reference.TargetEntry, oldState, newState);
+        }
+    }
+
+    /// <summary>
+    /// Updates entities implementing <see cref="ISoftDeletableEntity"/> interface.
+    /// </summary>
+    /// <param name="time">Current date and time in UTC.</param>
+    private void UpdateSoftDeletableEntities(DateTime time)
+    {
+        var deletedEntities = ChangeTracker
+            .Entries<ISoftDeletableEntity>()
+            .Where(entity => entity.State == EntityState.Deleted);
+
+        foreach (var entityEntry in deletedEntities)
+        {
             entityEntry.Property(nameof(ISoftDeletableEntity.DeletedOnUtc)).CurrentValue = time;
-
             entityEntry.Property(nameof(ISoftDeletableEntity.Deleted)).CurrentValue = true;
-
             entityEntry.State = EntityState.Modified;
+            UpdateEntityEntryReferences(entityEntry, EntityState.Deleted, EntityState.Modified);
+        }
+    }
 
-            UpdateDeletedEntityEntryReferencesToUnchanged(entityEntry);
+    /// <summary>
+    /// Updates entities implementing <see cref="ICreatableEntity"/> interface.
+    /// </summary>
+    /// <param name="time">Current date and time in UTC.</param>
+    private void UpdateCreatableEntities(DateTime time)
+    {
+        var addedEntities = ChangeTracker
+            .Entries<ICreatableEntity>()
+            .Where(entity => entity.State == EntityState.Added);
+
+        foreach (var entityEntry in addedEntities)
+        {
+            entityEntry.Property(nameof(ICreatableEntity.CreatedOn)).CurrentValue = time;
         }
     }
 
@@ -105,6 +124,7 @@ public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigr
     {
         var utcNow = _dateTime.UtcNow;
         UpdateSoftDeletableEntities(utcNow);
+        UpdateCreatableEntities(utcNow);
 
         await PublishDomainEvents(cancellationToken);
 

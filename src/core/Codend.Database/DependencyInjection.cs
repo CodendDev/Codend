@@ -42,9 +42,9 @@ public static class DependencyInjection
     private static IServiceCollection AddCodendDbContext<T>(
         this IServiceCollection services,
         Action<DbContextOptionsBuilder> optionsAction)
-        where T : DbContext, IUnitOfWork, IMigratable
+        where T : CodendApplicationDbContext, IUnitOfWork, IMigratable
     {
-        services.AddDbContext<T>(optionsAction);
+        services.AddDbContext<CodendApplicationDbContext, T>(optionsAction);
 
         services.AddScoped<IUnitOfWork, T>();
 
