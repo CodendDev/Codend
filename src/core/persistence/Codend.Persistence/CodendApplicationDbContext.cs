@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Codend.Persistence;
 
-public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigratable
+public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigratable, IDbContextSets
 {
     private readonly IDateTime _dateTime;
     private readonly IMediator _mediator;
@@ -130,4 +130,6 @@ public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigr
 
         return await base.SaveChangesAsync(cancellationToken);
     }
+
+    public new DbSet<T> Set<T>() where T : class, IEntity => base.Set<T>();
 }

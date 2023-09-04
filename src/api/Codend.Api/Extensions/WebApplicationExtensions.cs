@@ -1,7 +1,7 @@
 ﻿using Codend.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Codend.Api;
+namespace Codend.Api.Extensions;
 
 public static class WebApplicationExtensions
 {

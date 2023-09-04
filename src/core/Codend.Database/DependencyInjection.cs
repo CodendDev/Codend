@@ -46,9 +46,9 @@ public static class DependencyInjection
     {
         services.AddDbContext<CodendApplicationDbContext, T>(optionsAction);
 
-        services.AddScoped<IUnitOfWork, T>();
-
-        services.AddScoped<IMigratable, T>();
+        services.AddScoped<IUnitOfWork, T>(); // Save changes
+        services.AddScoped<IDbContextSets, T>(); // Entities DbSets 
+        services.AddScoped<IMigratable, T>(); // Migrations at startup
 
         return services;
     }
