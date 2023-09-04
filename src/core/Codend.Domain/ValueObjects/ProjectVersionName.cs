@@ -1,12 +1,13 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using NameTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionName.NameTooLong;
 
 namespace Codend.Domain.ValueObjects;
 
 /// <summary>
-/// Project version name value object.
+/// [Optional] Project version name value object.
 /// </summary>
 public sealed class ProjectVersionName : NullableStringValueObject
 {

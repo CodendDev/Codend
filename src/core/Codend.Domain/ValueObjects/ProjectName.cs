@@ -1,5 +1,6 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using NullOrEmpty = Codend.Domain.Core.Errors.DomainErrors.ProjectName.NullOrEmpty;
 using NameTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectName.NameTooLong;

@@ -1,12 +1,13 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using DescriptionTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskDescription.DescriptionTooLong;
 
 namespace Codend.Domain.ValueObjects;
 
 /// <summary>
-/// ProjectTask description value object.
+/// [Optional] ProjectTask description value object.
 /// </summary>
 public sealed class ProjectTaskDescription : NullableStringValueObject
 {

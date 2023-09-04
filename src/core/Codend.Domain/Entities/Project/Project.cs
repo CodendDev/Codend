@@ -19,7 +19,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     public ProjectDescription Description { get; private set; }
     public UserId OwnerId { get; private set; }
 
-    public static Result<Project> Create(string name, string? description = null)
+    public static Result<Project> Create(UserId ownerId, string name, string? description = null)
     {
         var project = new Project();
 
@@ -32,7 +32,8 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
         {
             return result;
         }
-        
+
+        project.OwnerId = ownerId;
         project.Name = resultName.Value;
         project.Description = resultDescription.Value;
 

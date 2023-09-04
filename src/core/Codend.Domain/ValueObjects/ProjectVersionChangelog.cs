@@ -1,12 +1,13 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using DescriptionTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionChangelog.DescriptionTooLong;
 
 namespace Codend.Domain.ValueObjects;
 
 /// <summary>
-/// Project version changelog value object.
+/// [Optional] Project version changelog value object.
 /// </summary>
 public sealed class ProjectVersionChangelog : NullableStringValueObject
 {

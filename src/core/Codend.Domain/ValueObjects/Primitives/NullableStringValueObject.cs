@@ -1,18 +1,18 @@
 ﻿using Codend.Domain.Core.Primitives;
 
-namespace Codend.Domain.ValueObjects;
+namespace Codend.Domain.ValueObjects.Primitives;
 
 /// <summary>
 /// String value object.
 /// </summary>
-public abstract class StringValueObject : ValueObject
+public abstract class NullableStringValueObject : ValueObject
 {
     /// <summary>
     /// String value.
     /// </summary>
-    public string Value { get; }
+    public string? Value { get; }
 
-    protected StringValueObject(string value)
+    protected NullableStringValueObject(string? value)
     {
         Value = value;
     }
@@ -20,6 +20,6 @@ public abstract class StringValueObject : ValueObject
     /// <inheritdoc />
     protected override IEnumerable<object> GetAtomicValues()
     {
-        yield return Value;
+        if (Value != null) yield return Value;
     }
 }

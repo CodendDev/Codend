@@ -1,12 +1,13 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using GoalTooLong = Codend.Domain.Core.Errors.DomainErrors.SprintGoal.GoalTooLong;
 
 namespace Codend.Domain.ValueObjects;
 
 /// <summary>
-/// Project sprint goal.
+/// [Optional] Project sprint goal.
 /// </summary>
 public sealed class SprintGoal : NullableStringValueObject
 {
