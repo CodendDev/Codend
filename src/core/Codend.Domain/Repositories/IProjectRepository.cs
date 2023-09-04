@@ -9,4 +9,6 @@ public interface IProjectRepository
     Task<Project?> GetByIdAsync(ProjectId projectId);
 
     void Remove(Project project);
+
+    void Update(Project project);
 }

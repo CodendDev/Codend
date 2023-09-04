@@ -1,5 +1,6 @@
 using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
+using Codend.Application.Projects.Commands.UpdateProject;
 using Codend.Presentation.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -36,5 +37,17 @@ public class ProjectController : ApiController
         }
 
         return NotFound();
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Update(UpdateProjectCommand command)
+    {
+        var response = await Mediator.Send(command);
+        if (response.IsFailed)
+        {
+            return Ok(response.Value.Id);
+        }
+
+        return BadRequest(response.Errors);
     }
 }

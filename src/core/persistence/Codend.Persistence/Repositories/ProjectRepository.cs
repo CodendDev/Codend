@@ -31,4 +31,9 @@ public class ProjectRepository : IProjectRepository
     {
         _context.Set<Project>().Remove(project);
     }
+
+    public void Update(Project project)
+    {
+        _context.Set<Project>().Update(project);
+    }
 }
