@@ -1,7 +1,7 @@
-﻿using Codend.Domain.Core.Errors;
-using Codend.Domain.Core.Extensions;
+﻿using Codend.Domain.Core.Extensions;
 using Codend.Domain.Core.Primitives;
 using FluentResults;
+using StartDateAfterEndDate = Codend.Domain.Core.Errors.DomainErrors.SprintPeriod.StartDateAfterEndDate;
 
 namespace Codend.Domain.ValueObjects;
 
@@ -21,7 +21,7 @@ public sealed class SprintPeriod : ValueObject
     public DateTime EndDate { get; }
 
     // TODO: Make sure to set startdate as beggining of the day and enddate as end of the day
-    public SprintPeriod(DateTime startDate, DateTime endDate)
+    private SprintPeriod(DateTime startDate, DateTime endDate)
     {
         StartDate = startDate;
         EndDate = endDate;
@@ -37,7 +37,7 @@ public sealed class SprintPeriod : ValueObject
     {
         return Result
             .Ok(new SprintPeriod(startDate, endDate))
-            .Ensure(() => startDate.CompareTo(endDate) < 0, new DomainErrors.SprintPeriod.StartDateAfterEndDate());
+            .Ensure<SprintPeriod, StartDateAfterEndDate>(() => startDate.CompareTo(endDate) < 0);
     }
 
     protected override IEnumerable<object> GetAtomicValues()

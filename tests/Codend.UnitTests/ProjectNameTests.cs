@@ -16,6 +16,6 @@ public class ProjectNameTests
 
         // assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be(name);
+        result.Value.Value.Should().Be(name);
     }
 }

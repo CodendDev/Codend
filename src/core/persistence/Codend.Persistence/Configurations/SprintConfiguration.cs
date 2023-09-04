@@ -17,18 +17,18 @@ internal sealed class SprintConfiguration : IEntityTypeConfiguration<Sprint>
         builder.ConfigureKeyId((Guid guid) => new SprintId(guid));
         builder.ConfigureSoftDeletableEntity();
         builder.ConfigureCreatableEntity();
-        
+
         builder
             .OwnsOne(sprint => sprint.Period,
-                sprintBuilder =>
+                sprintPeriod =>
                 {
-                    sprintBuilder
+                    sprintPeriod
                         .Property(period => period.StartDate)
                         .HasColumnName(nameof(SprintPeriod.StartDate))
                         .HasPrecision(0)
                         .IsRequired();
 
-                    sprintBuilder
+                    sprintPeriod
                         .Property(period => period.EndDate)
                         .HasColumnName(nameof(SprintPeriod.EndDate))
                         .HasPrecision(0)
@@ -37,13 +37,7 @@ internal sealed class SprintConfiguration : IEntityTypeConfiguration<Sprint>
 
         builder
             .OwnsOne(sprint => sprint.Goal,
-                sprintBuilder =>
-                {
-                    sprintBuilder
-                        .Property(period => period.Goal)
-                        .HasColumnName(nameof(Sprint.Goal))
-                        .HasMaxLength(SprintGoal.MaxLength);
-                });
+                sprintGoal => sprintGoal.ConfigureNullableStringValueObject(nameof(Sprint.Goal)));
 
         builder
             .HasMany<ProjectTask>()

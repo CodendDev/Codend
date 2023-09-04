@@ -42,23 +42,14 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             projectNameBuilder =>
             {
                 projectNameBuilder.WithOwner();
-
-                projectNameBuilder
-                    .Property(projectName => projectName.Name)
-                    .HasColumnName(nameof(Project.Name))
-                    .HasMaxLength(ProjectName.MaxLength)
-                    .IsRequired();
+                projectNameBuilder.ConfigureStringValueObject(nameof(Project.Name));
             });
 
         builder.OwnsOne(project => project.Description,
             projectDescriptionBuilder =>
             {
                 projectDescriptionBuilder.WithOwner();
-
-                projectDescriptionBuilder
-                    .Property(projectDescription => projectDescription.Description)
-                    .HasColumnName(nameof(Project.Description))
-                    .HasMaxLength(ProjectDescription.MaxLength);
+                projectDescriptionBuilder.ConfigureNullableStringValueObject(nameof(Project.Description));
             });
 
         builder

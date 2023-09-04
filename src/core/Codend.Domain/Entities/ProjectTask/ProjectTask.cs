@@ -17,7 +17,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     public bool Deleted { get; }
 
     public ProjectTaskName Name { get; private set; }
-    public ProjectTaskDescription? Description { get; private set; }
+    public ProjectTaskDescription Description { get; private set; }
     public ProjectTaskPriority Priority { get; private set; }
     public ProjectTaskStatusId StatusId { get; private set; }
     public DateTime? DueDate { get; private set; }

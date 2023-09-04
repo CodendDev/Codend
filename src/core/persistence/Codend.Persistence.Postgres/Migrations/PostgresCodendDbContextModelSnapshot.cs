@@ -257,8 +257,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Description")
-                                .IsRequired()
+                            b1.Property<string>("Value")
                                 .HasMaxLength(2000)
                                 .HasColumnType("character varying(2000)")
                                 .HasColumnName("Description");
@@ -276,7 +275,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Name")
+                            b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)")
@@ -290,7 +289,8 @@ namespace Codend.Persistence.Postgres.Migrations
                                 .HasForeignKey("ProjectId");
                         });
 
-                    b.Navigation("Description");
+                    b.Navigation("Description")
+                        .IsRequired();
 
                     b.Navigation("Name")
                         .IsRequired();
@@ -326,8 +326,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectTaskId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Description")
-                                .IsRequired()
+                            b1.Property<string>("Value")
                                 .HasMaxLength(2000)
                                 .HasColumnType("character varying(2000)")
                                 .HasColumnName("Description");
@@ -345,7 +344,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectTaskId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Name")
+                            b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(150)
                                 .HasColumnType("character varying(150)")
@@ -359,7 +358,8 @@ namespace Codend.Persistence.Postgres.Migrations
                                 .HasForeignKey("ProjectTaskId");
                         });
 
-                    b.Navigation("Description");
+                    b.Navigation("Description")
+                        .IsRequired();
 
                     b.Navigation("Name")
                         .IsRequired();
@@ -378,7 +378,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectTaskStatusId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Name")
+                            b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(150)
                                 .HasColumnType("character varying(150)")
@@ -409,8 +409,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectVersionId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Changelog")
-                                .IsRequired()
+                            b1.Property<string>("Value")
                                 .HasMaxLength(3000)
                                 .HasColumnType("character varying(3000)")
                                 .HasColumnName("Changelog");
@@ -428,8 +427,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectVersionId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Name")
-                                .IsRequired()
+                            b1.Property<string>("Value")
                                 .HasMaxLength(50)
                                 .HasColumnType("character varying(50)")
                                 .HasColumnName("Name");
@@ -447,7 +445,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectVersionId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Tag")
+                            b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(20)
                                 .HasColumnType("character varying(20)")
@@ -461,9 +459,11 @@ namespace Codend.Persistence.Postgres.Migrations
                                 .HasForeignKey("ProjectVersionId");
                         });
 
-                    b.Navigation("Changelog");
+                    b.Navigation("Changelog")
+                        .IsRequired();
 
-                    b.Navigation("Name");
+                    b.Navigation("Name")
+                        .IsRequired();
 
                     b.Navigation("Tag")
                         .IsRequired();
@@ -482,8 +482,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("SprintId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Goal")
-                                .IsRequired()
+                            b1.Property<string>("Value")
                                 .HasMaxLength(200)
                                 .HasColumnType("character varying(200)")
                                 .HasColumnName("Goal");
@@ -519,7 +518,8 @@ namespace Codend.Persistence.Postgres.Migrations
                                 .HasForeignKey("SprintId");
                         });
 
-                    b.Navigation("Goal");
+                    b.Navigation("Goal")
+                        .IsRequired();
 
                     b.Navigation("Period")
                         .IsRequired();
