@@ -1,5 +1,6 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using DescriptionTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskDescription.DescriptionTooLong;
@@ -9,12 +10,13 @@ namespace Codend.Domain.ValueObjects;
 /// <summary>
 /// [Optional] ProjectTask description value object.
 /// </summary>
-public sealed class ProjectTaskDescription : NullableStringValueObject
+public sealed class ProjectTaskDescription : NullableStringValueObject,
+    INullableStringValueObject<ProjectTaskDescription>
 {
     /// <summary>
     /// Maximum description length.
     /// </summary>
-    public const int MaxLength = 2000;
+    public static int MaxLength => 2000;
 
     private ProjectTaskDescription(string? value) : base(value)
     {

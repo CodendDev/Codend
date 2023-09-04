@@ -1,5 +1,6 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using NullOrEmpty = Codend.Domain.Core.Errors.DomainErrors.ProjectName.NullOrEmpty;
@@ -10,12 +11,12 @@ namespace Codend.Domain.ValueObjects;
 /// <summary>
 /// Project name value object.
 /// </summary>
-public sealed class ProjectName : StringValueObject
+public sealed class ProjectName : StringValueObject, IStringValueObject<ProjectName>
 {
     /// <summary>
     /// Maximum name length.
     /// </summary>
-    public const int MaxLength = 100;
+    public static int MaxLength => 100;
 
     private ProjectName(string value) : base(value)
     {

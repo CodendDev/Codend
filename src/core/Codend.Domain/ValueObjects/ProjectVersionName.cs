@@ -1,5 +1,6 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using NameTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionName.NameTooLong;
@@ -9,12 +10,12 @@ namespace Codend.Domain.ValueObjects;
 /// <summary>
 /// [Optional] Project version name value object.
 /// </summary>
-public sealed class ProjectVersionName : NullableStringValueObject
+public sealed class ProjectVersionName : NullableStringValueObject, INullableStringValueObject<ProjectVersionName>
 {
     /// <summary>
     /// Maximum name length.
     /// </summary>
-    public const int MaxLength = 50;
+    public static int MaxLength => 50;
 
     private ProjectVersionName(string? value) : base(value)
     {

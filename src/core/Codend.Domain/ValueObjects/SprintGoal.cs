@@ -1,5 +1,6 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using GoalTooLong = Codend.Domain.Core.Errors.DomainErrors.SprintGoal.GoalTooLong;
@@ -9,12 +10,12 @@ namespace Codend.Domain.ValueObjects;
 /// <summary>
 /// [Optional] Project sprint goal.
 /// </summary>
-public sealed class SprintGoal : NullableStringValueObject
+public sealed class SprintGoal : NullableStringValueObject, INullableStringValueObject<SprintGoal>
 {
     /// <summary>
     /// Maximum goal length.
     /// </summary>
-    public const int MaxLength = 200;
+    public static int MaxLength => 200;
 
     private SprintGoal(string? value) : base(value)
     {

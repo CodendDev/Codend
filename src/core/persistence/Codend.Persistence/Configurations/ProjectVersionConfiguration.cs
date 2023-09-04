@@ -17,39 +17,26 @@ internal sealed class ProjectVersionConfiguration : IEntityTypeConfiguration<Pro
         builder.ConfigureKeyId((Guid guid) => new ProjectVersionId(guid));
         builder.ConfigureSoftDeletableEntity();
         builder.ConfigureCreatableEntity();
-        
+
         builder.OwnsOne(projectVersion => projectVersion.Changelog,
             projectVersionBuilder =>
             {
                 projectVersionBuilder.WithOwner();
-
-                projectVersionBuilder
-                    .Property(changelog => changelog.Value)
-                    .HasColumnName(nameof(ProjectVersion.Changelog))
-                    .HasMaxLength(ProjectVersionChangelog.MaxLength);
+                projectVersionBuilder.ConfigureNullableStringValueObject(nameof(ProjectVersion.Changelog));
             });
 
         builder.OwnsOne(projectVersion => projectVersion.Name,
             projectVersionBuilder =>
             {
                 projectVersionBuilder.WithOwner();
-
-                projectVersionBuilder
-                    .Property(name => name.Value)
-                    .HasColumnName(nameof(ProjectVersion.Name))
-                    .HasMaxLength(ProjectVersionName.MaxLength);
+                projectVersionBuilder.ConfigureNullableStringValueObject(nameof(ProjectVersion.Name));
             });
 
         builder.OwnsOne(projectVersion => projectVersion.Tag,
             projectVersionBuilder =>
             {
                 projectVersionBuilder.WithOwner();
-
-                projectVersionBuilder
-                    .Property(tag => tag.Value)
-                    .HasColumnName(nameof(ProjectVersion.Tag))
-                    .HasMaxLength(ProjectVersionTag.MaxLength)
-                    .IsRequired();
+                projectVersionBuilder.ConfigureStringValueObject(nameof(ProjectVersion.Tag));
             });
 
         builder

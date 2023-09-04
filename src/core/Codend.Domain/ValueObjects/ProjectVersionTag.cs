@@ -1,5 +1,6 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using NullOrEmpty = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionTag.NullOrEmpty;
@@ -10,12 +11,12 @@ namespace Codend.Domain.ValueObjects;
 /// <summary>
 /// Project version tag value object.
 /// </summary>
-public sealed class ProjectVersionTag : StringValueObject
+public sealed class ProjectVersionTag : StringValueObject, IStringValueObject<ProjectVersionTag>
 {
     /// <summary>
     /// Maximum description length.
     /// </summary>
-    public const int MaxLength = 20;
+    public static int MaxLength => 20;
 
     private ProjectVersionTag(string value) : base(value)
     {

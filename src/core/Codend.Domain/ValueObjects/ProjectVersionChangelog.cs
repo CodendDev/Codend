@@ -1,5 +1,6 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using DescriptionTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionChangelog.DescriptionTooLong;
@@ -9,14 +10,15 @@ namespace Codend.Domain.ValueObjects;
 /// <summary>
 /// [Optional] Project version changelog value object.
 /// </summary>
-public sealed class ProjectVersionChangelog : NullableStringValueObject
+public sealed class ProjectVersionChangelog : NullableStringValueObject,
+    INullableStringValueObject<ProjectVersionChangelog>
 {
     /// <summary>
     /// Maximum description length.
     /// </summary>
-    public const int MaxLength = 3000;
+    public static int MaxLength => 3000;
 
-    private ProjectVersionChangelog(string? value):base(value)
+    private ProjectVersionChangelog(string? value) : base(value)
     {
     }
 

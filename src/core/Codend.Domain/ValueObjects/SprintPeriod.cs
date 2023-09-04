@@ -37,7 +37,7 @@ public sealed class SprintPeriod : ValueObject
     {
         return Result
             .Ok(new SprintPeriod(startDate, endDate))
-            .Ensure<SprintPeriod,StartDateAfterEndDate>(() => startDate.CompareTo(endDate) < 0);
+            .Ensure<SprintPeriod, StartDateAfterEndDate>(() => startDate.CompareTo(endDate) < 0);
     }
 
     protected override IEnumerable<object> GetAtomicValues()
