@@ -21,7 +21,7 @@ internal sealed class ProjectTaskStatusConfiguration : IEntityTypeConfiguration<
             {
                 projectTaskStatusNameBuilder.WithOwner();
 
-                projectTaskStatusNameBuilder.Property(projectTaskName => projectTaskName.Name)
+                projectTaskStatusNameBuilder.Property(projectTaskName => projectTaskName.Value)
                     .HasColumnName(nameof(ProjectTask.Name))
                     .HasMaxLength(ProjectTaskStatusName.MaxLength)
                     .IsRequired();

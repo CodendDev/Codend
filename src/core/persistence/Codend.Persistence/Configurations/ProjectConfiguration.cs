@@ -44,7 +44,7 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
                 projectNameBuilder.WithOwner();
 
                 projectNameBuilder
-                    .Property(projectName => projectName.Name)
+                    .Property(projectName => projectName.Value)
                     .HasColumnName(nameof(Project.Name))
                     .HasMaxLength(ProjectName.MaxLength)
                     .IsRequired();
@@ -56,7 +56,7 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
                 projectDescriptionBuilder.WithOwner();
 
                 projectDescriptionBuilder
-                    .Property(projectDescription => projectDescription.Description)
+                    .Property(projectDescription => projectDescription.Value)
                     .HasColumnName(nameof(Project.Description))
                     .HasMaxLength(ProjectDescription.MaxLength);
             });

@@ -26,7 +26,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
                 {
                     projectTaskNameBuilder.WithOwner();
 
-                    projectTaskNameBuilder.Property(projectTaskName => projectTaskName.Name)
+                    projectTaskNameBuilder.Property(projectTaskName => projectTaskName.Value)
                         .HasColumnName(nameof(ProjectTask.Name))
                         .HasMaxLength(ProjectTaskName.MaxLength)
                         .IsRequired();
@@ -38,7 +38,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
                 {
                     projectNameBuilder.WithOwner();
 
-                    projectNameBuilder.Property(projectTaskName => projectTaskName.Description)
+                    projectNameBuilder.Property(projectTaskName => projectTaskName.Value)
                         .HasColumnName(nameof(ProjectTask.Description))
                         .HasMaxLength(ProjectTaskDescription.MaxLength)
                         .IsRequired();

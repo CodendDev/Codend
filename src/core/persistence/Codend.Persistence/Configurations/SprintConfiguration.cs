@@ -40,7 +40,7 @@ internal sealed class SprintConfiguration : IEntityTypeConfiguration<Sprint>
                 sprintBuilder =>
                 {
                     sprintBuilder
-                        .Property(period => period.Goal)
+                        .Property(period => period.Value)
                         .HasColumnName(nameof(Sprint.Goal))
                         .HasMaxLength(SprintGoal.MaxLength);
                 });
