@@ -119,7 +119,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     /// </summary>
     /// <param name="assigneeId">New assigneeId.</param>
     /// <returns>Ok result with UserId object.</returns>
-    public Result<UserId> AssigneeUser(UserId assigneeId)
+    public Result<UserId> AssignUser(UserId assigneeId)
     {
         AssigneeId = assigneeId;
 

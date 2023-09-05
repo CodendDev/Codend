@@ -1,3 +1,4 @@
+using Codend.Application.ProjectTasks.Commands.AssignUser;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 using Codend.Contracts.ProjectTasks;
@@ -48,6 +49,21 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(DeleteProjectTaskCommand command)
+    {
+        var response = await Mediator.Send(command);
+        if (response.IsSuccess)
+        {
+            return Ok();
+        }
+
+        return NotFound();
+    }
+
+    [Route("assign")]
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AssignUser(AssignUserCommand command)
     {
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
