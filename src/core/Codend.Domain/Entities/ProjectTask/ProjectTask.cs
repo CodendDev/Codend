@@ -83,7 +83,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         return Result.Ok(priority);
     }
-    
+
     /// <summary>
     /// Changes ProjectTask status id to one of Project defined or default statuses.
     /// </summary>
@@ -98,7 +98,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         return Result.Ok(statusId);
     }
-    
+
     /// <summary>
     /// Changes ProjectTask dueDate.
     /// </summary>
@@ -113,7 +113,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         return Result.Ok(dueDate);
     }
-    
+
     /// <summary>
     /// Changes ProjectTask assignee.
     /// </summary>
@@ -128,7 +128,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         return Result.Ok(assigneeId);
     }
-    
+
     /// <summary>
     /// Edits ProjectTask estimated time.
     /// </summary>
@@ -143,7 +143,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         return Result.Ok(estimatedTime);
     }
-    
+
     /// <summary>
     /// Edits ProjectTask story points.
     /// </summary>
@@ -157,5 +157,41 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
         Raise(evt);
 
         return Result.Ok(storyPoints);
+    }
+
+    protected internal Result<ProjectTask> Create(
+        string name,
+        UserId ownerId,
+        ProjectTaskPriority priority,
+        string status,
+        ProjectId projectId,
+        string? description = null,
+        TimeSpan? estimatedTime = null,
+        DateTime? dueDate = null,
+        uint? storyPoints = null,
+        UserId? assigneeId = null)
+    {
+        var resultName = ProjectTaskName.Create(name);
+        var resultStatus = ProjectTaskStatus.Create(projectId, status);
+        var resultDescription = ProjectTaskDescription.Create(description);
+
+        var result = Result.Merge(resultName, resultStatus, resultDescription);
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        Name = resultName.Value;
+        OwnerId = ownerId;
+        Priority = priority;
+        StatusId = resultStatus.Value.Id;
+        ProjectId = projectId;
+        Description = resultDescription.Value;
+        EstimatedTime = estimatedTime;
+        DueDate = dueDate;
+        StoryPoints = storyPoints;
+        AssigneeId = assigneeId;
+
+        return Result.Ok(this);
     }
 }
