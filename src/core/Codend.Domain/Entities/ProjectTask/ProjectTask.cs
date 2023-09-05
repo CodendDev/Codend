@@ -171,7 +171,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
         }
 
         Name = resultName.Value;
-        OwnerId = properties.OwnerId;
+        OwnerId = properties.OwnerId ?? throw new ArgumentException("Owner can't be null");
         Priority = properties.Priority;
         StatusId = properties.StatusId;
         ProjectId = properties.ProjectId;

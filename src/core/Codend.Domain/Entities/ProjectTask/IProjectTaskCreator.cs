@@ -8,7 +8,6 @@ namespace Codend.Domain.Entities;
 /// </summary>
 public abstract record ProjectTaskProperties(
     string Name,
-    UserId OwnerId,
     ProjectTaskPriority Priority,
     ProjectTaskStatusId StatusId,
     ProjectId ProjectId,
@@ -17,7 +16,10 @@ public abstract record ProjectTaskProperties(
     DateTime? DueDate = null,
     uint? StoryPoints = null,
     UserId? AssigneeId = null
-);
+)
+{
+    public UserId? OwnerId { get; set; }
+};
 
 /// <summary>
 /// Interface for <see cref="IProjectTaskCreator{TProjectTask,TProps}"/>.
