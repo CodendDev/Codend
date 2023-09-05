@@ -1,18 +1,21 @@
+using Codend.Api.Configurations;
 using Codend.Api.Extensions;
 using Codend.Application;
 using Codend.Database;
 using Codend.Infrastructure;
 using Codend.Infrastructure.Authentication;
 using Codend.Presentation;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwagger();
 
 builder.Services.Configure<FusionauthConfiguration>(builder.Configuration.GetSection("Fusionauth"));
+builder.Services.AddFusionauthAuthentication();
 
 builder.Services
     .AddApplication()
