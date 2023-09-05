@@ -1,38 +1,46 @@
 ﻿using Codend.Domain.Core.Enums;
+using FluentResults;
 
 namespace Codend.Domain.Entities;
 
-public class BugFixProjectTask : ProjectTask
+public record BugFixProjectTaskProperties(
+        string Name,
+        UserId OwnerId,
+        ProjectTaskPriority Priority,
+        ProjectTaskStatusId StatusId,
+        ProjectId ProjectId,
+        string? Description = null,
+        TimeSpan? EstimatedTime = null,
+        DateTime? DueDate = null,
+        uint? StoryPoints = null,
+        UserId? AssigneeId = null)
+    : ProjectTaskProperties(Name,
+        OwnerId,
+        Priority,
+        StatusId,
+        ProjectId,
+        Description,
+        EstimatedTime,
+        DueDate,
+        StoryPoints,
+        AssigneeId);
+
+public class BugFixProjectTask : ProjectTask, IProjectTaskCreator<BugFixProjectTask, BugFixProjectTaskProperties>
 {
     private BugFixProjectTask(ProjectTaskId id) : base(id)
     {
     }
 
-    public new static BugFixProjectTask Create(
-        string name,
-        UserId ownerId,
-        ProjectTaskPriority priority,
-        string status,
-        ProjectId projectId,
-        string? description = null,
-        TimeSpan? estimatedTime = null,
-        DateTime? dueDate = null,
-        uint? storyPoints = null,
-        UserId? assigneeId = null)
+    public static Result<BugFixProjectTask> Create(BugFixProjectTaskProperties properties)
     {
         var task = new BugFixProjectTask(new ProjectTaskId(Guid.NewGuid()));
-        ((ProjectTask)task).Create(
-            name,
-            ownerId,
-            priority,
-            status,
-            projectId,
-            description,
-            estimatedTime,
-            dueDate,
-            storyPoints,
-            assigneeId);
+        var result = task.Create(properties as ProjectTaskProperties);
 
-        return task;
+        if (result.IsFailed)
+        {
+            return result.ToResult();
+        }
+
+        return Result.Ok(task);
     }
 }

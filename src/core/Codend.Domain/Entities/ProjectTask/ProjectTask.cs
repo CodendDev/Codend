@@ -159,38 +159,27 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
         return Result.Ok(storyPoints);
     }
 
-    protected internal Result<ProjectTask> Create(
-        string name,
-        UserId ownerId,
-        ProjectTaskPriority priority,
-        string status,
-        ProjectId projectId,
-        string? description = null,
-        TimeSpan? estimatedTime = null,
-        DateTime? dueDate = null,
-        uint? storyPoints = null,
-        UserId? assigneeId = null)
+    protected Result<ProjectTask> Create(ProjectTaskProperties properties)
     {
-        var resultName = ProjectTaskName.Create(name);
-        var resultStatus = ProjectTaskStatus.Create(projectId, status);
-        var resultDescription = ProjectTaskDescription.Create(description);
+        var resultName = ProjectTaskName.Create(properties.Name);
+        var resultDescription = ProjectTaskDescription.Create(properties.Description);
 
-        var result = Result.Merge(resultName, resultStatus, resultDescription);
+        var result = Result.Merge(resultName, resultDescription);
         if (result.IsFailed)
         {
             return result;
         }
 
         Name = resultName.Value;
-        OwnerId = ownerId;
-        Priority = priority;
-        StatusId = resultStatus.Value.Id;
-        ProjectId = projectId;
+        OwnerId = properties.OwnerId;
+        Priority = properties.Priority;
+        StatusId = properties.StatusId;
+        ProjectId = properties.ProjectId;
         Description = resultDescription.Value;
-        EstimatedTime = estimatedTime;
-        DueDate = dueDate;
-        StoryPoints = storyPoints;
-        AssigneeId = assigneeId;
+        EstimatedTime = properties.EstimatedTime;
+        DueDate = properties.DueDate;
+        StoryPoints = properties.StoryPoints;
+        AssigneeId = properties.AssigneeId;
 
         return Result.Ok(this);
     }
