@@ -39,14 +39,14 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
 
         return result;
     }
-    
+
     /// <summary>
     /// Edits name and description of the Project, and validates new name.
     /// </summary>
     /// <param name="name">New name.</param>
     /// <param name="description">New description</param>
     /// <returns>Ok result with ProjectName object or an error.</returns>
-    public Result<Project> Edit(string name, string description)
+    public Result<Project> Edit(string name, string? description)
     {
         var resultName = ProjectName.Create(name);
         var resultDescription = ProjectDescription.Create(description);
