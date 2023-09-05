@@ -3,22 +3,16 @@ using Codend.Domain.Repositories;
 
 namespace Codend.Persistence.Repositories;
 
-public class ProjectTaskStatusRepository : IProjectTaskStatusRepository
+public class ProjectTaskStatusRepository
+    : GenericRepository<ProjectTaskStatusId, Guid, ProjectTaskStatus>,
+        IProjectTaskStatusRepository
 {
-    private readonly CodendApplicationDbContext _context;
-
-    public ProjectTaskStatusRepository(CodendApplicationDbContext context)
+    public ProjectTaskStatusRepository(CodendApplicationDbContext context) : base(context)
     {
-        _context = context;
-    }
-
-    public void Add(ProjectTaskStatus status)
-    {
-        _context.Add(status);
     }
 
     public Task AddRangeAsync(IEnumerable<ProjectTaskStatus> statuses)
     {
-        return _context.AddRangeAsync(statuses);
+        return Context.AddRangeAsync(statuses);
     }
 }

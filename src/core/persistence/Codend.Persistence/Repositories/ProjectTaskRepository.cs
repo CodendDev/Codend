@@ -3,17 +3,9 @@ using Codend.Domain.Repositories;
 
 namespace Codend.Persistence.Repositories;
 
-public class ProjectTaskRepository : IProjectTaskRepository
+public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, ProjectTask>, IProjectTaskRepository
 {
-    private readonly CodendApplicationDbContext _context;
-
-    public ProjectTaskRepository(CodendApplicationDbContext context)
+    public ProjectTaskRepository(CodendApplicationDbContext context) : base(context)
     {
-        _context = context;
-    }
-
-    public void Add(ProjectTask task)
-    {
-        _context.Add(task);
     }
 }
