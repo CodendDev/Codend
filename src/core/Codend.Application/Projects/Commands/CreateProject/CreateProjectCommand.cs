@@ -10,9 +10,9 @@ namespace Codend.Application.Projects.Commands.CreateProject;
 public sealed record CreateProjectCommand(
         string Name,
         string? Description)
-    : ICommand<Project>;
+    : ICommand<Guid>;
 
-public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand, Project>
+public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand, Guid>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -28,7 +28,7 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
         _identityProvider = identityProvider;
     }
 
-    public async Task<Result<Project>> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
         var result = Project.Create(_identityProvider.UserId, request.Name, request.Description);
         if (result.IsFailed)
@@ -40,6 +40,6 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
         _projectRepository.Add(project);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return result;
+        return result.Value.Id.Value;
     }
 }
