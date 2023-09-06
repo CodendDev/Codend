@@ -2,6 +2,7 @@ using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
 using Codend.Application.Projects.Commands.UpdateProject;
 using Codend.Application.Projects.Queries.GetProjectById;
+using Codend.Contracts.Responses.Project;
 using Codend.Domain.Core.Errors;
 using Codend.Presentation.Infrastructure;
 using MediatR;
@@ -18,7 +19,7 @@ public class ProjectController : ApiController
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(CreateProjectCommand command)
     {
@@ -66,7 +67,7 @@ public class ProjectController : ApiController
     }
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProjectResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(GetProjectByIdQuery query)
     {
