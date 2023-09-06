@@ -7,10 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Codend.Contracts\Codend.Contracts.csproj" />
         <ProjectReference Include="..\Codend.Domain\Codend.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="12.0.1" />
         <PackageReference Include="FluentResults" Version="3.15.2"/>
         <PackageReference Include="MediatR" Version="12.1.1"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />

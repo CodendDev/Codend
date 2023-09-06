@@ -1,5 +1,6 @@
 using Codend.Api.Extensions;
 using Codend.Application;
+using Codend.Contracts;
 using Codend.Database;
 using Codend.Infrastructure;
 using Codend.Presentation;
@@ -12,6 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services
+    .AddContracts()
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddDatabase(builder.Configuration)
