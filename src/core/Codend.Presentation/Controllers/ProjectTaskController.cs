@@ -1,6 +1,7 @@
 using Codend.Application.ProjectTasks.Commands.AssignUser;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
+using Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 using Codend.Contracts.ProjectTasks;
 using Codend.Presentation.Infrastructure;
 using MediatR;
@@ -57,6 +58,20 @@ public class ProjectTaskController : ApiController
         if (response.IsSuccess)
         {
             return Ok();
+        }
+
+        return NotFound();
+    }
+
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(GetProjectTaskByIdQuery query)
+    {
+        var response = await Mediator.Send(query);
+        if (response.IsSuccess)
+        {
+            return Ok(response.Value);
         }
 
         return NotFound();
