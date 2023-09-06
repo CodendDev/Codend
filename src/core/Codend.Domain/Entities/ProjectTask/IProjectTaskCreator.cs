@@ -8,7 +8,7 @@ namespace Codend.Domain.Entities;
 /// </summary>
 public abstract record ProjectTaskProperties(
     string Name,
-    ProjectTaskPriority Priority,
+    string Priority,
     ProjectTaskStatusId StatusId,
     ProjectId ProjectId,
     string? Description = null,

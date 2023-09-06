@@ -4,10 +4,10 @@ public record CreateBugfixRequest
 (
     string Name,
     string Priority,
-    Guid Status,
+    Guid StatusId,
     Guid ProjectId,
     string? Description = null,
-    TimeSpan? EstimatedTime = null,
+    EstimatedTimeRequest? EstimatedTime = null,
     DateTime? DueDate = null,
     uint? StoryPoints = null,
     Guid? AssigneeId = null

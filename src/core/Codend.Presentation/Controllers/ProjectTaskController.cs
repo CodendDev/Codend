@@ -2,8 +2,6 @@ using Codend.Application.ProjectTasks.Commands.AssignUser;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 using Codend.Contracts.ProjectTasks;
-using Codend.Domain.Core.Enums;
-using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -20,21 +18,11 @@ public class ProjectTaskController : ApiController
 
     [Route("bugfix")]
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateBugFix(CreateBugfixRequest request)
     {
-        // TODO clean?
-        var command = new CreateBugfixProjectTaskCommand(
-            new BugFixProjectTaskProperties(
-                request.Name,
-                ProjectTaskPriority.FromName(request.Priority),
-                new ProjectTaskStatusId(request.Status),
-                new ProjectId(request.ProjectId),
-                request.Description,
-                request.EstimatedTime,
-                request.DueDate,
-                request.StoryPoints,
-                request.AssigneeId is not null ? new UserId(request.AssigneeId.Value) : null
-            ));
+        var command = request.MapToCommand();
 
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
@@ -42,7 +30,7 @@ public class ProjectTaskController : ApiController
             return Ok(response.Value);
         }
 
-        return BadRequest(response.Errors);
+        return BadRequest(response.Reasons);
     }
 
     [HttpDelete]

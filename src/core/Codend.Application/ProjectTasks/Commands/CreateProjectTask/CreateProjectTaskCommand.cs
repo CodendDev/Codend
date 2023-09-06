@@ -1,6 +1,7 @@
 using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -36,13 +37,21 @@ public abstract class CreateProjectTaskCommandHandler<TCommand, TProjectTask, TP
     {
         request.TaskProperties.OwnerId = _identityProvider.UserId;
 
-        var result = TProjectTask.Create(request.TaskProperties);
+        var projectStatusIsValid =
+            _projectTaskRepository.ProjectTaskIsValid(
+                request.TaskProperties.ProjectId,
+                request.TaskProperties.StatusId);
+        var resultProjectTaskStatus =
+            projectStatusIsValid ? Result.Ok() : Result.Fail(new DomainErrors.ProjectTaskErrors.InvalidStatusId());
+
+        var resultTask = TProjectTask.Create(request.TaskProperties);
+        var result = Result.Merge(resultProjectTaskStatus, resultTask);
         if (result.IsFailed)
         {
             return result.ToResult();
         }
 
-        var task = result.Value;
+        var task = resultTask.Value;
         _projectTaskRepository.Add(task);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

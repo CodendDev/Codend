@@ -5,7 +5,7 @@ namespace Codend.Domain.Entities;
 
 public record BugFixProjectTaskProperties(
         string Name,
-        ProjectTaskPriority Priority,
+        string Priority,
         ProjectTaskStatusId StatusId,
         ProjectId ProjectId,
         string? Description = null,

@@ -4,6 +4,7 @@ using Codend.Domain.Core.Events;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.ValueObjects;
 using FluentResults;
+using InvalidPriorityName = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskPriority.InvalidPriorityName;
 
 namespace Codend.Domain.Entities;
 
@@ -163,8 +164,10 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     {
         var resultName = ProjectTaskName.Create(properties.Name);
         var resultDescription = ProjectTaskDescription.Create(properties.Description);
+        var priorityParsed = ProjectTaskPriority.TryFromName(properties.Priority, true, out var priority);
+        var resultPriority = priorityParsed ? Result.Ok(priority) : Result.Fail(new InvalidPriorityName());
 
-        var result = Result.Merge(resultName, resultDescription);
+        var result = Result.Merge(resultName, resultDescription, resultPriority);
         if (result.IsFailed)
         {
             return result;
@@ -172,7 +175,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         Name = resultName.Value;
         OwnerId = properties.OwnerId ?? throw new ArgumentException("Owner can't be null");
-        Priority = properties.Priority;
+        Priority = resultPriority.Value;
         StatusId = properties.StatusId;
         ProjectId = properties.ProjectId;
         Description = resultDescription.Value;
