@@ -11,9 +11,9 @@ public sealed record UpdateProjectCommand(
         Guid ProjectId,
         string Name,
         string? Description)
-    : ICommand<Project>;
+    : ICommand;
 
-public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand, Project>
+public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -24,7 +24,7 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand,
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<Project>> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = await _projectRepository.GetByIdAsync(new ProjectId(request.ProjectId));
         if (project is null)
@@ -35,12 +35,12 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand,
         var result = project.Edit(request.Name, request.Description);
         if (result.IsFailed)
         {
-            return result;
+            return result.ToResult();
         }
 
         _projectRepository.Update(project);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return result;
+        return result.ToResult();
     }
 }

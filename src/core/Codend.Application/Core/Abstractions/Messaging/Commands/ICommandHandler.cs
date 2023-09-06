@@ -7,7 +7,7 @@ namespace Codend.Application.Core.Abstractions.Messaging.Commands;
 /// Interface of command handler without response type
 /// </summary>
 /// <typeparam name="TCommand">Type of handled command</typeparam>
-public interface ICommandHandler<TCommand> : IRequestHandler<TCommand, Result> where TCommand : ICommand
+public interface ICommandHandler<in TCommand> : IRequestHandler<TCommand, Result> where TCommand : ICommand
 {
 }
 
@@ -15,8 +15,8 @@ public interface ICommandHandler<TCommand> : IRequestHandler<TCommand, Result> w
 /// Interface of command handler
 /// </summary>
 /// <typeparam name="TCommand">Type of handled command</typeparam>
-/// <typeparam name="TResposne">Result response type</typeparam>
-public interface ICommandHandler<TCommand, TResposne> : IRequestHandler<TCommand, Result<TResposne>>
-    where TCommand : ICommand<TResposne>
+/// <typeparam name="TResponse">Result response type</typeparam>
+public interface ICommandHandler<in TCommand, TResponse> : IRequestHandler<TCommand, Result<TResponse>>
+    where TCommand : ICommand<TResponse>
 {
 }

@@ -21,8 +21,7 @@ public class ProjectController : ApiController
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
-            // TODO
-            return Ok(response.Value.Id);
+            return Ok(response.Value);
         }
 
         return BadRequest(response.Errors);
@@ -46,9 +45,10 @@ public class ProjectController : ApiController
         var response = await Mediator.Send(command);
         if (response.IsFailed)
         {
-            return Ok(response.Value.Id);
+            return Ok();
         }
 
+        // TODO notfound
         return BadRequest(response.Errors);
     }
 
