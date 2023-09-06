@@ -7,7 +7,7 @@ using ProjectNotFound = Codend.Domain.Core.Errors.DomainErrors.ProjectErrors.Pro
 namespace Codend.Application.Projects.Queries.GetProjectById;
 
 public sealed record GetProjectByIdQuery(
-        Guid ProjectId)
+        Guid Id)
     : IQuery<Project>;
 
 public class GetProjectByIdQueryHandler : IQueryHandler<GetProjectByIdQuery, Project>
@@ -21,7 +21,7 @@ public class GetProjectByIdQueryHandler : IQueryHandler<GetProjectByIdQuery, Pro
 
     public async Task<Result<Project>> Handle(GetProjectByIdQuery request, CancellationToken cancellationToken)
     {
-        var project = await _projectRepository.GetByIdAsync(new ProjectId(request.ProjectId));
+        var project = await _projectRepository.GetByIdAsync(new ProjectId(request.Id));
         if (project is null)
         {
             return Result.Fail(new ProjectNotFound());
