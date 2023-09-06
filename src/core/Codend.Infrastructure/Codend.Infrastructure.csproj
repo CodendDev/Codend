@@ -8,18 +8,18 @@
 
 
     <ItemGroup>
-      <ProjectReference Include="..\Codend.Application\Codend.Application.csproj" />
+        <ProjectReference Include="..\Codend.Application\Codend.Application.csproj"/>
     </ItemGroup>
-
-
 
     <ItemGroup>
-      <PackageReference Include="FusionAuth.Client" Version="1.47.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
     </ItemGroup>
 
-
-
+    <ItemGroup>
+        <PackageReference Include="FusionAuth.Client" Version="1.47.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0" />
+    </ItemGroup>
 
 
 </Project>

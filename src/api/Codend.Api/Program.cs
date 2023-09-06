@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddControllers(options =>
         options.Filters.Add(new AuthorizeFilter(
             new AuthorizationPolicyBuilder()
@@ -28,6 +27,8 @@ builder.Services.AddSwagger();
 
 builder.Services.Configure<FusionauthConfiguration>(builder.Configuration.GetSection("Fusionauth"));
 builder.Services.AddFusionauthAuthentication();
+builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services
     .AddApplication()
