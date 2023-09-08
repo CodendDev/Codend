@@ -2,14 +2,6 @@
 
 ## Run application
 
-### Docker run
-
-```bash
-docker run -p 8080:80 --name codend codend/codend:latest
-```
-
-Visit http://127.0.0.1:8080 in your browser.
-
 ### Docker Compose
 
 **Clone repository**
