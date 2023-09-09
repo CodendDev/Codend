@@ -64,7 +64,7 @@ public static partial class DomainErrors
             public InvalidPriorityName()
                 : base(
                     "ProjectTaskPriority.InvalidPriorityName",
-                    $"Only [{string.Join(", ", Enums.ProjectTaskPriority.DefaultList())}] are allowed")
+                    $"Only ['{string.Join("', '", Enums.ProjectTaskPriority.DefaultList())}'] are allowed")
             {
             }
         }

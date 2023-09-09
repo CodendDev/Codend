@@ -4,11 +4,13 @@ namespace Codend.Domain.Repositories;
 
 public interface IProjectTaskRepository
 {
-    void Add(ProjectTask project);
+    void Add(ProjectTask task);
 
-    Task<ProjectTask?> GetByIdAsync(ProjectTaskId projectId);
+    Task<ProjectTask?> GetByIdAsync(ProjectTaskId taskId);
 
-    void Remove(ProjectTask project);
+    void Remove(ProjectTask task);
+
+    void Update(ProjectTask task);
 
     /// <summary>
     /// Checks whether project exists and checks whether status is contained by given project.
