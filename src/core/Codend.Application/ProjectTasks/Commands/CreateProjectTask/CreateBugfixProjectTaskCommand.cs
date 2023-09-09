@@ -7,18 +7,23 @@ using Codend.Domain.Repositories;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 
+/// <summary>
+/// CreateBugfixProjectTaskCommand implements <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/>
+/// with properties needed for BugfixTask creation.
+/// </summary>
+/// <param name="TaskProperties">BugfixProjectTask properties.</param>
 public sealed record CreateBugfixProjectTaskCommand(
         BugFixProjectTaskProperties TaskProperties
     )
     : ICommand<Guid>, ICreateProjectTaskCommand<BugFixProjectTaskProperties>;
 
-public class CreateProjectTaskCommandHandler :
+public class CreateBugfixProjectTaskCommandHandler :
     CreateProjectTaskCommandHandler<
         CreateBugfixProjectTaskCommand,
         BugFixProjectTask,
         BugFixProjectTaskProperties>
 {
-    public CreateProjectTaskCommandHandler(
+    public CreateBugfixProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
         IUserIdentityProvider identityProvider)

@@ -23,7 +23,7 @@ public class ProjectTaskController : ApiController
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateBugFix(CreateBugfixRequest request)
+    public async Task<IActionResult> CreateBugfix(CreateBugfixRequest request)
     {
         var command = request.MapToCommand();
 

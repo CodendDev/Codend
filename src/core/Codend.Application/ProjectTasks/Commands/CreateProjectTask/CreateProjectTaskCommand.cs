@@ -8,11 +8,31 @@ using FluentResults;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 
+/// <summary>
+/// Create ProjectTask Command.
+/// </summary>
+/// <typeparam name="TProjectTaskProperties">
+/// Properties interface needed for task creation.
+/// Must implement <see cref="ProjectTaskProperties"/> interface.
+/// </typeparam>
 public interface ICreateProjectTaskCommand<out TProjectTaskProperties>
+    where TProjectTaskProperties : ProjectTaskProperties
 {
     TProjectTaskProperties TaskProperties { get; }
 }
 
+/// <summary>
+/// Creates ProjectTask using <see cref="IProjectTaskCreator{TProjectTask,TProps}.Create"/> and persists it.
+/// </summary>
+/// <typeparam name="TCommand">
+/// Must implement <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/> interface.
+/// </typeparam>
+/// <typeparam name="TProjectTask">
+/// Must implement <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/> interface.
+/// </typeparam>
+/// <typeparam name="TProjectTaskProperties">
+/// Must implement <see cref="ProjectTaskProperties"/> interface.
+/// </typeparam>
 public abstract class CreateProjectTaskCommandHandler<TCommand, TProjectTask, TProjectTaskProperties>
     : ICommandHandler<TCommand, Guid>
     where TCommand : ICommand<Guid>, ICreateProjectTaskCommand<TProjectTaskProperties>
@@ -33,7 +53,7 @@ public abstract class CreateProjectTaskCommandHandler<TCommand, TProjectTask, TP
         _identityProvider = identityProvider;
     }
 
-    public virtual async Task<Result<Guid>> Handle(TCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(TCommand request, CancellationToken cancellationToken)
     {
         request.TaskProperties.OwnerId = _identityProvider.UserId;
 
