@@ -13,7 +13,7 @@ public sealed record UpdateBugfixProjectTaskCommand(
 ) : ICommand, IUpdateProjectTaskCommand<BugfixUpdateProjectTaskProperties>;
 
 public class UpdateBugfixProjectTaskCommandHandler :
-    UpdateProjectTaskCommandHandler<
+    AbstractUpdateProjectTaskCommandHandler<
         UpdateBugfixProjectTaskCommand,
         BugfixProjectTask,
         BugfixUpdateProjectTaskProperties>
