@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Codend.Persistence.Configurations;
 
 /// <summary>
-/// Entity framework configuration for the <see cref="BugFixProjectTask"/> entity.
+/// Entity framework configuration for the <see cref="BugfixProjectTask"/> entity.
 /// </summary>
-internal sealed class ExampleProjectTaskConfiguration : IEntityTypeConfiguration<BugFixProjectTask>
+internal sealed class ExampleProjectTaskConfiguration : IEntityTypeConfiguration<BugfixProjectTask>
 {
     /// <inheritdoc />
-    public void Configure(EntityTypeBuilder<BugFixProjectTask> builder)
+    public void Configure(EntityTypeBuilder<BugfixProjectTask> builder)
     {
     }
 }

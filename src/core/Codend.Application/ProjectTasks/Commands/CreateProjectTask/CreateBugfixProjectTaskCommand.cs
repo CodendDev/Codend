@@ -13,15 +13,15 @@ namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 /// </summary>
 /// <param name="TaskProperties">BugfixProjectTask properties.</param>
 public sealed record CreateBugfixProjectTaskCommand(
-        BugFixProjectTaskProperties TaskProperties
+        BugfixProjectTaskProperties TaskProperties
     )
-    : ICommand<Guid>, ICreateProjectTaskCommand<BugFixProjectTaskProperties>;
+    : ICommand<Guid>, ICreateProjectTaskCommand<BugfixProjectTaskProperties>;
 
 public class CreateBugfixProjectTaskCommandHandler :
     CreateProjectTaskCommandHandler<
         CreateBugfixProjectTaskCommand,
-        BugFixProjectTask,
-        BugFixProjectTaskProperties>
+        BugfixProjectTask,
+        BugfixProjectTaskProperties>
 {
     public CreateBugfixProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
@@ -37,7 +37,7 @@ public static class CreateBugfixRequestExtensions
     public static CreateBugfixProjectTaskCommand MapToCommand(this CreateBugfixRequest request)
     {
         var command = new CreateBugfixProjectTaskCommand(
-            new BugFixProjectTaskProperties(
+            new BugfixProjectTaskProperties(
                 request.Name,
                 request.Priority,
                 new ProjectTaskStatusId(request.StatusId),

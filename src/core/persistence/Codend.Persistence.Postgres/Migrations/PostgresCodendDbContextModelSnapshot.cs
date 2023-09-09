@@ -203,11 +203,11 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.ToTable("SprintProjectTask");
                 });
 
-            modelBuilder.Entity("Codend.Domain.Entities.BugFixProjectTask", b =>
+            modelBuilder.Entity("Codend.Domain.Entities.BugfixProjectTask", b =>
                 {
                     b.HasBaseType("Codend.Domain.Entities.ProjectTask");
 
-                    b.HasDiscriminator().HasValue("BugFixProjectTask");
+                    b.HasDiscriminator().HasValue("BugfixProjectTask");
                 });
 
             modelBuilder.Entity("Codend.Domain.Entities.Project", b =>

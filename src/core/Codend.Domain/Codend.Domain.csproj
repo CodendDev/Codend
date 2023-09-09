@@ -11,5 +11,9 @@
       <PackageReference Include="FluentResults" Version="3.15.2" />
       <PackageReference Include="MediatR" Version="12.1.1" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Codend.Shared\Codend.Shared.csproj" />
+    </ItemGroup>
     
 </Project>
