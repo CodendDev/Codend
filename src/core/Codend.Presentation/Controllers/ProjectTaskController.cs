@@ -1,12 +1,14 @@
 using Codend.Application.ProjectTasks.Commands.AssignUser;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
+using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 using Codend.Contracts.ProjectTasks;
 using Codend.Presentation.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProjectTaskNotFound = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors.ProjectTaskNotFound;
 
 namespace Codend.Presentation.Controllers;
 
@@ -75,5 +77,25 @@ public class ProjectTaskController : ApiController
         }
 
         return NotFound();
+    }
+
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateTask(UpdateProjectTaskRequest request)
+    {
+        var response = await Mediator.Send(request.MapToCommand());
+        if (response.IsSuccess)
+        {
+            return NoContent();
+        }
+
+        if (response.HasError<ProjectTaskNotFound>())
+        {
+            return NotFound();
+        }
+
+        return BadRequest(response.Reasons);
     }
 }

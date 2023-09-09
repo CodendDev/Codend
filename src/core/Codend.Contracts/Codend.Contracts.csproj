@@ -15,7 +15,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Codend.Domain\Codend.Domain.csproj"/>
+        <ProjectReference Include="..\Codend.Shared\Codend.Shared.csproj"/>
     </ItemGroup>
-
-
 </Project>
