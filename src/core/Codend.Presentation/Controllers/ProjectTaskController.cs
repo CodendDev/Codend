@@ -36,6 +36,47 @@ public class ProjectTaskController : ApiController
         return BadRequest(response.Reasons);
     }
 
+    [HttpPut]
+    [Route("bugfix")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateBugfixTask(BugfixUpdateProjectTaskRequest request)
+    {
+        var response = await Mediator.Send(request.MapToCommand());
+        if (response.IsSuccess)
+        {
+            return NoContent();
+        }
+
+        if (response.HasError<ProjectTaskNotFound>())
+        {
+            return NotFound();
+        }
+
+        return BadRequest(response.Reasons);
+    }
+
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateBugfixTask(UpdateProjectTaskRequest request)
+    {
+        var response = await Mediator.Send(request.MapToCommand());
+        if (response.IsSuccess)
+        {
+            return NoContent();
+        }
+
+        if (response.HasError<ProjectTaskNotFound>())
+        {
+            return NotFound();
+        }
+
+        return BadRequest(response.Reasons);
+    }
+
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -77,25 +118,5 @@ public class ProjectTaskController : ApiController
         }
 
         return NotFound();
-    }
-
-    [HttpPut]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateTask(UpdateProjectTaskRequest request)
-    {
-        var response = await Mediator.Send(request.MapToCommand());
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        if (response.HasError<ProjectTaskNotFound>())
-        {
-            return NotFound();
-        }
-
-        return BadRequest(response.Reasons);
     }
 }
