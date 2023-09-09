@@ -61,7 +61,7 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateBugfixTask(UpdateProjectTaskRequest request)
+    public async Task<IActionResult> UpdateTask(UpdateProjectTaskRequest request)
     {
         var response = await Mediator.Send(request.MapToCommand());
         if (response.IsSuccess)

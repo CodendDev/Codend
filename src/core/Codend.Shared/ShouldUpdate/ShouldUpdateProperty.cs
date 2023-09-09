@@ -1,23 +1,33 @@
 namespace Codend.Shared.ShouldUpdate;
 
-public class ShouldUpdateProperty<T> : IShouldUpdate<T>
+public static class ShouldUpdateProperty
 {
-    private T? _value;
-
-    public T? Value
+    public static ShouldUpdateProperty<T> DontUpdate<T>()
     {
-        get => ShouldUpdate ? _value : default;
-        set => _value = value;
+        return new ShouldUpdateProperty<T>(false, default);
     }
 
-    public bool ShouldUpdate { get; init; }
+    public static ShouldUpdateProperty<T> Update<T>(T value)
+    {
+        return new ShouldUpdateProperty<T>(true, value);
+    }
+}
+
+public class ShouldUpdateProperty<T> : IShouldUpdate<T>
+{
+    private readonly T? _value;
+
+    public T? Value => ShouldUpdate ? _value : default;
+
+    public bool ShouldUpdate { get; }
 
     public ShouldUpdateProperty()
     {
     }
 
-    public ShouldUpdateProperty(bool update)
+    internal ShouldUpdateProperty(bool update, T? value)
     {
         ShouldUpdate = update;
+        _value = value;
     }
 }

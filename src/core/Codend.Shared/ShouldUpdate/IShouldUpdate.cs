@@ -2,7 +2,7 @@ namespace Codend.Shared.ShouldUpdate;
 
 public interface IShouldUpdate
 {
-    public bool ShouldUpdate { get; init; }
+    public bool ShouldUpdate { get; }
 }
 
 public interface IShouldUpdate<out T> : IShouldUpdate

@@ -32,38 +32,23 @@ public static class UpdateProjectTaskExtensions
     /// </summary>
     public static UpdateProjectTaskCommand MapToCommand(this UpdateProjectTaskRequest request)
     {
-        var name = request.Name ?? new ShouldUpdateProperty<string>(false);
-        var priority = request.Priority ?? new ShouldUpdateProperty<string>(false);
+        var name = request.Name ?? ShouldUpdateProperty.DontUpdate<string>();
+        var priority = request.Priority ?? ShouldUpdateProperty.DontUpdate<string>();
+        var description = request.Description ?? ShouldUpdateProperty.DontUpdate<string?>();
+        var dueDate = request.DueDate ?? ShouldUpdateProperty.DontUpdate<DateTime?>();
+        var storyPoints = request.StoryPoints ?? ShouldUpdateProperty.DontUpdate<uint?>();
+
         var statusId = request.StatusId is null
-            ? new ShouldUpdateProperty<ProjectTaskStatusId> { ShouldUpdate = false }
-            : new ShouldUpdateProperty<ProjectTaskStatusId>
-                { ShouldUpdate = true, Value = new ProjectTaskStatusId(request.StatusId.Value) };
-        var description = request.Description ?? new ShouldUpdateProperty<string?>(false);
+            ? ShouldUpdateProperty.DontUpdate<ProjectTaskStatusId>()
+            : ShouldUpdateProperty.Update(new ProjectTaskStatusId(request.StatusId.Value));
+
         var estimatedTime = request.EstimatedTime is null
-            ? new ShouldUpdateProperty<TimeSpan?>(false)
-            : new ShouldUpdateProperty<TimeSpan?>
-            {
-                ShouldUpdate = true,
-                Value = request.EstimatedTime.Value is null
-                    ? null
-                    : new TimeSpan(
-                        (int)request.EstimatedTime.Value.Days,
-                        (int)request.EstimatedTime.Value.Hours,
-                        (int)request.EstimatedTime.Value.Minutes,
-                        0)
-            };
-        var dueDate = request.DueDate ?? new ShouldUpdateProperty<DateTime?>(false);
-        var storyPoints = request.StoryPoints ?? new ShouldUpdateProperty<uint?>(false);
-        var assigneeId = request.AssigneeId is null
-            ? new ShouldUpdateProperty<UserId?> { ShouldUpdate = false }
-            : new ShouldUpdateProperty<UserId?>
-            {
-                ShouldUpdate = true,
-                Value = request.AssigneeId.Value is null
-                    ? null
-                    : new UserId(request.AssigneeId.Value.Value) // XD
-            };
-        // D:
+            ? ShouldUpdateProperty.DontUpdate<TimeSpan?>()
+            : ShouldUpdateProperty.Update(request.EstimatedTime.Value.ToTimeSpan());
+
+        var assigneeId = request.AssigneeId?.Value is null
+            ? ShouldUpdateProperty.DontUpdate<UserId?>()
+            : ShouldUpdateProperty.Update<UserId?>(new UserId(request.AssigneeId.Value.Value));
 
         var command = new UpdateProjectTaskCommand(
             new ProjectTaskId(request.TaskId),
