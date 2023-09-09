@@ -8,12 +8,12 @@ namespace Codend.Domain.Core.Events;
 /// </summary>
 public class ProjectTaskStoryPointsEditedEvent : IDomainEvent
 {
-    public ProjectTaskStoryPointsEditedEvent(uint storyPoints, ProjectTaskId projectTaskId)
+    public ProjectTaskStoryPointsEditedEvent(uint? storyPoints, ProjectTaskId projectTaskId)
     {
         StoryPoints = storyPoints;
         ProjectTaskId = projectTaskId;
     }
 
-    public uint StoryPoints { get; set; }
+    public uint? StoryPoints { get; set; }
     public ProjectTaskId ProjectTaskId { get; set; }
 }

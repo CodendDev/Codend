@@ -25,7 +25,7 @@ public class BugfixProjectTask :
 
     public Result<BugfixProjectTask> Update(BugfixUpdateProjectTaskProperties properties)
     {
-        var result = UpdateBase(properties);
+        var result = base.Update(properties);
         if (result.IsFailed)
         {
             return result.ToResult();

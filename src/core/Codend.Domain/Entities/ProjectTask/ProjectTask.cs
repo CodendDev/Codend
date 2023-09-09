@@ -8,7 +8,10 @@ using InvalidPriorityName = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskPr
 
 namespace Codend.Domain.Entities;
 
-public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEntity
+public abstract class ProjectTask :
+    Aggregate<ProjectTaskId>,
+    ISoftDeletableEntity,
+    IProjectTaskUpdater<ProjectTask, UpdateProjectTaskProperties>
 {
     protected ProjectTask(ProjectTaskId id) : base(id)
     {
@@ -105,7 +108,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     /// </summary>
     /// <param name="dueDate">New dueDate.</param>
     /// <returns>Ok result with DateTime object.</returns>
-    public Result<DateTime> SetDueDate(DateTime dueDate)
+    public Result<DateTime?> SetDueDate(DateTime? dueDate)
     {
         DueDate = dueDate;
 
@@ -120,7 +123,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     /// </summary>
     /// <param name="assigneeId">New assigneeId.</param>
     /// <returns>Ok result with UserId object.</returns>
-    public Result<UserId> AssignUser(UserId assigneeId)
+    public Result<UserId?> AssignUser(UserId? assigneeId)
     {
         AssigneeId = assigneeId;
 
@@ -135,7 +138,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     /// </summary>
     /// <param name="estimatedTime">New estimatedTime.</param>
     /// <returns>Ok result with TimeSpan object.</returns>
-    public Result<TimeSpan> EditEstimatedTime(TimeSpan estimatedTime)
+    public Result<TimeSpan?> EditEstimatedTime(TimeSpan? estimatedTime)
     {
         EstimatedTime = estimatedTime;
 
@@ -150,7 +153,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
     /// </summary>
     /// <param name="storyPoints">New story points.</param>
     /// <returns>Ok result with uint object.</returns>
-    public Result<uint> EditStoryPoints(uint storyPoints)
+    public Result<uint?> EditStoryPoints(uint? storyPoints)
     {
         StoryPoints = storyPoints;
 
@@ -187,7 +190,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
         return Result.Ok(this);
     }
 
-    protected Result<ProjectTask> UpdateBase(UpdateProjectTaskProperties properties)
+    public Result<ProjectTask> Update(UpdateProjectTaskProperties properties)
     {
         var results = new List<Result>();
 
@@ -216,22 +219,22 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         if (properties.EstimatedTime.ShouldUpdate)
         {
-            results.Add(EditEstimatedTime(properties.EstimatedTime.Value!.Value).ToResult());
+            results.Add(EditEstimatedTime(properties.EstimatedTime.Value).ToResult());
         }
 
         if (properties.DueDate.ShouldUpdate)
         {
-            results.Add(SetDueDate(properties.DueDate.Value!.Value).ToResult());
+            results.Add(SetDueDate(properties.DueDate.Value).ToResult());
         }
 
         if (properties.StoryPoints.ShouldUpdate)
         {
-            results.Add(EditStoryPoints(properties.StoryPoints.Value!.Value).ToResult());
+            results.Add(EditStoryPoints(properties.StoryPoints.Value).ToResult());
         }
 
         if (properties.AssigneeId.ShouldUpdate)
         {
-            results.Add(AssignUser(properties.AssigneeId.Value!).ToResult());
+            results.Add(AssignUser(properties.AssigneeId.Value).ToResult());
         }
 
         var result = Result.Merge(results.ToArray());
