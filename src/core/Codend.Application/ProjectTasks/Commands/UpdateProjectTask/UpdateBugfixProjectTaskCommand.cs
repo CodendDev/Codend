@@ -43,13 +43,7 @@ public static class UpdateBugfixProjectTaskExtensions
             : new ShouldUpdateProperty<TimeSpan?>
             {
                 ShouldUpdate = true,
-                Value = request.EstimatedTime.Value is null
-                    ? null
-                    : new TimeSpan(
-                        (int)request.EstimatedTime.Value.Days,
-                        (int)request.EstimatedTime.Value.Hours,
-                        (int)request.EstimatedTime.Value.Minutes,
-                        0)
+                Value = request.EstimatedTime.Value.ToTimeSpan()
             };
         var dueDate = request.DueDate ?? new ShouldUpdateProperty<DateTime?>(false);
         var storyPoints = request.StoryPoints ?? new ShouldUpdateProperty<uint?>(false);
