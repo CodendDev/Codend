@@ -8,12 +8,12 @@ using InvalidPriorityName = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskPr
 
 namespace Codend.Domain.Entities;
 
-public abstract class ProjectTask :
+public abstract class AbstractProjectTask :
     Aggregate<ProjectTaskId>,
     ISoftDeletableEntity,
-    IProjectTaskUpdater<ProjectTask, UpdateProjectTaskProperties>
+    IProjectTaskUpdater<AbstractProjectTask, UpdateProjectTaskProperties>
 {
-    protected ProjectTask(ProjectTaskId id) : base(id)
+    protected AbstractProjectTask(ProjectTaskId id) : base(id)
     {
     }
 
@@ -163,7 +163,7 @@ public abstract class ProjectTask :
         return Result.Ok(storyPoints);
     }
 
-    protected Result<ProjectTask> Create(ProjectTaskProperties properties)
+    protected Result<AbstractProjectTask> Create(ProjectTaskProperties properties)
     {
         var resultName = ProjectTaskName.Create(properties.Name);
         var resultDescription = ProjectTaskDescription.Create(properties.Description);
@@ -190,7 +190,7 @@ public abstract class ProjectTask :
         return Result.Ok(this);
     }
 
-    public Result<ProjectTask> Update(UpdateProjectTaskProperties properties)
+    public Result<AbstractProjectTask> Update(UpdateProjectTaskProperties properties)
     {
         var results = new List<Result>();
 

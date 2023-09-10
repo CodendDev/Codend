@@ -14,7 +14,7 @@ public sealed record UpdateProjectTaskCommand
 public class UpdateProjectTaskCommandHandler :
     AbstractUpdateProjectTaskCommandHandler<
         UpdateProjectTaskCommand,
-        ProjectTask,
+        AbstractProjectTask,
         UpdateProjectTaskProperties>
 {
     public UpdateProjectTaskCommandHandler(IProjectTaskRepository taskRepository, IUnitOfWork unitOfWork)

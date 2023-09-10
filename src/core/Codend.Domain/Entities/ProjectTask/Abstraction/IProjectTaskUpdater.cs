@@ -16,7 +16,7 @@ public abstract record UpdateProjectTaskProperties
 );
 
 public interface IProjectTaskUpdater<TProjectTask, in TUpdateProps>
-    where TProjectTask : ProjectTask
+    where TProjectTask : AbstractProjectTask
     where TUpdateProps : UpdateProjectTaskProperties
 {
     Result<TProjectTask> Update(TUpdateProps properties);

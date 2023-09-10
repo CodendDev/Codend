@@ -3,7 +3,7 @@
 namespace Codend.Domain.Entities;
 
 public class BugfixProjectTask :
-    ProjectTask,
+    AbstractProjectTask,
     IPersistentProjectTask<BugfixProjectTask, BugfixProjectTaskProperties, BugfixUpdateProjectTaskProperties>
 {
     private BugfixProjectTask(ProjectTaskId id) : base(id)

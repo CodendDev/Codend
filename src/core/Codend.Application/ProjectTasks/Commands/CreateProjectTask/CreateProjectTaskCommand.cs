@@ -36,7 +36,7 @@ public interface ICreateProjectTaskCommand<out TProjectTaskProperties>
 public abstract class CreateProjectTaskCommandHandler<TCommand, TProjectTask, TProjectTaskProperties>
     : ICommandHandler<TCommand, Guid>
     where TCommand : ICommand<Guid>, ICreateProjectTaskCommand<TProjectTaskProperties>
-    where TProjectTask : ProjectTask, IProjectTaskCreator<TProjectTask, TProjectTaskProperties>
+    where TProjectTask : AbstractProjectTask, IProjectTaskCreator<TProjectTask, TProjectTaskProperties>
     where TProjectTaskProperties : ProjectTaskProperties
 {
     private readonly IProjectTaskRepository _projectTaskRepository;

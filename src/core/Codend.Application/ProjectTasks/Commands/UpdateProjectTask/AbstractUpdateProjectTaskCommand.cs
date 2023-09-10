@@ -21,7 +21,7 @@ public interface IUpdateProjectTaskCommand<out TUpdateProjectTaskProperties> : I
 public class AbstractUpdateProjectTaskCommandHandler<TCommand, TProjectTask, TUpdateProjectTaskProperties>
     : ICommandHandler<TCommand>
     where TCommand : ICommand, IUpdateProjectTaskCommand<TUpdateProjectTaskProperties>
-    where TProjectTask : ProjectTask, IProjectTaskUpdater<TProjectTask, TUpdateProjectTaskProperties>
+    where TProjectTask : AbstractProjectTask, IProjectTaskUpdater<TProjectTask, TUpdateProjectTaskProperties>
     where TUpdateProjectTaskProperties : UpdateProjectTaskProperties
 {
     private readonly IProjectTaskRepository _taskRepository;

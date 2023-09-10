@@ -9,12 +9,12 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codend.Persistence.Configurations;
 
 /// <summary>
-/// Entity framework configuration for the <see cref="ProjectTask"/> entity.
+/// Entity framework configuration for the <see cref="AbstractProjectTask"/> entity.
 /// </summary>
-internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<ProjectTask>
+internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<AbstractProjectTask>
 {
     /// <inheritdoc />
-    public void Configure(EntityTypeBuilder<ProjectTask> builder)
+    public void Configure(EntityTypeBuilder<AbstractProjectTask> builder)
     {
         builder.ConfigureKeyId((Guid guid) => new ProjectTaskId(guid));
         builder.ConfigureSoftDeletableEntity();
@@ -25,7 +25,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
                 projectTaskNameBuilder =>
                 {
                     projectTaskNameBuilder.WithOwner();
-                    projectTaskNameBuilder.ConfigureStringValueObject(nameof(ProjectTask.Name));
+                    projectTaskNameBuilder.ConfigureStringValueObject(nameof(AbstractProjectTask.Name));
                 });
 
         builder
@@ -33,7 +33,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
                 projectNameBuilder =>
                 {
                     projectNameBuilder.WithOwner();
-                    projectNameBuilder.ConfigureNullableStringValueObject(nameof(ProjectTask.Description));
+                    projectNameBuilder.ConfigureNullableStringValueObject(nameof(AbstractProjectTask.Description));
                 });
 
         builder
@@ -52,7 +52,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
 
         builder
             .Property(projectTask => projectTask.DueDate)
-            .HasColumnName(nameof(ProjectTask.DueDate));
+            .HasColumnName(nameof(AbstractProjectTask.DueDate));
 
         builder
             .HasUserIdProperty(projectTask => projectTask.OwnerId);

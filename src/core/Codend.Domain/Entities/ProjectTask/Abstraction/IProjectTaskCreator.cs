@@ -28,7 +28,7 @@ public abstract record ProjectTaskProperties(
 /// <typeparam name="TProjectTask">ProjectTask class.</typeparam>
 /// <typeparam name="TProps">Props class which will be used for creation.</typeparam>
 public interface IProjectTaskCreator<TProjectTask, in TProps>
-    where TProjectTask : ProjectTask
+    where TProjectTask : AbstractProjectTask
     where TProps : ProjectTaskProperties
 {
     static abstract Result<TProjectTask> Create(TProps props);

@@ -8,9 +8,9 @@ namespace Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 
 public sealed record GetProjectTaskByIdQuery(
         Guid ProjectTaskId)
-    : IQuery<ProjectTask>;
+    : IQuery<AbstractProjectTask>;
 
-public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, ProjectTask>
+public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, AbstractProjectTask>
 {
     private readonly IProjectTaskRepository _taskRepository;
 
@@ -19,7 +19,7 @@ public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, Project
         _taskRepository = taskRepository;
     }
 
-    public async Task<Result<ProjectTask>> Handle(GetProjectTaskByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<AbstractProjectTask>> Handle(GetProjectTaskByIdQuery request, CancellationToken cancellationToken)
     {
         var task = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId));
         if (task is null)

@@ -3,7 +3,7 @@ using Codend.Domain.Repositories;
 
 namespace Codend.Persistence.Repositories;
 
-public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, ProjectTask>, IProjectTaskRepository
+public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, AbstractProjectTask>, IProjectTaskRepository
 {
     public ProjectTaskRepository(CodendApplicationDbContext context) : base(context)
     {
