@@ -9,6 +9,10 @@ using FluentResults;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 
+public interface ICreateProjectTaskCommand
+{
+}
+
 /// <summary>
 /// Create ProjectTask Command.
 /// </summary>
@@ -16,7 +20,7 @@ namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 /// Properties interface needed for task creation.
 /// Must implement <see cref="AbstractProjectTaskCreateProperties"/> interface.
 /// </typeparam>
-public interface ICreateProjectTaskCommand<out TProjectTaskProperties>
+public interface ICreateProjectTaskCommand<out TProjectTaskProperties> : ICreateProjectTaskCommand
     where TProjectTaskProperties : AbstractProjectTaskCreateProperties
 {
     TProjectTaskProperties TaskProperties { get; }

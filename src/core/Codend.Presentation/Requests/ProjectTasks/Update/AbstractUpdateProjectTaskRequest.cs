@@ -2,7 +2,7 @@ using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Contracts.ProjectTasks;
 using Codend.Shared;
 
-namespace Codend.Presentation.Requests.ProjectTasks;
+namespace Codend.Presentation.Requests.ProjectTasks.Update;
 
 /// <summary>
 /// Abstract implementation for <see cref="IUpdateProjectTaskRequest{T}"/> interface.
@@ -33,7 +33,7 @@ public abstract class AbstractUpdateProjectTaskRequest<TCommand> : IUpdateProjec
     public IShouldUpdate<Guid>? StatusId => _StatusId;
 
     public ShouldUpdateBinder<EstimatedTimeRequest>? _EstimatedTime { get; set; }
-    public IShouldUpdate<EstimatedTimeRequest>? EstimatedTime => _EstimatedTime;
+    public IShouldUpdate<IEstimatedTimeRequest>? EstimatedTime => _EstimatedTime;
 
     public ShouldUpdateBinder<Guid?>? _AssigneeId { get; set; }
     public IShouldUpdate<Guid?>? AssigneeId => _AssigneeId;

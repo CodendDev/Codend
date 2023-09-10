@@ -4,7 +4,7 @@ using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
 
-namespace Codend.Presentation.Requests.ProjectTasks;
+namespace Codend.Presentation.Requests.ProjectTasks.Update;
 
 /// <summary>
 /// Request for updating <see cref="BugfixProjectTask"/>.
