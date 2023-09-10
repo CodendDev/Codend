@@ -3,6 +3,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
+using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Domain.Repositories;
 using FluentResults;
 
@@ -24,7 +25,7 @@ public abstract class AbstractUpdateProjectTaskCommandHandler<TCommand, TProject
     : ICommandHandler<TCommand>
     where TCommand : ICommand, IUpdateProjectTaskCommand<TUpdateProjectTaskProperties>
     where TProjectTask : AbstractProjectTask, IProjectTaskUpdater<TProjectTask, TUpdateProjectTaskProperties>
-    where TUpdateProjectTaskProperties : UpdateAbstractProjectTaskProperties
+    where TUpdateProjectTaskProperties : AbstractProjectTaskUpdateProperties
 {
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;

@@ -3,6 +3,7 @@ using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Contracts.ProjectTasks;
 using Codend.Domain.Entities;
+using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Codend.Domain.Repositories;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
@@ -13,15 +14,15 @@ namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 /// </summary>
 /// <param name="TaskProperties">BugfixProjectTask properties.</param>
 public sealed record CreateBugfixProjectTaskCommand(
-        BugfixProjectTaskProperties TaskProperties
+        BugfixProjectTaskCreateProperties TaskProperties
     )
-    : ICommand<Guid>, ICreateProjectTaskCommand<BugfixProjectTaskProperties>;
+    : ICommand<Guid>, ICreateProjectTaskCommand<BugfixProjectTaskCreateProperties>;
 
 public class CreateBugfixProjectTaskCommandHandler :
     CreateProjectTaskCommandHandler<
         CreateBugfixProjectTaskCommand,
         BugfixProjectTask,
-        BugfixProjectTaskProperties>
+        BugfixProjectTaskCreateProperties>
 {
     public CreateBugfixProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
@@ -37,7 +38,7 @@ public static class CreateBugfixRequestExtensions
     public static CreateBugfixProjectTaskCommand MapToCommand(this CreateBugfixRequest request)
     {
         var command = new CreateBugfixProjectTaskCommand(
-            new BugfixProjectTaskProperties(
+            new BugfixProjectTaskCreateProperties(
                 request.Name,
                 request.Priority,
                 new ProjectTaskStatusId(request.StatusId),

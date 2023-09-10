@@ -1,9 +1,9 @@
 using Codend.Shared;
 using FluentResults;
 
-namespace Codend.Domain.Entities;
+namespace Codend.Domain.Entities.ProjectTask.Abstractions;
 
-public record UpdateAbstractProjectTaskProperties
+public record AbstractProjectTaskUpdateProperties
 (
     IShouldUpdate<string> Name,
     IShouldUpdate<string> Priority,
@@ -17,7 +17,7 @@ public record UpdateAbstractProjectTaskProperties
 
 public interface IProjectTaskUpdater<TProjectTask, in TUpdateProps>
     where TProjectTask : AbstractProjectTask
-    where TUpdateProps : UpdateAbstractProjectTaskProperties
+    where TUpdateProps : AbstractProjectTaskUpdateProperties
 {
     Result<TProjectTask> Update(TUpdateProps properties);
 }

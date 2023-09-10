@@ -1,4 +1,5 @@
 ﻿using Codend.Domain.Entities;
+using Codend.Domain.Entities.ProjectTask.Abstractions;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
@@ -7,7 +8,7 @@ public interface IUpdateProjectTaskCommand
 }
 
 public interface IUpdateProjectTaskCommand<out TUpdateProjectTaskProperties> : IUpdateProjectTaskCommand
-    where TUpdateProjectTaskProperties : UpdateAbstractProjectTaskProperties
+    where TUpdateProjectTaskProperties : AbstractProjectTaskUpdateProperties
 {
     /// <summary>
     /// Id of <see cref="AbstractProjectTask"/> which will be updated.

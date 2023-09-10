@@ -1,4 +1,4 @@
-﻿using Codend.Domain.Entities;
+﻿using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

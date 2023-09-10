@@ -2,16 +2,20 @@ using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Enums;
 using Codend.Domain.Core.Events;
 using Codend.Domain.Core.Primitives;
+using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Domain.ValueObjects;
 using FluentResults;
 using InvalidPriorityName = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskPriority.InvalidPriorityName;
 
 namespace Codend.Domain.Entities;
 
+/// <summary>
+/// Abstract base ProjectTask class.
+/// </summary>
 public abstract class AbstractProjectTask :
     Aggregate<ProjectTaskId>,
     ISoftDeletableEntity,
-    IProjectTaskUpdater<AbstractProjectTask, UpdateAbstractProjectTaskProperties>
+    IProjectTaskUpdater<AbstractProjectTask, AbstractProjectTaskUpdateProperties>
 {
     protected AbstractProjectTask(ProjectTaskId id) : base(id)
     {
@@ -163,7 +167,7 @@ public abstract class AbstractProjectTask :
         return Result.Ok(storyPoints);
     }
 
-    protected Result<AbstractProjectTask> Create(ProjectTaskProperties properties)
+    protected Result<AbstractProjectTask> Create(AbstractProjectTaskCreateProperties properties)
     {
         var resultName = ProjectTaskName.Create(properties.Name);
         var resultDescription = ProjectTaskDescription.Create(properties.Description);
@@ -190,7 +194,7 @@ public abstract class AbstractProjectTask :
         return Result.Ok(this);
     }
 
-    public Result<AbstractProjectTask> Update(UpdateAbstractProjectTaskProperties properties)
+    public Result<AbstractProjectTask> Update(AbstractProjectTaskUpdateProperties properties)
     {
         var results = new List<Result>();
 

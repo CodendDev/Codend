@@ -1,12 +1,12 @@
-using Codend.Domain.Core.Enums;
 using FluentResults;
 
-namespace Codend.Domain.Entities;
+namespace Codend.Domain.Entities.ProjectTask.Abstractions;
 
 /// <summary>
 /// Base ProjectTask properties.
 /// </summary>
-public abstract record ProjectTaskProperties(
+public abstract record AbstractProjectTaskCreateProperties
+(
     string Name,
     string Priority,
     ProjectTaskStatusId StatusId,
@@ -29,7 +29,7 @@ public abstract record ProjectTaskProperties(
 /// <typeparam name="TProps">Props class which will be used for creation.</typeparam>
 public interface IProjectTaskCreator<TProjectTask, in TProps>
     where TProjectTask : AbstractProjectTask
-    where TProps : ProjectTaskProperties
+    where TProps : AbstractProjectTaskCreateProperties
 {
     static abstract Result<TProjectTask> Create(TProps props);
 }

@@ -1,8 +1,10 @@
+using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Shared;
 
-namespace Codend.Domain.Entities;
+namespace Codend.Domain.Entities.ProjectTask.Bugfix;
 
-public record BugfixUpdateProjectTaskProperties(
+public record BugfixProjectTaskUpdateProperties
+(
     IShouldUpdate<string> Name,
     IShouldUpdate<string> Priority,
     IShouldUpdate<ProjectTaskStatusId> StatusId,
@@ -11,7 +13,7 @@ public record BugfixUpdateProjectTaskProperties(
     IShouldUpdate<DateTime?> DueDate,
     IShouldUpdate<uint?> StoryPoints,
     IShouldUpdate<UserId?> AssigneeId
-) : UpdateAbstractProjectTaskProperties(
+) : AbstractProjectTaskUpdateProperties(
     Name,
     Priority,
     StatusId,

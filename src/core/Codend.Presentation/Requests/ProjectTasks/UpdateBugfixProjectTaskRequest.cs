@@ -2,6 +2,7 @@ using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Contracts.ProjectTasks;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
+using Codend.Domain.Entities.ProjectTask.Bugfix;
 
 namespace Codend.Presentation.Requests.ProjectTasks;
 
@@ -34,7 +35,7 @@ public class UpdateBugfixProjectTaskRequest :
 
         var command = new UpdateBugfixProjectTaskCommand(
             new ProjectTaskId(TaskId),
-            new BugfixUpdateProjectTaskProperties(
+            new BugfixProjectTaskUpdateProperties(
                 name,
                 priority,
                 statusId,

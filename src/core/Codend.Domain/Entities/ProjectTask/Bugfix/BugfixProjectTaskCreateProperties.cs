@@ -1,6 +1,9 @@
-namespace Codend.Domain.Entities;
+using Codend.Domain.Entities.ProjectTask.Abstractions;
 
-public record BugfixProjectTaskProperties(
+namespace Codend.Domain.Entities.ProjectTask.Bugfix;
+
+public record BugfixProjectTaskCreateProperties
+(
     string Name,
     string Priority,
     ProjectTaskStatusId StatusId,
@@ -10,7 +13,7 @@ public record BugfixProjectTaskProperties(
     DateTime? DueDate = null,
     uint? StoryPoints = null,
     UserId? AssigneeId = null
-) : ProjectTaskProperties(
+) : AbstractProjectTaskCreateProperties(
     Name,
     Priority,
     StatusId,

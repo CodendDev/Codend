@@ -2,6 +2,7 @@ using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Contracts.ProjectTasks;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
+using Codend.Domain.Entities.ProjectTask.Abstractions;
 
 namespace Codend.Presentation.Requests.ProjectTasks;
 
@@ -34,7 +35,7 @@ public class UpdateProjectTaskRequest :
 
         var command = new UpdateAbstractProjectTaskCommand(
             new ProjectTaskId(TaskId),
-            new UpdateAbstractProjectTaskProperties(
+            new AbstractProjectTaskUpdateProperties(
                 name,
                 priority,
                 statusId,
