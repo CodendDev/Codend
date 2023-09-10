@@ -3,6 +3,7 @@ using Codend.Application.ProjectTasks.Commands.AssignUser;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
+using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 using Codend.Contracts.ProjectTasks;
 using Codend.Presentation.Infrastructure;
@@ -69,7 +70,7 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAbstractTask(UpdateProjectTaskRequest request)
-        => await UpdateTask<UpdateProjectTaskRequest, UpdateProjectTaskCommand>(request);
+        => await UpdateTask<UpdateProjectTaskRequest, UpdateAbstractProjectTaskCommand>(request);
 
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]

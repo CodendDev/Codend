@@ -11,7 +11,7 @@ public record BugfixUpdateProjectTaskProperties(
     IShouldUpdate<DateTime?> DueDate,
     IShouldUpdate<uint?> StoryPoints,
     IShouldUpdate<UserId?> AssigneeId
-) : UpdateProjectTaskProperties(
+) : UpdateAbstractProjectTaskProperties(
     Name,
     Priority,
     StatusId,

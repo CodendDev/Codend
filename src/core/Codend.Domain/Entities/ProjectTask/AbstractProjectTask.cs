@@ -11,7 +11,7 @@ namespace Codend.Domain.Entities;
 public abstract class AbstractProjectTask :
     Aggregate<ProjectTaskId>,
     ISoftDeletableEntity,
-    IProjectTaskUpdater<AbstractProjectTask, UpdateProjectTaskProperties>
+    IProjectTaskUpdater<AbstractProjectTask, UpdateAbstractProjectTaskProperties>
 {
     protected AbstractProjectTask(ProjectTaskId id) : base(id)
     {
@@ -190,7 +190,7 @@ public abstract class AbstractProjectTask :
         return Result.Ok(this);
     }
 
-    public Result<AbstractProjectTask> Update(UpdateProjectTaskProperties properties)
+    public Result<AbstractProjectTask> Update(UpdateAbstractProjectTaskProperties properties)
     {
         var results = new List<Result>();
 

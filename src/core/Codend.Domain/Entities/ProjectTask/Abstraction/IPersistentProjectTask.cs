@@ -10,14 +10,14 @@ namespace Codend.Domain.Entities;
 /// </typeparam>
 /// <typeparam name="TUpdateProperties">
 /// Properties class which will be used for update.
-/// Properties must implement <see cref="UpdateProjectTaskProperties"/>
+/// Properties must implement <see cref="UpdateAbstractProjectTaskProperties"/>
 /// </typeparam>
 public interface IPersistentProjectTask<TProjectTask, in TCreateProperties, in TUpdateProperties> :
     IProjectTaskCreator<TProjectTask, TCreateProperties>,
     IProjectTaskUpdater<TProjectTask, TUpdateProperties>
     where TProjectTask : AbstractProjectTask
     where TCreateProperties : ProjectTaskProperties
-    where TUpdateProperties : UpdateProjectTaskProperties
+    where TUpdateProperties : UpdateAbstractProjectTaskProperties
 
 {
 }
