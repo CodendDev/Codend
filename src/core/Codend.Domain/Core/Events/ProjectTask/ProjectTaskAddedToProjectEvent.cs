@@ -8,12 +8,12 @@ namespace Codend.Domain.Core.Events;
 /// </summary>
 public class ProjectTaskAddedToProjectEvent : IDomainEvent
 {
-    public ProjectTaskAddedToProjectEvent(Entities.AbstractProjectTask projectTask, ProjectId projectId)
+    public ProjectTaskAddedToProjectEvent(AbstractProjectTask projectTask, ProjectId projectId)
     {
         ProjectTask = projectTask;
         ProjectId = projectId;
     }
 
-    public Entities.AbstractProjectTask ProjectTask { get; set; }
+    public AbstractProjectTask ProjectTask { get; set; }
     public ProjectId ProjectId { get; set; }
 }
