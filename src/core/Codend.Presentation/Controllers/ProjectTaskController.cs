@@ -1,9 +1,9 @@
+using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.ProjectTasks.Commands.AssignUser;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
-using Codend.Contracts;
 using Codend.Contracts.ProjectTasks;
 using Codend.Presentation.Infrastructure;
 using Codend.Presentation.Requests.ProjectTasks;
@@ -28,56 +28,48 @@ public class ProjectTaskController : ApiController
     public async Task<IActionResult> CreateBugfix(CreateBugfixRequest request)
     {
         var command = request.MapToCommand();
-    
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
             return Ok(response.Value);
         }
-    
+
         return BadRequest(response.Reasons);
     }
-    
+
+    private async Task<IActionResult> UpdateTask<TRequest, TCommand>(TRequest request)
+        where TRequest : AbstractUpdateProjectTaskRequest<TCommand>
+        where TCommand : ICommand, IUpdateProjectTaskCommand
+    {
+        var response = await Mediator.Send(request.MapToCommand());
+        if (response.IsSuccess)
+        {
+            return NoContent();
+        }
+
+        if (response.HasError<ProjectTaskNotFound>())
+        {
+            return NotFound();
+        }
+
+        return BadRequest(response.Reasons);
+    }
+
     [HttpPut]
     [Route("bugfix")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateBugfixTask(UpdateBugfixProjectTaskRequest request)
-    {
-        var response = await Mediator.Send(request.MapToCommand());
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-    
-        if (response.HasError<ProjectTaskNotFound>())
-        {
-            return NotFound();
-        }
-    
-        return BadRequest(response.Reasons);
-    }
+        => await UpdateTask<UpdateBugfixProjectTaskRequest, UpdateBugfixProjectTaskCommand>(request);
 
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateTask(UpdateProjectTaskRequest request)
-    {
-        var response = await Mediator.Send(request.MapToCommand());
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        if (response.HasError<ProjectTaskNotFound>())
-        {
-            return NotFound();
-        }
-
-        return BadRequest(response.Reasons);
-    }
+    public async Task<IActionResult> UpdateAbstractTask(UpdateProjectTaskRequest request)
+        => await UpdateTask<UpdateProjectTaskRequest, UpdateProjectTaskCommand>(request);
 
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]
