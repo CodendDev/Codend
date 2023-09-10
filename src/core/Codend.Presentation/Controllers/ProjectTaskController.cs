@@ -3,8 +3,10 @@ using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
+using Codend.Contracts;
 using Codend.Contracts.ProjectTasks;
 using Codend.Presentation.Infrastructure;
+using Codend.Presentation.Requests.ProjectTasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,16 +28,16 @@ public class ProjectTaskController : ApiController
     public async Task<IActionResult> CreateBugfix(CreateBugfixRequest request)
     {
         var command = request.MapToCommand();
-
+    
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
             return Ok(response.Value);
         }
-
+    
         return BadRequest(response.Reasons);
     }
-
+    
     [HttpPut]
     [Route("bugfix")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -48,12 +50,12 @@ public class ProjectTaskController : ApiController
         {
             return NoContent();
         }
-
+    
         if (response.HasError<ProjectTaskNotFound>())
         {
             return NotFound();
         }
-
+    
         return BadRequest(response.Reasons);
     }
 

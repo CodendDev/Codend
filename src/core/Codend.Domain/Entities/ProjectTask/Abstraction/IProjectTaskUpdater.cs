@@ -1,4 +1,4 @@
-using Codend.Shared.ShouldUpdate;
+using Codend.Shared;
 using FluentResults;
 
 namespace Codend.Domain.Entities;

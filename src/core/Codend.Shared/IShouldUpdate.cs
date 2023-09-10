@@ -1,4 +1,4 @@
-namespace Codend.Shared.ShouldUpdate;
+namespace Codend.Shared;
 
 public interface IShouldUpdate
 {

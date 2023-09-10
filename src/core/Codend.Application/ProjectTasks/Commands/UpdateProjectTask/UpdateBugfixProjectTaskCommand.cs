@@ -1,10 +1,9 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Contracts.ProjectTasks;
-using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
-using Codend.Shared.ShouldUpdate;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 
@@ -30,7 +29,7 @@ public static class UpdateBugfixProjectTaskExtensions
     /// <summary>
     /// 💀👽
     /// </summary>
-    public static UpdateBugfixProjectTaskCommand MapToCommand(this BugfixUpdateProjectTaskRequest request)
+    public static UpdateBugfixProjectTaskCommand MapToCommand(this IUpdateBugfixProjectTaskRequest request)
     {
         var name = request.Name ?? ShouldUpdateProperty.DontUpdate<string>();
         var priority = request.Priority ?? ShouldUpdateProperty.DontUpdate<string>();

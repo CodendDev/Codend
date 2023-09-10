@@ -1,4 +1,6 @@
-namespace Codend.Shared.ShouldUpdate;
+using Codend.Shared;
+
+namespace Codend.Domain.Core.Primitives;
 
 public static class ShouldUpdateProperty
 {
@@ -20,10 +22,6 @@ public class ShouldUpdateProperty<T> : IShouldUpdate<T>
     public T? Value => ShouldUpdate ? _value : default;
 
     public bool ShouldUpdate { get; }
-
-    public ShouldUpdateProperty()
-    {
-    }
 
     internal ShouldUpdateProperty(bool update, T? value)
     {
