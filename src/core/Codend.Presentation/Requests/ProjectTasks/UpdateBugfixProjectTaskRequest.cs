@@ -5,6 +5,9 @@ using Codend.Domain.Entities;
 
 namespace Codend.Presentation.Requests.ProjectTasks;
 
+/// <summary>
+/// Request for updating <see cref="BugfixProjectTask"/>.
+/// </summary>
 public class UpdateBugfixProjectTaskRequest :
     AbstractUpdateProjectTaskRequest<UpdateBugfixProjectTaskCommand>,
     IUpdateBugfixProjectTaskRequest<UpdateBugfixProjectTaskCommand>

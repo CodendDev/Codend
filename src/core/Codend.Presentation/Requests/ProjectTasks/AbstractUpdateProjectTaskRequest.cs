@@ -1,12 +1,15 @@
-using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Contracts.ProjectTasks;
 using Codend.Shared;
 
 namespace Codend.Presentation.Requests.ProjectTasks;
 
+/// <summary>
+/// Abstract implementation for <see cref="IUpdateProjectTaskRequest{T}"/> interface.
+/// </summary>
+/// <typeparam name="TCommand">Command implementing <see cref="IUpdateProjectTaskCommand"/>.</typeparam>
 public abstract class AbstractUpdateProjectTaskRequest<TCommand> : IUpdateProjectTaskRequest<TCommand>
-where TCommand : IUpdateProjectTaskCommand
+    where TCommand : IUpdateProjectTaskCommand
 {
     public Guid TaskId { get; set; }
 

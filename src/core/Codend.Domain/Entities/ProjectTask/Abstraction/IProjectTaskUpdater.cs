@@ -3,7 +3,7 @@ using FluentResults;
 
 namespace Codend.Domain.Entities;
 
-public abstract record UpdateAbstractProjectTaskProperties
+public record UpdateAbstractProjectTaskProperties
 (
     IShouldUpdate<string> Name,
     IShouldUpdate<string> Priority,

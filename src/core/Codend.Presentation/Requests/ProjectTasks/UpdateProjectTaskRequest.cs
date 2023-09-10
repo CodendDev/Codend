@@ -5,8 +5,12 @@ using Codend.Domain.Entities;
 
 namespace Codend.Presentation.Requests.ProjectTasks;
 
+/// <summary>
+/// Request for updating <see cref="AbstractProjectTask"/>.
+/// </summary>
 public class UpdateProjectTaskRequest :
-    AbstractUpdateProjectTaskRequest<UpdateAbstractProjectTaskCommand>
+    AbstractUpdateProjectTaskRequest<UpdateAbstractProjectTaskCommand>,
+    IUpdateProjectTaskRequest<UpdateAbstractProjectTaskCommand>
 {
     public override UpdateAbstractProjectTaskCommand MapToCommand()
     {
@@ -30,7 +34,7 @@ public class UpdateProjectTaskRequest :
 
         var command = new UpdateAbstractProjectTaskCommand(
             new ProjectTaskId(TaskId),
-            new BugfixUpdateProjectTaskProperties(
+            new UpdateAbstractProjectTaskProperties(
                 name,
                 priority,
                 statusId,
