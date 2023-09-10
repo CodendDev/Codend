@@ -1,5 +1,5 @@
 ﻿namespace Codend.Contracts.ProjectTasks;
 
-public interface IUpdateBugfixProjectTaskRequest : IUpdateProjectTaskRequest
+public interface IUpdateBugfixProjectTaskRequest<T> : IUpdateProjectTaskRequest<T>
 {
 }

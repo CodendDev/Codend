@@ -5,10 +5,11 @@ using Codend.Domain.Entities;
 
 namespace Codend.Presentation.Requests.ProjectTasks;
 
-public class UpdateProjectTaskRequest :
-    AbstractUpdateProjectTaskRequest<UpdateProjectTaskCommand>
+public class UpdateBugfixProjectTaskRequest :
+    AbstractUpdateProjectTaskRequest<UpdateBugfixProjectTaskCommand>,
+    IUpdateBugfixProjectTaskRequest<UpdateBugfixProjectTaskCommand>
 {
-    public override UpdateProjectTaskCommand MapToCommand()
+    public override UpdateBugfixProjectTaskCommand MapToCommand()
     {
         var name = Name ?? ShouldUpdateProperty.DontUpdate<string>();
         var priority = Priority ?? ShouldUpdateProperty.DontUpdate<string>();
@@ -28,7 +29,7 @@ public class UpdateProjectTaskRequest :
             ? ShouldUpdateProperty.DontUpdate<UserId?>()
             : ShouldUpdateProperty.Update<UserId?>(new UserId(AssigneeId.Value.Value));
 
-        var command = new UpdateProjectTaskCommand(
+        var command = new UpdateBugfixProjectTaskCommand(
             new ProjectTaskId(TaskId),
             new BugfixUpdateProjectTaskProperties(
                 name,

@@ -7,7 +7,11 @@ using FluentResults;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 
-public interface IUpdateProjectTaskCommand<out TUpdateProjectTaskProperties>
+public interface IUpdateProjectTaskCommand
+{
+}
+
+public interface IUpdateProjectTaskCommand<out TUpdateProjectTaskProperties> : IUpdateProjectTaskCommand
     where TUpdateProjectTaskProperties : UpdateProjectTaskProperties
 {
     ProjectTaskId TaskId { get; }

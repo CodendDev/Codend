@@ -2,7 +2,7 @@
 
 namespace Codend.Contracts.ProjectTasks;
 
-public interface IUpdateProjectTaskRequest
+public interface IUpdateProjectTaskRequest<out T>
 {
     public Guid TaskId { get; }
     IShouldUpdate<string>? Name { get; }
