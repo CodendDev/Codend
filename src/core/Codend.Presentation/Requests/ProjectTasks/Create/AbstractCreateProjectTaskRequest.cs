@@ -14,7 +14,7 @@ public abstract record AbstractCreateProjectTaskRequest<TCommand>
     DateTime? DueDate,
     uint? StoryPoints,
     Guid? AssigneeId
-) : ICreateProjectTaskRequest<TCommand>
+) : ICreateProjectTaskRequest
     where TCommand : ICreateProjectTaskCommand
 {
     public IEstimatedTimeRequest? EstimatedTime => _EstimatedTime;

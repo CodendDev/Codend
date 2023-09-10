@@ -1,6 +1,6 @@
 ﻿namespace Codend.Contracts.ProjectTasks;
 
-public interface ICreateProjectTaskRequest<T>
+public interface ICreateProjectTaskRequest
 {
     string Name { get; }
     string Priority { get; }

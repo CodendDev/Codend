@@ -31,8 +31,9 @@ public record UpdateBugfixProjectTaskRequest
     _StatusId,
     _EstimatedTime,
     _AssigneeId
-), IUpdateBugfixProjectTaskRequest<UpdateBugfixProjectTaskCommand>
+), IUpdateBugfixProjectTaskRequest
 {
+    /// <inheritdoc />
     public override UpdateBugfixProjectTaskCommand MapToCommand()
     {
         var name = Name ?? ShouldUpdateProperty.DontUpdate<string>();

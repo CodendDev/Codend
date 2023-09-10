@@ -5,7 +5,7 @@ using Codend.Shared;
 namespace Codend.Presentation.Requests.ProjectTasks.Update;
 
 /// <summary>
-/// Abstract implementation for <see cref="IUpdateProjectTaskRequest{T}"/> interface.
+/// Abstract implementation for <see cref="IUpdateProjectTaskRequest"/> interface.
 /// </summary>
 /// <typeparam name="TCommand">Command implementing <see cref="IUpdateProjectTaskCommand"/>.</typeparam>
 public abstract record AbstractUpdateProjectTaskRequest<TCommand>
@@ -19,7 +19,7 @@ public abstract record AbstractUpdateProjectTaskRequest<TCommand>
     ShouldUpdateBinder<Guid>? _StatusId,
     ShouldUpdateBinder<EstimatedTimeRequest>? _EstimatedTime,
     ShouldUpdateBinder<Guid?>? _AssigneeId
-) : IUpdateProjectTaskRequest<TCommand>
+) : IUpdateProjectTaskRequest
     where TCommand : IUpdateProjectTaskCommand
 {
     public IShouldUpdate<string>? Name => _Name;
@@ -30,5 +30,10 @@ public abstract record AbstractUpdateProjectTaskRequest<TCommand>
     public IShouldUpdate<Guid>? StatusId => _StatusId;
     public IShouldUpdate<IEstimatedTimeRequest>? EstimatedTime => _EstimatedTime;
     public IShouldUpdate<Guid?>? AssigneeId => _AssigneeId;
+
+    /// <summary>
+    /// Method for mapping request to <see cref="TCommand"/>.
+    /// </summary>
+    /// <returns>Command created from request.</returns>
     public abstract TCommand MapToCommand();
 }
