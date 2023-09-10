@@ -2,6 +2,9 @@ using Codend.Shared;
 
 namespace Codend.Domain.Core.Primitives;
 
+/// <summary>
+/// <see cref="ShouldUpdateProperty{T}"/> helper for easier creation.
+/// </summary>
 public static class ShouldUpdateProperty
 {
     public static ShouldUpdateProperty<T> DontUpdate<T>()
@@ -15,11 +18,17 @@ public static class ShouldUpdateProperty
     }
 }
 
+/// <summary>
+/// <see cref="IShouldUpdate{T}"/> implementation used for updating domain aggregates.
+/// </summary>
 public class ShouldUpdateProperty<T> : IShouldUpdate<T>
 {
     private readonly T? _value;
 
-    public T? Value => ShouldUpdate ? _value : default;
+    public T? Value =>
+        ShouldUpdate
+            ? _value
+            : throw new InvalidOperationException("You can't get value of property which should not be updated");
 
     public bool ShouldUpdate { get; }
 

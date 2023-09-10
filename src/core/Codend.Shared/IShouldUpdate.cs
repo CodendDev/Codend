@@ -1,11 +1,11 @@
 namespace Codend.Shared;
 
-public interface IShouldUpdate
-{
-    public bool ShouldUpdate { get; }
-}
-
-public interface IShouldUpdate<out T> : IShouldUpdate
+/// <summary>
+/// Interface used for updating entities' properties.
+/// Allows updating properties which are nullable.
+/// </summary>
+public interface IShouldUpdate<out T>
 {
     public T? Value { get; }
+    public bool ShouldUpdate { get; }
 }
