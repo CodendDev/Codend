@@ -4,7 +4,29 @@ using Codend.Domain.Entities.ProjectTask.Bugfix;
 
 namespace Codend.Presentation.Requests.ProjectTasks.Create;
 
-public class CreateBugfixProjectTaskRequest : AbstractCreateProjectTaskRequest<CreateBugfixProjectTaskCommand>
+public record CreateBugfixProjectTaskRequest
+(
+    string Name,
+    string Priority,
+    Guid StatusId,
+    Guid ProjectId,
+    string? Description,
+    EstimatedTimeRequest? _EstimatedTime,
+    DateTime? DueDate,
+    uint? StoryPoints,
+    Guid? AssigneeId
+) : AbstractCreateProjectTaskRequest<CreateBugfixProjectTaskCommand>
+(
+    Name,
+    Priority,
+    StatusId,
+    ProjectId,
+    Description,
+    _EstimatedTime,
+    DueDate,
+    StoryPoints,
+    AssigneeId
+)
 {
     public override CreateBugfixProjectTaskCommand MapToCommand()
     {

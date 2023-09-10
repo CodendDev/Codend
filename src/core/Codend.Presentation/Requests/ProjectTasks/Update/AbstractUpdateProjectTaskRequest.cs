@@ -8,35 +8,27 @@ namespace Codend.Presentation.Requests.ProjectTasks.Update;
 /// Abstract implementation for <see cref="IUpdateProjectTaskRequest{T}"/> interface.
 /// </summary>
 /// <typeparam name="TCommand">Command implementing <see cref="IUpdateProjectTaskCommand"/>.</typeparam>
-public abstract class AbstractUpdateProjectTaskRequest<TCommand> : IUpdateProjectTaskRequest<TCommand>
+public abstract record AbstractUpdateProjectTaskRequest<TCommand>
+(
+    Guid TaskId,
+    ShouldUpdateBinder<string>? _Name,
+    ShouldUpdateBinder<string>? _Priority,
+    ShouldUpdateBinder<string?>? _Description,
+    ShouldUpdateBinder<DateTime?>? _DueDate,
+    ShouldUpdateBinder<uint?>? _StoryPoints,
+    ShouldUpdateBinder<Guid>? _StatusId,
+    ShouldUpdateBinder<EstimatedTimeRequest>? _EstimatedTime,
+    ShouldUpdateBinder<Guid?>? _AssigneeId
+) : IUpdateProjectTaskRequest<TCommand>
     where TCommand : IUpdateProjectTaskCommand
 {
-    public Guid TaskId { get; set; }
-
-    public ShouldUpdateBinder<string>? _Name { get; set; }
     public IShouldUpdate<string>? Name => _Name;
-
-    public ShouldUpdateBinder<string>? _Priority { get; set; }
     public IShouldUpdate<string>? Priority => _Priority;
-
-    public ShouldUpdateBinder<string?>? _Description { get; set; }
     public IShouldUpdate<string?>? Description => _Description;
-
-    public ShouldUpdateBinder<DateTime?>? _DueDate { get; set; }
     public IShouldUpdate<DateTime?>? DueDate => _DueDate;
-
-
-    public ShouldUpdateBinder<uint?>? _StoryPoints { get; set; }
     public IShouldUpdate<uint?>? StoryPoints => _StoryPoints;
-
-    public ShouldUpdateBinder<Guid>? _StatusId { get; set; }
     public IShouldUpdate<Guid>? StatusId => _StatusId;
-
-    public ShouldUpdateBinder<EstimatedTimeRequest>? _EstimatedTime { get; set; }
     public IShouldUpdate<IEstimatedTimeRequest>? EstimatedTime => _EstimatedTime;
-
-    public ShouldUpdateBinder<Guid?>? _AssigneeId { get; set; }
     public IShouldUpdate<Guid?>? AssigneeId => _AssigneeId;
-
     public abstract TCommand MapToCommand();
 }

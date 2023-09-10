@@ -9,9 +9,29 @@ namespace Codend.Presentation.Requests.ProjectTasks.Update;
 /// <summary>
 /// Request for updating <see cref="BugfixProjectTask"/>.
 /// </summary>
-public class UpdateBugfixProjectTaskRequest :
-    AbstractUpdateProjectTaskRequest<UpdateBugfixProjectTaskCommand>,
-    IUpdateBugfixProjectTaskRequest<UpdateBugfixProjectTaskCommand>
+public record UpdateBugfixProjectTaskRequest
+(
+    Guid TaskId,
+    ShouldUpdateBinder<string>? _Name,
+    ShouldUpdateBinder<string>? _Priority,
+    ShouldUpdateBinder<string?>? _Description,
+    ShouldUpdateBinder<DateTime?>? _DueDate,
+    ShouldUpdateBinder<uint?>? _StoryPoints,
+    ShouldUpdateBinder<Guid>? _StatusId,
+    ShouldUpdateBinder<EstimatedTimeRequest>? _EstimatedTime,
+    ShouldUpdateBinder<Guid?>? _AssigneeId
+) : AbstractUpdateProjectTaskRequest<UpdateBugfixProjectTaskCommand>
+(
+    TaskId,
+    _Name,
+    _Priority,
+    _Description,
+    _DueDate,
+    _StoryPoints,
+    _StatusId,
+    _EstimatedTime,
+    _AssigneeId
+), IUpdateBugfixProjectTaskRequest<UpdateBugfixProjectTaskCommand>
 {
     public override UpdateBugfixProjectTaskCommand MapToCommand()
     {
