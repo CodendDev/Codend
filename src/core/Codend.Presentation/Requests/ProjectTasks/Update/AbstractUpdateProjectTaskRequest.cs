@@ -1,6 +1,6 @@
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
+using Codend.Contracts.Abstractions;
 using Codend.Contracts.ProjectTasks;
-using Codend.Shared;
 
 namespace Codend.Presentation.Requests.ProjectTasks.Update;
 

@@ -1,10 +1,10 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
+using Codend.Contracts.Abstractions;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Codend.Domain.Repositories;
-using Codend.Shared;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 

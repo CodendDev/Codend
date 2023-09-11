@@ -1,4 +1,4 @@
-using Codend.Shared;
+using Codend.Contracts.Abstractions;
 
 namespace Codend.Application.Core;
 

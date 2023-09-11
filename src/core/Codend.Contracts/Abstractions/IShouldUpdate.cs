@@ -1,4 +1,4 @@
-namespace Codend.Shared;
+namespace Codend.Contracts.Abstractions;
 
 /// <summary>
 /// Interface used for updating entities' properties.

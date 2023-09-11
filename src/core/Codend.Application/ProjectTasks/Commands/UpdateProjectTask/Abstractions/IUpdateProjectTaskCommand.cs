@@ -1,5 +1,5 @@
-﻿using Codend.Domain.Entities;
-using Codend.Shared;
+﻿using Codend.Contracts.Abstractions;
+using Codend.Domain.Entities;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
