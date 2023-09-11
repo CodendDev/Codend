@@ -17,7 +17,7 @@ public sealed record CreateBugfixProjectTaskCommand(
     : ICommand<Guid>, ICreateProjectTaskCommand<BugfixProjectTaskCreateProperties>;
 
 public class CreateBugfixProjectTaskCommandHandler :
-    CreateProjectTaskCommandHandler<
+    CreateProjectTaskCommandAbstractHandler<
         CreateBugfixProjectTaskCommand,
         BugfixProjectTask,
         BugfixProjectTaskCreateProperties>

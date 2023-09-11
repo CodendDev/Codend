@@ -11,10 +11,10 @@ public class BugfixProjectTask :
     {
     }
 
-    public static Result<BugfixProjectTask> Create(BugfixProjectTaskCreateProperties properties)
+    public static Result<BugfixProjectTask> Create(BugfixProjectTaskCreateProperties properties, UserId ownerId)
     {
         var task = new BugfixProjectTask(new ProjectTaskId(Guid.NewGuid()));
-        var result = task.Create(properties as AbstractProjectTaskCreateProperties);
+        var result = task.Create(properties as IProjectTaskCreateProperties, ownerId);
 
         if (result.IsFailed)
         {

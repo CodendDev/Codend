@@ -166,7 +166,7 @@ public abstract class AbstractProjectTask :
         return Result.Ok(storyPoints);
     }
 
-    protected Result<AbstractProjectTask> Create(AbstractProjectTaskCreateProperties properties)
+    protected Result<AbstractProjectTask> Create(IProjectTaskCreateProperties properties, UserId ownerId)
     {
         var resultName = ProjectTaskName.Create(properties.Name);
         var resultDescription = ProjectTaskDescription.Create(properties.Description);
@@ -180,7 +180,7 @@ public abstract class AbstractProjectTask :
         }
 
         Name = resultName.Value;
-        OwnerId = properties.OwnerId ?? throw new ArgumentException("Owner can't be null");
+        OwnerId = ownerId ?? throw new ArgumentException("Owner can't be null");
         Priority = resultPriority.Value;
         StatusId = properties.StatusId;
         ProjectId = properties.ProjectId;

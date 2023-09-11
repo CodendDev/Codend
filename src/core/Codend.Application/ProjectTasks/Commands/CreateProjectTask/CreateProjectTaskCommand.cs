@@ -18,10 +18,10 @@ public interface ICreateProjectTaskCommand
 /// </summary>
 /// <typeparam name="TProjectTaskProperties">
 /// Properties interface needed for task creation.
-/// Must implement <see cref="AbstractProjectTaskCreateProperties"/> interface.
+/// Must implement <see cref="IProjectTaskCreateProperties"/> interface.
 /// </typeparam>
 public interface ICreateProjectTaskCommand<out TProjectTaskProperties> : ICreateProjectTaskCommand
-    where TProjectTaskProperties : AbstractProjectTaskCreateProperties
+    where TProjectTaskProperties : IProjectTaskCreateProperties
 {
     TProjectTaskProperties TaskProperties { get; }
 }
@@ -36,19 +36,19 @@ public interface ICreateProjectTaskCommand<out TProjectTaskProperties> : ICreate
 /// Must implement <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/> interface.
 /// </typeparam>
 /// <typeparam name="TProjectTaskProperties">
-/// Must implement <see cref="AbstractProjectTaskCreateProperties"/> interface.
+/// Must implement <see cref="IProjectTaskCreateProperties"/> interface.
 /// </typeparam>
-public abstract class CreateProjectTaskCommandHandler<TCommand, TProjectTask, TProjectTaskProperties>
+public abstract class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TProjectTaskProperties>
     : ICommandHandler<TCommand, Guid>
     where TCommand : ICommand<Guid>, ICreateProjectTaskCommand<TProjectTaskProperties>
     where TProjectTask : AbstractProjectTask, IProjectTaskCreator<TProjectTask, TProjectTaskProperties>
-    where TProjectTaskProperties : AbstractProjectTaskCreateProperties
+    where TProjectTaskProperties : IProjectTaskCreateProperties
 {
     private readonly IProjectTaskRepository _projectTaskRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserIdentityProvider _identityProvider;
 
-    protected CreateProjectTaskCommandHandler(
+    protected CreateProjectTaskCommandAbstractHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
         IUserIdentityProvider identityProvider)
@@ -60,8 +60,6 @@ public abstract class CreateProjectTaskCommandHandler<TCommand, TProjectTask, TP
 
     public async Task<Result<Guid>> Handle(TCommand request, CancellationToken cancellationToken)
     {
-        request.TaskProperties.OwnerId = _identityProvider.UserId;
-
         var projectStatusIsValid =
             _projectTaskRepository.ProjectTaskIsValid(
                 request.TaskProperties.ProjectId,
@@ -69,7 +67,7 @@ public abstract class CreateProjectTaskCommandHandler<TCommand, TProjectTask, TP
         var resultProjectTaskStatus =
             projectStatusIsValid ? Result.Ok() : Result.Fail(new DomainErrors.ProjectTaskErrors.InvalidStatusId());
 
-        var resultTask = TProjectTask.Create(request.TaskProperties);
+        var resultTask = TProjectTask.Create(request.TaskProperties, _identityProvider.UserId);
         var result = Result.Merge(resultProjectTaskStatus, resultTask);
         if (result.IsFailed)
         {

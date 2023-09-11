@@ -13,14 +13,4 @@ public record BugfixProjectTaskCreateProperties
     DateTime? DueDate = null,
     uint? StoryPoints = null,
     UserId? AssigneeId = null
-) : AbstractProjectTaskCreateProperties(
-    Name,
-    Priority,
-    StatusId,
-    ProjectId,
-    Description,
-    EstimatedTime,
-    DueDate,
-    StoryPoints,
-    AssigneeId
-);
+) : IProjectTaskCreateProperties;
