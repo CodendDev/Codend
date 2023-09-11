@@ -58,16 +58,14 @@ public record UpdateProjectTaskRequest
 
         var command = new UpdateAbstractProjectTaskCommand(
             new ProjectTaskId(TaskId),
-            new AbstractProjectTaskUpdateProperties(
-                name,
-                priority,
-                statusId,
-                description,
-                estimatedTime,
-                dueDate,
-                storyPoints,
-                assigneeId
-            )
+            name,
+            priority,
+            statusId,
+            description,
+            estimatedTime,
+            dueDate,
+            storyPoints,
+            assigneeId
         );
 
         return command;

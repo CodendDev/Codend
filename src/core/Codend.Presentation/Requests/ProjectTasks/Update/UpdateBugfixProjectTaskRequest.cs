@@ -57,16 +57,14 @@ public record UpdateBugfixProjectTaskRequest
 
         var command = new UpdateBugfixProjectTaskCommand(
             new ProjectTaskId(TaskId),
-            new BugfixProjectTaskUpdateProperties(
-                name,
-                priority,
-                statusId,
-                description,
-                estimatedTime,
-                dueDate,
-                storyPoints,
-                assigneeId
-            )
+            name,
+            priority,
+            statusId,
+            description,
+            estimatedTime,
+            dueDate,
+            storyPoints,
+            assigneeId
         );
 
         return command;

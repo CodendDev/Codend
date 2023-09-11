@@ -4,7 +4,6 @@ using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Domain.Core.Enums;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
-using Codend.Domain.Entities.ProjectTask;
 using Codend.Domain.Repositories;
 using FluentResults;
 
@@ -14,13 +13,12 @@ namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 /// Abstract handler for updating any <see cref="AbstractProjectTask"/>. 
 /// </summary>
 /// <typeparam name="TCommand">
-/// Command that implements <see cref="IUpdateProjectTaskCommand{TUpdateProjectTaskProperties}"/> interface.
+/// Command that implements <see cref="IUpdateProjectTaskCommand"/> interface.
 /// </typeparam>
-public abstract class AbstractUpdateProjectTaskCommandHandler<TCommand, TProjectTask, TUpdateProjectTaskProperties>
+public abstract class AbstractUpdateProjectTaskCommandHandler<TCommand, TProjectTask>
     : ICommandHandler<TCommand>
-    where TCommand : ICommand, IUpdateProjectTaskCommand<TUpdateProjectTaskProperties>
+    where TCommand : ICommand, IUpdateProjectTaskCommand
     where TProjectTask : AbstractProjectTask
-    where TUpdateProjectTaskProperties : AbstractProjectTaskUpdateProperties
 {
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -38,7 +36,7 @@ public abstract class AbstractUpdateProjectTaskCommandHandler<TCommand, TProject
             return Result.Fail(new DomainErrors.ProjectTaskErrors.ProjectTaskNotFound());
         }
 
-        var result = HandleUpdate(task, request.UpdateTaskProperties);
+        var result = HandleUpdate(task, request);
         if (result.IsFailed)
         {
             return result;
@@ -50,18 +48,18 @@ public abstract class AbstractUpdateProjectTaskCommandHandler<TCommand, TProject
         return Result.Ok();
     }
 
-    protected virtual Result HandleUpdate(TProjectTask task, TUpdateProjectTaskProperties properties)
+    protected virtual Result HandleUpdate(TProjectTask task, TCommand request)
     {
         var results = new List<Result>();
 
-        if (properties.Name.ShouldUpdate)
+        if (request.Name.ShouldUpdate)
         {
-            results.Add(task.EditName(properties.Name.Value!).ToResult());
+            results.Add(task.EditName(request.Name.Value!).ToResult());
         }
 
-        if (properties.Priority.ShouldUpdate)
+        if (request.Priority.ShouldUpdate)
         {
-            var priorityParsed = ProjectTaskPriority.TryFromName(properties.Priority.Value, true, out var priority);
+            var priorityParsed = ProjectTaskPriority.TryFromName(request.Priority.Value, true, out var priority);
             var resultPriority = priorityParsed
                 ? Result.Ok(priority)
                 : Result.Fail(new DomainErrors.ProjectTaskPriority.InvalidPriorityName());
@@ -69,34 +67,34 @@ public abstract class AbstractUpdateProjectTaskCommandHandler<TCommand, TProject
             results.Add(resultPriority.ToResult());
         }
 
-        if (properties.StatusId.ShouldUpdate)
+        if (request.StatusId.ShouldUpdate)
         {
-            results.Add(task.ChangeStatus(properties.StatusId.Value).ToResult());
+            results.Add(task.ChangeStatus(request.StatusId.Value).ToResult());
         }
 
-        if (properties.Description.ShouldUpdate)
+        if (request.Description.ShouldUpdate)
         {
-            results.Add(task.EditDescription(properties.Description.Value!).ToResult());
+            results.Add(task.EditDescription(request.Description.Value!).ToResult());
         }
 
-        if (properties.EstimatedTime.ShouldUpdate)
+        if (request.EstimatedTime.ShouldUpdate)
         {
-            results.Add(task.EditEstimatedTime(properties.EstimatedTime.Value).ToResult());
+            results.Add(task.EditEstimatedTime(request.EstimatedTime.Value).ToResult());
         }
 
-        if (properties.DueDate.ShouldUpdate)
+        if (request.DueDate.ShouldUpdate)
         {
-            results.Add(task.SetDueDate(properties.DueDate.Value).ToResult());
+            results.Add(task.SetDueDate(request.DueDate.Value).ToResult());
         }
 
-        if (properties.StoryPoints.ShouldUpdate)
+        if (request.StoryPoints.ShouldUpdate)
         {
-            results.Add(task.EditStoryPoints(properties.StoryPoints.Value).ToResult());
+            results.Add(task.EditStoryPoints(request.StoryPoints.Value).ToResult());
         }
 
-        if (properties.AssigneeId.ShouldUpdate)
+        if (request.AssigneeId.ShouldUpdate)
         {
-            results.Add(task.AssignUser(properties.AssigneeId.Value).ToResult());
+            results.Add(task.AssignUser(request.AssigneeId.Value).ToResult());
         }
 
         return Result.Merge(results.ToArray());

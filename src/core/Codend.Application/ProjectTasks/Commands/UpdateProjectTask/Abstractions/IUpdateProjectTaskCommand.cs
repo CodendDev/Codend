@@ -1,23 +1,21 @@
 ﻿using Codend.Domain.Entities;
-using Codend.Domain.Entities.ProjectTask;
-using Codend.Domain.Entities.ProjectTask.Abstractions;
+using Codend.Shared;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
 public interface IUpdateProjectTaskCommand
-{
-}
-
-public interface IUpdateProjectTaskCommand<out TUpdateProjectTaskProperties> : IUpdateProjectTaskCommand
-    where TUpdateProjectTaskProperties : AbstractProjectTaskUpdateProperties
 {
     /// <summary>
     /// Id of <see cref="AbstractProjectTask"/> which will be updated.
     /// </summary>
     ProjectTaskId TaskId { get; }
 
-    /// <summary>
-    /// Properties which will be applied on <see cref="AbstractProjectTask"/>.
-    /// </summary>
-    TUpdateProjectTaskProperties UpdateTaskProperties { get; }
+    IShouldUpdate<string> Name { get; }
+    IShouldUpdate<string> Priority { get; }
+    IShouldUpdate<ProjectTaskStatusId> StatusId { get; }
+    IShouldUpdate<string?> Description { get; }
+    IShouldUpdate<TimeSpan?> EstimatedTime { get; }
+    IShouldUpdate<DateTime?> DueDate { get; }
+    IShouldUpdate<uint?> StoryPoints { get; }
+    IShouldUpdate<UserId?> AssigneeId { get; }
 }
