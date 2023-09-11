@@ -28,7 +28,7 @@ public abstract record AbstractUpdateProjectTaskRequest<TCommand>
     public IShouldUpdate<DateTime?>? DueDate => _DueDate;
     public IShouldUpdate<uint?>? StoryPoints => _StoryPoints;
     public IShouldUpdate<Guid>? StatusId => _StatusId;
-    public IShouldUpdate<IEstimatedTimeRequest>? EstimatedTime => _EstimatedTime;
+    public IShouldUpdate<EstimatedTimeRequest>? EstimatedTime => _EstimatedTime;
     public IShouldUpdate<Guid?>? AssigneeId => _AssigneeId;
 
     /// <summary>

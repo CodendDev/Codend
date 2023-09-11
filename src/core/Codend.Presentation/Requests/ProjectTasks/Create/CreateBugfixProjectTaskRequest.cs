@@ -1,4 +1,5 @@
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
+using Codend.Contracts.ProjectTasks;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
 
@@ -11,7 +12,7 @@ public record CreateBugfixProjectTaskRequest
     Guid StatusId,
     Guid ProjectId,
     string? Description,
-    EstimatedTimeRequest? _EstimatedTime,
+    EstimatedTimeRequest? EstimatedTime,
     DateTime? DueDate,
     uint? StoryPoints,
     Guid? AssigneeId
@@ -22,7 +23,7 @@ public record CreateBugfixProjectTaskRequest
     StatusId,
     ProjectId,
     Description,
-    _EstimatedTime,
+    EstimatedTime,
     DueDate,
     StoryPoints,
     AssigneeId

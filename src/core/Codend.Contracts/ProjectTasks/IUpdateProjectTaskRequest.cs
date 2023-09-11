@@ -11,6 +11,6 @@ public interface IUpdateProjectTaskRequest
     IShouldUpdate<DateTime?>? DueDate { get; }
     IShouldUpdate<uint?>? StoryPoints { get; }
     IShouldUpdate<Guid>? StatusId { get; }
-    IShouldUpdate<IEstimatedTimeRequest>? EstimatedTime { get; }
+    IShouldUpdate<EstimatedTimeRequest>? EstimatedTime { get; }
     IShouldUpdate<Guid?>? AssigneeId { get; }
 }

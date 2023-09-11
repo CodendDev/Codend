@@ -7,7 +7,7 @@ public interface ICreateProjectTaskRequest
     Guid StatusId { get; }
     Guid ProjectId { get; }
     string? Description { get; }
-    IEstimatedTimeRequest? EstimatedTime { get; }
+    EstimatedTimeRequest? EstimatedTime { get; }
     DateTime? DueDate { get; }
     uint? StoryPoints { get; }
     Guid? AssigneeId { get; }

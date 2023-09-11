@@ -10,13 +10,12 @@ public abstract record AbstractCreateProjectTaskRequest<TCommand>
     Guid StatusId,
     Guid ProjectId,
     string? Description,
-    EstimatedTimeRequest? _EstimatedTime,
+    EstimatedTimeRequest? EstimatedTime,
     DateTime? DueDate,
     uint? StoryPoints,
     Guid? AssigneeId
 ) : ICreateProjectTaskRequest
     where TCommand : ICreateProjectTaskCommand
 {
-    public IEstimatedTimeRequest? EstimatedTime => _EstimatedTime;
     public abstract TCommand MapToCommand();
 }
