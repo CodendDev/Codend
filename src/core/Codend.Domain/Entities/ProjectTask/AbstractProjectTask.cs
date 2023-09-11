@@ -14,8 +14,7 @@ namespace Codend.Domain.Entities;
 /// </summary>
 public abstract class AbstractProjectTask :
     Aggregate<ProjectTaskId>,
-    ISoftDeletableEntity,
-    IProjectTaskUpdater<AbstractProjectTask, AbstractProjectTaskUpdateProperties>
+    ISoftDeletableEntity
 {
     protected AbstractProjectTask(ProjectTaskId id) : base(id)
     {
@@ -192,61 +191,5 @@ public abstract class AbstractProjectTask :
         AssigneeId = properties.AssigneeId;
 
         return Result.Ok(this);
-    }
-
-    public Result<AbstractProjectTask> Update(AbstractProjectTaskUpdateProperties properties)
-    {
-        var results = new List<Result>();
-
-        if (properties.Name.ShouldUpdate)
-        {
-            results.Add(EditName(properties.Name.Value!).ToResult());
-        }
-
-        if (properties.Priority.ShouldUpdate)
-        {
-            var priorityParsed = ProjectTaskPriority.TryFromName(properties.Priority.Value, true, out var priority);
-            var resultPriority = priorityParsed ? Result.Ok(priority) : Result.Fail(new InvalidPriorityName());
-            ChangePriority(priority);
-            results.Add(resultPriority.ToResult());
-        }
-
-        if (properties.StatusId.ShouldUpdate)
-        {
-            results.Add(ChangeStatus(properties.StatusId.Value).ToResult());
-        }
-
-        if (properties.Description.ShouldUpdate)
-        {
-            results.Add(EditDescription(properties.Description.Value!).ToResult());
-        }
-
-        if (properties.EstimatedTime.ShouldUpdate)
-        {
-            results.Add(EditEstimatedTime(properties.EstimatedTime.Value).ToResult());
-        }
-
-        if (properties.DueDate.ShouldUpdate)
-        {
-            results.Add(SetDueDate(properties.DueDate.Value).ToResult());
-        }
-
-        if (properties.StoryPoints.ShouldUpdate)
-        {
-            results.Add(EditStoryPoints(properties.StoryPoints.Value).ToResult());
-        }
-
-        if (properties.AssigneeId.ShouldUpdate)
-        {
-            results.Add(AssignUser(properties.AssigneeId.Value).ToResult());
-        }
-
-        var result = Result.Merge(results.ToArray());
-        if (result.IsFailed)
-        {
-            return result;
-        }
-
-        return Result.Ok();
     }
 }

@@ -5,7 +5,7 @@ namespace Codend.Domain.Entities.ProjectTask.Bugfix;
 
 public class BugfixProjectTask :
     AbstractProjectTask,
-    IPersistentProjectTask<BugfixProjectTask, BugfixProjectTaskCreateProperties, BugfixProjectTaskUpdateProperties>
+    IProjectTaskCreator<BugfixProjectTask, BugfixProjectTaskCreateProperties>
 {
     private BugfixProjectTask(ProjectTaskId id) : base(id)
     {
@@ -22,16 +22,5 @@ public class BugfixProjectTask :
         }
 
         return Result.Ok(task);
-    }
-
-    public Result<BugfixProjectTask> Update(BugfixProjectTaskUpdateProperties properties)
-    {
-        var result = base.Update(properties);
-        if (result.IsFailed)
-        {
-            return result.ToResult();
-        }
-
-        return Result.Ok();
     }
 }

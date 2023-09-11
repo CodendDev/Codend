@@ -1,7 +1,6 @@
 using Codend.Shared;
-using FluentResults;
 
-namespace Codend.Domain.Entities.ProjectTask.Abstractions;
+namespace Codend.Domain.Entities.ProjectTask;
 
 public record AbstractProjectTaskUpdateProperties
 (
@@ -14,10 +13,3 @@ public record AbstractProjectTaskUpdateProperties
     IShouldUpdate<uint?> StoryPoints,
     IShouldUpdate<UserId?> AssigneeId
 );
-
-public interface IProjectTaskUpdater<TProjectTask, in TUpdateProps>
-    where TProjectTask : AbstractProjectTask
-    where TUpdateProps : AbstractProjectTaskUpdateProperties
-{
-    Result<TProjectTask> Update(TUpdateProps properties);
-}

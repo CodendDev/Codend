@@ -1,6 +1,6 @@
 using Codend.Shared;
 
-namespace Codend.Domain.Core.Primitives;
+namespace Codend.Application.Core;
 
 /// <summary>
 /// <see cref="ShouldUpdateProperty{T}"/> helper for easier creation.

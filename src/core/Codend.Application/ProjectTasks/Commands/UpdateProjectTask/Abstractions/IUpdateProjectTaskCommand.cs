@@ -1,4 +1,5 @@
 ﻿using Codend.Domain.Entities;
+using Codend.Domain.Entities.ProjectTask;
 using Codend.Domain.Entities.ProjectTask.Abstractions;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
