@@ -5,6 +5,7 @@ using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
+using Codend.Contracts.Responses.ProjectTask;
 using Codend.Presentation.Infrastructure;
 using Codend.Presentation.Requests.ProjectTasks.Create;
 using Codend.Presentation.Requests.ProjectTasks.Update;
@@ -115,7 +116,7 @@ public class ProjectTaskController : ApiController
     }
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AbstractProjectTaskResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(GetProjectTaskByIdQuery query)
     {

@@ -23,11 +23,11 @@ public abstract class GenericRepository<TKey, TKeyPrimitive, TEntity>
 
     public Task<TEntity?> GetByIdAsync(TKey entityId)
     {
-        var project = Context
+        var entity = Context
             .Set<TEntity>()
             .SingleOrDefaultAsync(entity => Equals(entity.Id, entityId));
 
-        return project;
+        return entity;
     }
 
     public void Remove(TEntity entity)
