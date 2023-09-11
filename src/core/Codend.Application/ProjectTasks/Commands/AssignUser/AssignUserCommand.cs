@@ -35,6 +35,11 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
         }
 
         var result = task.AssignUser(new UserId(request.Assignee));
+        if (result.IsFailed)
+        {
+            return result.ToResult();
+        }
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return result.ToResult();
