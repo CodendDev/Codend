@@ -31,7 +31,7 @@ public class AuthenticationController : ApiController
     /// </returns>
     [HttpPost("login")]
     [ProducesResponseType(typeof(TokenResponse), 200)]
-    [ProducesResponseType(404)]
+    [ProducesResponseType(400)]
     [AllowAnonymous]
     public async Task<IActionResult> Login(LoginCommand command)
     {
@@ -63,7 +63,7 @@ public class AuthenticationController : ApiController
     /// </returns>
     [HttpPost("register")]
     [ProducesResponseType(typeof(TokenResponse), 200)]
-    [ProducesResponseType(404)]
+    [ProducesResponseType(400)]
     [AllowAnonymous]
     public async Task<IActionResult> Register(RegisterCommand command)
     {
