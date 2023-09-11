@@ -15,7 +15,10 @@ namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 /// <typeparam name="TCommand">
 /// Command that implements <see cref="IUpdateProjectTaskCommand"/> interface.
 /// </typeparam>
-public abstract class AbstractUpdateProjectTaskCommandHandler<TCommand, TProjectTask>
+/// <typeparam name="TProjectTask">
+/// Derived from AbstractProjectTask class.
+/// </typeparam>
+public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProjectTask>
     : ICommandHandler<TCommand>
     where TCommand : ICommand, IUpdateProjectTaskCommand
     where TProjectTask : AbstractProjectTask
@@ -23,7 +26,7 @@ public abstract class AbstractUpdateProjectTaskCommandHandler<TCommand, TProject
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    protected AbstractUpdateProjectTaskCommandHandler(IProjectTaskRepository taskRepository, IUnitOfWork unitOfWork)
+    protected UpdateProjectTaskCommandAbstractHandler(IProjectTaskRepository taskRepository, IUnitOfWork unitOfWork)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;

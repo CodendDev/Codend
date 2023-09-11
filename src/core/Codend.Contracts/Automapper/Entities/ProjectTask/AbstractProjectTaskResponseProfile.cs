@@ -4,9 +4,9 @@ using Codend.Domain.Entities;
 
 namespace Codend.Contracts.Automapper.Entities.ProjectTask;
 
-public sealed class ProjectTaskResponseProfile : Profile
+public sealed class AbstractProjectTaskResponseProfile : Profile
 {
-    public ProjectTaskResponseProfile()
+    public AbstractProjectTaskResponseProfile()
     {
         CreateMap<AbstractProjectTask, AbstractProjectTaskResponse>();
     }

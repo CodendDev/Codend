@@ -21,7 +21,7 @@ public sealed record UpdateAbstractProjectTaskCommand
 ) : ICommand, IUpdateProjectTaskCommand;
 
 public class UpdateAbstractProjectTaskCommandHandler :
-    AbstractUpdateProjectTaskCommandHandler<UpdateAbstractProjectTaskCommand, AbstractProjectTask>
+    UpdateProjectTaskCommandAbstractHandler<UpdateAbstractProjectTaskCommand, AbstractProjectTask>
 {
     public UpdateAbstractProjectTaskCommandHandler(IProjectTaskRepository taskRepository, IUnitOfWork unitOfWork)
         : base(taskRepository, unitOfWork)
