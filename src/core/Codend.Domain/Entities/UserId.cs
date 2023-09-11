@@ -1,3 +1,5 @@
-﻿namespace Codend.Domain.Entities;
+﻿using Codend.Domain.Core.Abstractions;
 
-public record UserId(Guid Value);
+namespace Codend.Domain.Entities;
+
+public record UserId(Guid Value) : IEntityId<Guid>;
