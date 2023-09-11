@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  nginx:
+    container_name: codend_nginx
+    image: nginx:latest
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    volumes:
+      - "./nginx:/etc/nginx:ro"
+    networks:
+      - codend_backend
+
+  backend:
+    container_name: codend_backend
+    depends_on:
+      - postgres
+    build:
+      context: .
+      dockerfile: src/api/Codend.Api/Dockerfile
+    environment:
+      - "ConnectionStrings:PostgresDatabase=Host=postgres; Database=codendDatabase; Username=${POSTGRES_USER}; Password=${POSTGRES_PASSWORD}"
+      - "ASPNETCORE_URLS=http://+:5000"
+    networks:
+      - codend_database
+      - codend_backend
+
+  postgres:
+    container_name: codend_postgres
+    image: postgres:latest
+    environment:
+      PGDATA: /var/lib/postgresql/data/
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - codend_database
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+networks:
+  codend_backend:
+  codend_database:
+
+
+volumes:
+  db_data:
