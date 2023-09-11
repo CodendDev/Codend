@@ -22,6 +22,12 @@ services:
       dockerfile: src/api/Codend.Api/Dockerfile
     environment:
       - "ConnectionStrings:PostgresDatabase=Host=postgres; Database=codendDatabase; Username=${POSTGRES_USER}; Password=${POSTGRES_PASSWORD}"
+      - "Fusionauth:ApiKey=${FUSIONAUTH_API_KEY}"
+      - "Fusionauth:ApiUrl=http://fusionauth:9011/"
+      - "Fusionauth:Issuer=${FUSIONAUTH_ISSUER}"
+      - "Fusionauth:ApplicationId=${FUSIONAUTH_APPLICATION_ID}"
+      - "Fusionauth:SigningKey=${FUSIONAUTH_SIGNING_KEY}"
+      - "Fusionauth:TenantId=${FUSIONAUTH_TENANT_ID}"
       - "ASPNETCORE_URLS=http://+:5000"
     networks:
       - codend_database
@@ -38,6 +44,28 @@ services:
       - codend_database
     volumes:
       - db_data:/var/lib/postgresql/data
+  
+  fusionauth:
+    container_name: codend_fusionauth
+    image: fusionauth/fusionauth-app:latest
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/fusionauth
+      DATABASE_ROOT_USERNAME: ${POSTGRES_USER}
+      DATABASE_ROOT_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      FUSIONAUTH_APP_MEMORY: ${FUSIONAUTH_APP_MEMORY}
+      FUSIONAUTH_APP_RUNTIME_MODE: development
+      FUSIONAUTH_APP_URL: http://fusionauth:9011
+      SEARCH_TYPE: database
+      FUSIONAUTH_APP_KICKSTART_FILE: ${FUSIONAUTH_APP_KICKSTART_FILE}
+    networks:
+      - codend_database
+    volumes:
+      - fusionauth_config:/usr/local/fusionauth/config
+      - ./kickstart:/usr/local/fusionauth/kickstart
 
 networks:
   codend_backend:
@@ -46,3 +74,4 @@ networks:
 
 volumes:
   db_data:
+  fusionauth_config:
