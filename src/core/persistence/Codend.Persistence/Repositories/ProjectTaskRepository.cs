@@ -9,6 +9,7 @@ public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, Abst
     {
     }
 
+    /// <inheritdoc/>
     public bool ProjectTaskIsValid(ProjectId projectId, ProjectTaskStatusId statusId)
     {
         var valid =
