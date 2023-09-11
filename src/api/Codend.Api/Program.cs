@@ -35,6 +35,9 @@ app.MapControllers();
 
 var database = app.MigrateDatabase();
 
-app.MapGet("", () => $"Hello {database}");
+var buildDate = builder.Configuration["BUILD_DATE"];
+var deploymentDate = DateTime.UtcNow.ToString("R");
+var helloString = $"Deployment date: {deploymentDate}" + (buildDate is not null ? $"\nBuild date: {buildDate}" : "");
+app.MapGet("", () => helloString);
 
 app.Run();
