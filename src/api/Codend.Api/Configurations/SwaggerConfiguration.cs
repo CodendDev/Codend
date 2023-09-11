@@ -50,6 +50,8 @@ public static class SwaggerConfiguration
                     SearchOption.TopDirectoryOnly)
                 .ToList();
             xmlFiles.ForEach(xmlFile => options.IncludeXmlComments(xmlFile));
+
+            options.SupportNonNullableReferenceTypes();
         });
     }
 }

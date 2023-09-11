@@ -9,5 +9,5 @@ public interface IEntityId<TKey>
     /// <summary>
     /// Value of <typeparamref name="TKey"/> id.
     /// </summary>
-    public TKey Value { get; set; }
+    public TKey Value { get; }
 }

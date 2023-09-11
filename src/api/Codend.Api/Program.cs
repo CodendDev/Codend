@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Codend.Api.Configurations;
 using Codend.Api.Extensions;
 using Codend.Application;
+using Codend.Contracts;
 using Codend.Database;
 using Codend.Infrastructure;
 using Codend.Infrastructure.Authentication;
@@ -22,6 +23,7 @@ builder.Services.AddControllers(options =>
         options.JsonSerializerOptions.Converters.Add(new JsonDateTimeConverter());
     });
 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
 
@@ -31,6 +33,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services
+    .AddContracts()
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddDatabase(builder.Configuration)
