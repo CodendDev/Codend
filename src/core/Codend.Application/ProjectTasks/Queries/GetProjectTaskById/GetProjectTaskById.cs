@@ -4,6 +4,7 @@ using Codend.Application.Core.Abstractions.Messaging.Queries;
 using Codend.Contracts.Responses.ProjectTask;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
+using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Codend.Domain.Repositories;
 using FluentResults;
 
@@ -29,6 +30,21 @@ public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, Abstrac
         _statusRepository = statusRepository;
     }
 
+    private AbstractProjectTaskResponse Map(AbstractProjectTask task)
+    {
+        AbstractProjectTaskResponse dto;
+        if (task is BugfixProjectTask)
+        {
+            dto = _mapper.Map<BugfixProjectTaskResponse>(task);
+        }
+        else
+        {
+            throw new InvalidOperationException("Can't cast ProjectTask");
+        }
+
+        return dto;
+    }
+
     public async Task<Result<AbstractProjectTaskResponse>> Handle(
         GetProjectTaskByIdQuery request,
         CancellationToken cancellationToken)
@@ -39,13 +55,13 @@ public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, Abstrac
             return Result.Fail(new DomainErrors.ProjectTaskErrors.ProjectTaskNotFound());
         }
 
-        var dto = _mapper.Map<AbstractProjectTaskResponse>(task);
         var status = await _statusRepository.GetByIdAsync(task.StatusId);
         if (status is null)
         {
             throw new NoNullAllowedException("ProjectStatus can't be null.");
         }
 
+        var dto = Map(task);
         dto.Status = status.Name.Value;
         return Result.Ok(dto);
     }

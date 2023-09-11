@@ -116,7 +116,7 @@ public class ProjectTaskController : ApiController
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(AbstractProjectTaskResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(GetProjectTaskByIdQuery query)
     {
