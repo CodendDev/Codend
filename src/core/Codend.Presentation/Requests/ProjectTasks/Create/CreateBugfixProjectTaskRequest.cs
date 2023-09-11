@@ -1,5 +1,5 @@
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
-using Codend.Contracts.ProjectTasks;
+using Codend.Contracts.Requests;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
 

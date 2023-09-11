@@ -1,5 +1,6 @@
 ﻿using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
-using Codend.Contracts.ProjectTasks;
+using Codend.Contracts.Requests;
+using Codend.Contracts.Requests.ProjectTasks;
 
 namespace Codend.Presentation.Requests.ProjectTasks.Create;
 

@@ -1,4 +1,4 @@
-﻿namespace Codend.Contracts.ProjectTasks;
+namespace Codend.Contracts.Requests;
 
 public record EstimatedTimeRequest
 (

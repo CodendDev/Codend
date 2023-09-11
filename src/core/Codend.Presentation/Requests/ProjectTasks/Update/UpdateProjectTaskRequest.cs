@@ -1,6 +1,7 @@
 using Codend.Application.Core;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
-using Codend.Contracts.ProjectTasks;
+using Codend.Contracts.Requests;
+using Codend.Contracts.Requests.ProjectTasks;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask;
