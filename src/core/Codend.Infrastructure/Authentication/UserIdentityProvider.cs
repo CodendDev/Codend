@@ -16,14 +16,10 @@ public class UserIdentityProvider : IUserIdentityProvider
     public UserIdentityProvider(IHttpContextAccessor contextAccessor)
     {
         _contextAccessor = contextAccessor;
-        //Todo:replace all UserId refrences with GetUserId method.
-        if(GetUserId() is not null)
-        {
-            UserId = new UserId((Guid)GetUserId()!);
-        }
     }
-    
-    public UserId UserId { get; }
+
+    //Todo:replace all UserId refrences with GetUserId method.
+    public UserId UserId => new UserId((Guid)GetUserId()!);
     
     /// <inheritdoc />
     public Guid? GetUserId()

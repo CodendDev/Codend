@@ -81,8 +81,14 @@ public sealed class AuthService : IAuthService
         }
 
         if (response.statusCode != 400) return Result.Fail(new AuthErrors.General.UnspecifiedAuthError());
-        return response.errorResponse.fieldErrors.Any(err => err.Value.Any(e => e.code.Contains("email")))
-            ? Result.Fail(new AuthErrors.Register.EmailAlreadyExists())
-            : Result.Fail(new AuthErrors.General.UnspecifiedAuthError());
+
+        // Checking if error response from fusionauth contains email field error, which means that email is already in use
+        // or is not a valid email, but it should be covered by validation.
+        if (response.errorResponse.fieldErrors.Any(err => err.Value.Any(e => e.code.Contains("email"))))
+        {
+            return Result.Fail(new AuthErrors.Register.EmailAlreadyExists());
+        }
+        
+        return Result.Fail(new AuthErrors.General.UnspecifiedAuthError());
     }
 }

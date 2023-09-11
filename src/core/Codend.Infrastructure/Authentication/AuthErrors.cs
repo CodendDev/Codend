@@ -39,10 +39,7 @@ public static class AuthErrors
             }
         }
     }
-
-    /// <summary>
-    /// ProjectTask domain errors.
-    /// </summary>
+    
     public static class Login
     {
         public class InvalidEmailOrPassword : AuthError

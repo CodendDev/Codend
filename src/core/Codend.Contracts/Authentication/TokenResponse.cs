@@ -8,7 +8,6 @@ public sealed class TokenResponse
     /// <summary>
     /// Initializes a new instance of the <see cref="TokenResponse"/> class.
     /// </summary>
-    /// <param name="accessToken"></param>
     public TokenResponse(string accessToken) => AccessToken = accessToken;
 
     /// <summary>
