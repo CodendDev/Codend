@@ -1,8 +1,8 @@
 ﻿using Codend.Contracts.Abstractions;
 
-namespace Codend.Contracts.Requests.ProjectTasks;
+namespace Codend.Contracts.Requests.ProjectTasks.Update;
 
-public interface IUpdateProjectTaskRequest
+public interface IUpdateBaseProjectTaskRequest
 {
     public Guid TaskId { get; }
     IShouldUpdate<string>? Name { get; }

@@ -1,15 +1,15 @@
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Contracts.Abstractions;
 using Codend.Contracts.Requests;
-using Codend.Contracts.Requests.ProjectTasks;
+using Codend.Contracts.Requests.ProjectTasks.Update;
 
-namespace Codend.Presentation.Requests.ProjectTasks.Update;
+namespace Codend.Presentation.Requests.ProjectTasks.Update.Abstractions;
 
 /// <summary>
-/// Abstract implementation for <see cref="IUpdateProjectTaskRequest"/> interface.
+/// Abstract implementation for <see cref="IUpdateBaseProjectTaskRequest"/> interface.
 /// </summary>
 /// <typeparam name="TCommand">Command implementing <see cref="IUpdateProjectTaskCommand"/>.</typeparam>
-public abstract record AbstractUpdateProjectTaskRequest<TCommand>
+public abstract record UpdateProjectTaskAbstractRequest<TCommand>
 (
     Guid TaskId,
     ShouldUpdateBinder<string>? _Name,
@@ -20,7 +20,7 @@ public abstract record AbstractUpdateProjectTaskRequest<TCommand>
     ShouldUpdateBinder<Guid>? _StatusId,
     ShouldUpdateBinder<EstimatedTimeRequest>? _EstimatedTime,
     ShouldUpdateBinder<Guid?>? _AssigneeId
-) : IUpdateProjectTaskRequest
+)
     where TCommand : IUpdateProjectTaskCommand
 {
     public IShouldUpdate<string>? Name => _Name;

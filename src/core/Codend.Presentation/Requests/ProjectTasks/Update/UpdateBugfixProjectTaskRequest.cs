@@ -1,10 +1,10 @@
 using Codend.Application.Core;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Contracts.Requests;
-using Codend.Contracts.Requests.ProjectTasks;
-using Codend.Domain.Core.Primitives;
+using Codend.Contracts.Requests.ProjectTasks.Update;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
+using Codend.Presentation.Requests.ProjectTasks.Update.Abstractions;
 
 namespace Codend.Presentation.Requests.ProjectTasks.Update;
 
@@ -22,7 +22,7 @@ public record UpdateBugfixProjectTaskRequest
     ShouldUpdateBinder<Guid>? _StatusId,
     ShouldUpdateBinder<EstimatedTimeRequest>? _EstimatedTime,
     ShouldUpdateBinder<Guid?>? _AssigneeId
-) : AbstractUpdateProjectTaskRequest<UpdateBugfixProjectTaskCommand>
+) : UpdateProjectTaskAbstractRequest<UpdateBugfixProjectTaskCommand>
 (
     TaskId,
     _Name,

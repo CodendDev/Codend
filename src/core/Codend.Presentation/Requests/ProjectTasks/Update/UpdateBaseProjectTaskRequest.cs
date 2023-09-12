@@ -1,18 +1,16 @@
 using Codend.Application.Core;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Contracts.Requests;
-using Codend.Contracts.Requests.ProjectTasks;
-using Codend.Domain.Core.Primitives;
+using Codend.Contracts.Requests.ProjectTasks.Update;
 using Codend.Domain.Entities;
-using Codend.Domain.Entities.ProjectTask;
-using Codend.Domain.Entities.ProjectTask.Abstractions;
+using Codend.Presentation.Requests.ProjectTasks.Update.Abstractions;
 
 namespace Codend.Presentation.Requests.ProjectTasks.Update;
 
 /// <summary>
 /// Request for updating <see cref="BaseProjectTask"/>.
 /// </summary>
-public record UpdateProjectTaskRequest
+public record UpdateBaseProjectTaskRequest
 (
     Guid TaskId,
     ShouldUpdateBinder<string>? _Name,
@@ -23,7 +21,7 @@ public record UpdateProjectTaskRequest
     ShouldUpdateBinder<Guid>? _StatusId,
     ShouldUpdateBinder<EstimatedTimeRequest>? _EstimatedTime,
     ShouldUpdateBinder<Guid?>? _AssigneeId
-) : AbstractUpdateProjectTaskRequest<UpdateBaseProjectTaskCommand>
+) : UpdateProjectTaskAbstractRequest<UpdateBaseProjectTaskCommand>
 (
     TaskId,
     _Name,
@@ -34,7 +32,7 @@ public record UpdateProjectTaskRequest
     _StatusId,
     _EstimatedTime,
     _AssigneeId
-), IUpdateProjectTaskRequest
+), IUpdateBaseProjectTaskRequest
 {
     /// <inheritdoc />
     public override UpdateBaseProjectTaskCommand MapToCommand()

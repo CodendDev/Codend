@@ -2,12 +2,11 @@ using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.ProjectTasks.Create;
 using Codend.Domain.Entities;
-using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Codend.Presentation.Requests.ProjectTasks.Create.Abstractions;
 
 namespace Codend.Presentation.Requests.ProjectTasks.Create;
 
-public sealed record CreateBugfixProjectTaskRequest
+public sealed record CreateBaseProjectTaskRequest
 (
     string Name,
     string Priority,
@@ -18,12 +17,12 @@ public sealed record CreateBugfixProjectTaskRequest
     DateTime? DueDate,
     uint? StoryPoints,
     Guid? AssigneeId
-) : ICreateBugfixProjectTaskRequest, ICreateProjectTaskMapToCommand<CreateBugfixProjectTaskCommand>
+) : ICreateBaseProjectTaskRequest, ICreateProjectTaskMapToCommand<CreateBaseProjectTaskCommand>
 {
-    public CreateBugfixProjectTaskCommand MapToCommand()
+    public CreateBaseProjectTaskCommand MapToCommand()
     {
-        var command = new CreateBugfixProjectTaskCommand(
-            new BugfixProjectTaskCreateProperties(
+        var command = new CreateBaseProjectTaskCommand(
+            new BaseProjectTaskCreateProperties(
                 Name,
                 Priority,
                 new ProjectTaskStatusId(StatusId),
