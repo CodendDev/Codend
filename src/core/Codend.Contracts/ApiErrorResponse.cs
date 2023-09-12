@@ -2,19 +2,19 @@
 
 namespace Codend.Contracts;
 
+public sealed record ApiErrorResponse(string ErrorCode, string Message);
+
 /// <summary>
-/// Represents API an error response.
+/// Mappers for <see cref="ApiErrorResponse"/>.
 /// </summary>
-public class ApiErrorResponse
+public static class ApiErrorResponseMappers
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="ApiErrorResponse"/> class.
+    /// Converts <see cref="IReason"/> to ApiErrorResponse.
     /// </summary>
-    /// <param name="errors">The enumerable collection of errors.</param>
-    public ApiErrorResponse(IReadOnlyCollection<Error> errors) => Errors = errors;
+    /// <param name="reason">Reason to be converted.</param>
+    /// <returns>New <see cref="ApiErrorResponse"/> with mapped ErrorCode and Message values.</returns>
+    public static ApiErrorResponse MapToApiErrorResponse(this IReason reason) =>
+        new ApiErrorResponse(reason.Metadata["ErrorCode"].ToString() ?? string.Empty, reason.Message);
 
-    /// <summary>
-    /// Gets the errors.
-    /// </summary>
-    public IReadOnlyCollection<Error> Errors { get; }
 }
