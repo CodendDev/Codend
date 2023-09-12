@@ -16,5 +16,4 @@ public static class ApiErrorResponseMappers
     /// <returns>New <see cref="ApiErrorResponse"/> with mapped ErrorCode and Message values.</returns>
     public static ApiErrorResponse MapToApiErrorResponse(this IReason reason) =>
         new ApiErrorResponse(reason.Metadata["ErrorCode"].ToString() ?? string.Empty, reason.Message);
-
 }

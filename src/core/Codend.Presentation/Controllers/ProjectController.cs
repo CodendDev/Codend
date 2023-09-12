@@ -21,7 +21,7 @@ public class ProjectController : ApiController
 
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiErrorsResponse),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(CreateProjectCommand command)
     {
         var response = await Mediator.Send(command);

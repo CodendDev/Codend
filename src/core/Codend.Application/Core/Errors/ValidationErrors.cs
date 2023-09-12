@@ -27,7 +27,7 @@ public static class ValidationErrors
             {
             }
         }
-        
+
         public class StringPropertyTooLong : ValidationError
         {
             public StringPropertyTooLong(string stringName, int maxLength) : base("Common.StringPropertyTooLong",

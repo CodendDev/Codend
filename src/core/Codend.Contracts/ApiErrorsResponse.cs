@@ -6,14 +6,15 @@ namespace Codend.Contracts;
 /// <summary>
 /// Represents API an error response.
 /// </summary>
-public class ApiErrorsResponse
+public sealed class ApiErrorsResponse
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ApiErrorsResponse"/> class.
     /// </summary>
     /// <param name="errors">The enumerable collection of <see cref="IError"/>.</param>
-    public ApiErrorsResponse(IReadOnlyCollection<IError> errors) => Errors = errors.Select(x=>x.MapToApiErrorResponse()).ToList();
-    
+    public ApiErrorsResponse(IReadOnlyCollection<IError> errors) =>
+        Errors = errors.Select(x => x.MapToApiErrorResponse()).ToList();
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ApiErrorsResponse"/> class.
     /// </summary>

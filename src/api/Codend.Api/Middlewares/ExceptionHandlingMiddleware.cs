@@ -43,6 +43,7 @@ public class ExceptionHandlingMiddleware
             {
                 _logger.LogError(ex, "An exception occurred: {Message}", ex.Message);
             }
+
             await HandleExceptionAsync(httpContext, ex);
         }
     }
