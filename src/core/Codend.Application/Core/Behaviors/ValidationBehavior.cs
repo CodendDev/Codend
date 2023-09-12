@@ -1,15 +1,15 @@
-﻿using Codend.Application.Core.Abstractions.Messaging.Commands;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
+using ValidationException = Codend.Application.Exceptions.ValidationException;
 
 namespace Codend.Application.Core.Behaviors;
 
 /// <summary>
-/// Command validation pipeline implementation. It searches for all command validators and validates request with each one.
+/// Request validation pipeline implementation. Validates current request with every validator implemented for it.
 /// Throws an exception if there are any validation errors.
 /// </summary>
 public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : class, ICommand<TResponse>
+    where TRequest : class, IRequest<TResponse>
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 

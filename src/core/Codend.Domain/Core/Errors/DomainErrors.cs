@@ -27,11 +27,10 @@ public static partial class DomainErrors
         {
             public ServerError() : base("General.ServerError", "Unexpected server error.")
             {
-                
             }
         }
     }
-    
+
     /// <summary>
     /// Project domain errors.
     /// </summary>

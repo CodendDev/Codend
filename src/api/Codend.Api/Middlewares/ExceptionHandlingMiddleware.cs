@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Codend.Application.Exceptions;
 using Codend.Contracts;
 using Codend.Domain.Core.Errors;
@@ -38,8 +39,10 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An exception occurred: {Message}", ex.Message);
-
+            if (ex is not ValidationException)
+            {
+                _logger.LogError(ex, "An exception occurred: {Message}", ex.Message);
+            }
             await HandleExceptionAsync(httpContext, ex);
         }
     }
@@ -60,10 +63,11 @@ public class ExceptionHandlingMiddleware
 
         var serializerOptions = new JsonSerializerOptions
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
         };
 
-        string response = JsonSerializer.Serialize(new ApiErrorResponse(errors), serializerOptions);
+        var response = JsonSerializer.Serialize(new ApiErrorsResponse(errors), serializerOptions);
 
         await httpContext.Response.WriteAsync(response);
     }
