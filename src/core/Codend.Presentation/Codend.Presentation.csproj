@@ -17,6 +17,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Codend.Application\Codend.Application.csproj" />
+      <ProjectReference Include="..\Codend.Contracts\Codend.Contracts.csproj" />
     </ItemGroup>
 
 </Project>
