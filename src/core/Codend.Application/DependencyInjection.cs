@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Codend.Application.Core.Behaviors;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using FluentValidation;
 
 namespace Codend.Application
 {
@@ -13,7 +16,9 @@ namespace Codend.Application
         {
             var assembly = typeof(DependencyInjection).Assembly;
 
+            services.AddValidatorsFromAssembly(assembly);
             services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             return services;
         }
     }
