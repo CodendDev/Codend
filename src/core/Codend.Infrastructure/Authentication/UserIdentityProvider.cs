@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Authentication;
 using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +8,7 @@ namespace Codend.Infrastructure.Authentication;
 
 /// <summary>
 /// Implementation of IUserIdentityProvider which uses JWT token to
-/// obtain required informations e.g. GetUserId uses "sub" claim to retrieve id.
+/// obtain required information e.g. GetUserId uses "sub" claim to retrieve id.
 /// </summary>
 public class UserIdentityProvider : IUserIdentityProvider
 {
@@ -18,17 +19,17 @@ public class UserIdentityProvider : IUserIdentityProvider
         _contextAccessor = contextAccessor;
     }
 
-    //Todo:replace all UserId refrences with GetUserId method.
-    public UserId UserId => new UserId((Guid)GetUserId()!);
-    
+    public UserId UserId => new(GetUserGuid());
+
     /// <inheritdoc />
-    public Guid? GetUserId()
+    public Guid GetUserGuid()
     {
-        var jwtToken = _contextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        var jwtToken = _contextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ")
+            .Last();
         if (jwtToken == null)
         {
             // User is not authenticated
-            return null;
+            throw new AuthenticationException("User is not authenticated, but should be.");
         }
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -37,11 +38,10 @@ public class UserIdentityProvider : IUserIdentityProvider
         if (token == null || token.Claims.All(c => c.Type != "sub"))
         {
             // JWT token is invalid
-            return null;
+            throw new AuthenticationException("Invalid token - no 'sub' claim with user id.");
         }
 
         var userId = Guid.Parse(token.Claims.First(c => c.Type == "sub").Value);
         return userId;
     }
-    
 }
