@@ -2,6 +2,7 @@ using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
 using Codend.Application.Projects.Commands.UpdateProject;
 using Codend.Application.Projects.Queries.GetProjectById;
+using Codend.Contracts;
 using Codend.Contracts.Responses.Project;
 using Codend.Domain.Core.Errors;
 using Codend.Presentation.Infrastructure;
@@ -20,7 +21,7 @@ public class ProjectController : ApiController
 
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorsResponse),StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(CreateProjectCommand command)
     {
         var response = await Mediator.Send(command);
@@ -29,7 +30,7 @@ public class ProjectController : ApiController
             return CreatedAtAction(nameof(Get), new { id = response.Value }, response.Value);
         }
 
-        return BadRequest(response.Reasons);
+        return BadRequest(response.MapToApiErrorsResponse());
     }
 
     [HttpDelete]
