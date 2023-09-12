@@ -12,10 +12,13 @@ namespace Codend.Api.Configurations;
 /// </summary>
 public static class AuthenticationConfiguration
 {
-    public static AuthenticationBuilder AddFusionauthAuthentication(this IServiceCollection services)
+    public static AuthenticationBuilder AddFusionauthAuthentication(this IServiceCollection services,
+        IConfiguration configuration)
     {
-        var fusionAuthConf = services.BuildServiceProvider().GetService<IOptions<FusionauthConfiguration>>()!.Value;
+        services.Configure<FusionauthConfiguration>(configuration.GetSection("Fusionauth"));
         
+        var fusionAuthConf = services.BuildServiceProvider().GetService<IOptions<FusionauthConfiguration>>()!.Value;
+
         return services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

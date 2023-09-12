@@ -5,7 +5,6 @@ using Codend.Application;
 using Codend.Contracts;
 using Codend.Database;
 using Codend.Infrastructure;
-using Codend.Infrastructure.Authentication;
 using Codend.Presentation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -27,8 +26,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
 
-builder.Services.Configure<FusionauthConfiguration>(builder.Configuration.GetSection("Fusionauth"));
-builder.Services.AddFusionauthAuthentication();
+builder.Services.AddFusionauthAuthentication(builder.Configuration);
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 
