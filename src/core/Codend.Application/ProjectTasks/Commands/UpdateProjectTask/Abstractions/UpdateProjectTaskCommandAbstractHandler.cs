@@ -1,13 +1,12 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Domain.Core.Enums;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
 
-namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
+namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
 /// <summary>
 /// Abstract handler for updating any <see cref="BaseProjectTask"/>. 

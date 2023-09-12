@@ -23,7 +23,7 @@ public record UpdateProjectTaskRequest
     ShouldUpdateBinder<Guid>? _StatusId,
     ShouldUpdateBinder<EstimatedTimeRequest>? _EstimatedTime,
     ShouldUpdateBinder<Guid?>? _AssigneeId
-) : AbstractUpdateProjectTaskRequest<UpdateAbstractProjectTaskCommand>
+) : AbstractUpdateProjectTaskRequest<UpdateBaseProjectTaskCommand>
 (
     TaskId,
     _Name,
@@ -37,7 +37,7 @@ public record UpdateProjectTaskRequest
 ), IUpdateProjectTaskRequest
 {
     /// <inheritdoc />
-    public override UpdateAbstractProjectTaskCommand MapToCommand()
+    public override UpdateBaseProjectTaskCommand MapToCommand()
     {
         var name = Name ?? ShouldUpdateProperty.DontUpdate<string>();
         var priority = Priority ?? ShouldUpdateProperty.DontUpdate<string>();
@@ -57,7 +57,7 @@ public record UpdateProjectTaskRequest
             ? ShouldUpdateProperty.DontUpdate<UserId?>()
             : ShouldUpdateProperty.Update<UserId?>(new UserId(AssigneeId.Value.Value));
 
-        var command = new UpdateAbstractProjectTaskCommand(
+        var command = new UpdateBaseProjectTaskCommand(
             new ProjectTaskId(TaskId),
             name,
             priority,

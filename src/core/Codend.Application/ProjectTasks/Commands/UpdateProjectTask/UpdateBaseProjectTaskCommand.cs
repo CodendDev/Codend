@@ -7,7 +7,7 @@ using Codend.Domain.Repositories;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 
-public sealed record UpdateAbstractProjectTaskCommand
+public sealed record UpdateBaseProjectTaskCommand
 (
     ProjectTaskId TaskId,
     IShouldUpdate<string> Name,
@@ -21,7 +21,7 @@ public sealed record UpdateAbstractProjectTaskCommand
 ) : ICommand, IUpdateProjectTaskCommand;
 
 public class UpdateAbstractProjectTaskCommandHandler :
-    UpdateProjectTaskCommandAbstractHandler<UpdateAbstractProjectTaskCommand, BaseProjectTask>
+    UpdateProjectTaskCommandAbstractHandler<UpdateBaseProjectTaskCommand, BaseProjectTask>
 {
     public UpdateAbstractProjectTaskCommandHandler(IProjectTaskRepository taskRepository, IUnitOfWork unitOfWork)
         : base(taskRepository, unitOfWork)

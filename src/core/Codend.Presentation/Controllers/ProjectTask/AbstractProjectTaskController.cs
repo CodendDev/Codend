@@ -22,7 +22,7 @@ public class AbstractProjectTaskController : ProjectTaskBaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAbstractTask(UpdateProjectTaskRequest request)
-        => await UpdateTask<UpdateProjectTaskRequest, UpdateAbstractProjectTaskCommand>(request);
+        => await UpdateTask<UpdateProjectTaskRequest, UpdateBaseProjectTaskCommand>(request);
 
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]
