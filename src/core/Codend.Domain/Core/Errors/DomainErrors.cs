@@ -10,19 +10,28 @@ public static partial class DomainErrors
     /// <summary>
     /// Domain error base class.
     /// </summary>
-    public abstract class DomainError : Error
+    public abstract class DomainError : ApiError
     {
-        public string ErrorCode { get; }
-
-        protected DomainError(string errorCode, string message)
+        /// <inheritdoc />
+        protected DomainError(string errorCode, string message) : base(errorCode, message)
         {
-            Metadata.Add("ErrorCode", errorCode);
-            Metadata.Add("Message", message);
-            ErrorCode = errorCode;
-            Message = message;
         }
     }
 
+    /// <summary>
+    /// General domain errors.
+    /// </summary>
+    public static class General
+    {
+        public class ServerError : DomainError
+        {
+            public ServerError() : base("General.ServerError", "Unexpected server error.")
+            {
+                
+            }
+        }
+    }
+    
     /// <summary>
     /// Project domain errors.
     /// </summary>
