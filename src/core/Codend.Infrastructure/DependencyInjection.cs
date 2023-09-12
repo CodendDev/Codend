@@ -20,7 +20,7 @@ public static class DependencyInjection
         services.AddTransient<IDateTime, MachineDateTime>();
 
         services.AddScoped<IUserIdentityProvider, UserIdentityProvider>();
-        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAuthService, FusionAuthService>();
 
         return services;
     }

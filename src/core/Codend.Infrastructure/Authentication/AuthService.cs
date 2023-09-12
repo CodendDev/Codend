@@ -11,12 +11,12 @@ namespace Codend.Infrastructure.Authentication;
 /// <summary>
 /// Fusionauth implementation of <see cref="IAuthService"/>.
 /// </summary>
-public sealed class AuthService : IAuthService
+public sealed class FusionAuthService : IAuthService
 {
     private readonly IFusionAuthAsyncClient _fusionAuthClient;
     private readonly Guid _appId;
 
-    public AuthService(IOptions<FusionauthConfiguration> configuration)
+    public FusionAuthService(IOptions<FusionauthConfiguration> configuration)
     {
         var fusionauthConfiguration = configuration.Value;
         _fusionAuthClient = new FusionAuthClient(
