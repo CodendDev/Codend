@@ -4,7 +4,7 @@ using FluentResults;
 namespace Codend.Contracts;
 
 /// <summary>
-/// Represents API an error response.
+/// Represents an API errors list response.
 /// </summary>
 public sealed class ApiErrorsResponse
 {

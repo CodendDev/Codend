@@ -2,6 +2,9 @@
 
 namespace Codend.Contracts;
 
+/// <summary>
+/// Represents an single API error response.
+/// </summary>
 public sealed record ApiErrorResponse(string ErrorCode, string Message);
 
 /// <summary>
