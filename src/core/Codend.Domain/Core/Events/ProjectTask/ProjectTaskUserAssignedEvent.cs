@@ -8,12 +8,12 @@ namespace Codend.Domain.Core.Events;
 /// </summary>
 public class ProjectTaskUserAssignedEvent : IDomainEvent
 {
-    public ProjectTaskUserAssignedEvent(UserId assigneeId, ProjectTaskId projectTaskId)
+    public ProjectTaskUserAssignedEvent(UserId? assigneeId, ProjectTaskId projectTaskId)
     {
         AssigneeId = assigneeId;
         ProjectTaskId = projectTaskId;
     }
 
-    public UserId AssigneeId { get; set; }
+    public UserId? AssigneeId { get; set; }
     public ProjectTaskId ProjectTaskId { get; set; }
 }

@@ -8,12 +8,12 @@ namespace Codend.Domain.Core.Events;
 /// </summary>
 public class ProjectTaskEstimatedTimeEditedEvent : IDomainEvent
 {
-    public ProjectTaskEstimatedTimeEditedEvent(TimeSpan estimatedTime, ProjectTaskId projectTaskId)
+    public ProjectTaskEstimatedTimeEditedEvent(TimeSpan? estimatedTime, ProjectTaskId projectTaskId)
     {
         this.EstimatedTime = estimatedTime;
         ProjectTaskId = projectTaskId;
     }
 
-    public TimeSpan EstimatedTime { get; set; }
+    public TimeSpan? EstimatedTime { get; set; }
     public ProjectTaskId ProjectTaskId { get; set; }
 }

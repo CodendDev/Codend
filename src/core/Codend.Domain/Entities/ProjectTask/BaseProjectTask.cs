@@ -2,14 +2,22 @@ using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Enums;
 using Codend.Domain.Core.Events;
 using Codend.Domain.Core.Primitives;
+using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Domain.ValueObjects;
 using FluentResults;
+using InvalidPriorityName = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskPriority.InvalidPriorityName;
 
 namespace Codend.Domain.Entities;
 
-public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEntity
+/// <summary>
+/// Abstract base ProjectTask class.
+/// </summary>
+public class BaseProjectTask :
+    Aggregate<ProjectTaskId>,
+    ISoftDeletableEntity,
+    IProjectTaskCreator<BaseProjectTask, BaseProjectTaskCreateProperties>
 {
-    protected ProjectTask(ProjectTaskId id) : base(id)
+    protected BaseProjectTask(ProjectTaskId id) : base(id)
     {
     }
 
@@ -83,7 +91,7 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         return Result.Ok(priority);
     }
-    
+
     /// <summary>
     /// Changes ProjectTask status id to one of Project defined or default statuses.
     /// </summary>
@@ -98,13 +106,13 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         return Result.Ok(statusId);
     }
-    
+
     /// <summary>
     /// Changes ProjectTask dueDate.
     /// </summary>
     /// <param name="dueDate">New dueDate.</param>
     /// <returns>Ok result with DateTime object.</returns>
-    public Result<DateTime> SetDueDate(DateTime dueDate)
+    public Result<DateTime?> SetDueDate(DateTime? dueDate)
     {
         DueDate = dueDate;
 
@@ -113,13 +121,13 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         return Result.Ok(dueDate);
     }
-    
+
     /// <summary>
     /// Changes ProjectTask assignee.
     /// </summary>
     /// <param name="assigneeId">New assigneeId.</param>
     /// <returns>Ok result with UserId object.</returns>
-    public Result<UserId> AssigneeUser(UserId assigneeId)
+    public Result<UserId?> AssignUser(UserId? assigneeId)
     {
         AssigneeId = assigneeId;
 
@@ -128,13 +136,13 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         return Result.Ok(assigneeId);
     }
-    
+
     /// <summary>
     /// Edits ProjectTask estimated time.
     /// </summary>
     /// <param name="estimatedTime">New estimatedTime.</param>
     /// <returns>Ok result with TimeSpan object.</returns>
-    public Result<TimeSpan> EditEstimatedTime(TimeSpan estimatedTime)
+    public Result<TimeSpan?> EditEstimatedTime(TimeSpan? estimatedTime)
     {
         EstimatedTime = estimatedTime;
 
@@ -143,13 +151,13 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
 
         return Result.Ok(estimatedTime);
     }
-    
+
     /// <summary>
     /// Edits ProjectTask story points.
     /// </summary>
     /// <param name="storyPoints">New story points.</param>
     /// <returns>Ok result with uint object.</returns>
-    public Result<uint> EditStoryPoints(uint storyPoints)
+    public Result<uint?> EditStoryPoints(uint? storyPoints)
     {
         StoryPoints = storyPoints;
 
@@ -157,5 +165,44 @@ public abstract class ProjectTask : Aggregate<ProjectTaskId>, ISoftDeletableEnti
         Raise(evt);
 
         return Result.Ok(storyPoints);
+    }
+
+    protected Result<BaseProjectTask> PopulateBaseProperties(IProjectTaskCreateProperties properties, UserId ownerId)
+    {
+        var resultName = ProjectTaskName.Create(properties.Name);
+        var resultDescription = ProjectTaskDescription.Create(properties.Description);
+        var priorityParsed = ProjectTaskPriority.TryFromName(properties.Priority, true, out var priority);
+        var resultPriority = priorityParsed ? Result.Ok(priority) : Result.Fail(new InvalidPriorityName());
+
+        var result = Result.Merge(resultName, resultDescription, resultPriority);
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        Name = resultName.Value;
+        OwnerId = ownerId ?? throw new ArgumentException("Owner can't be null");
+        Priority = resultPriority.Value;
+        StatusId = properties.StatusId;
+        ProjectId = properties.ProjectId;
+        Description = resultDescription.Value;
+        EstimatedTime = properties.EstimatedTime;
+        DueDate = properties.DueDate;
+        StoryPoints = properties.StoryPoints;
+        AssigneeId = properties.AssigneeId;
+
+        return Result.Ok();
+    }
+
+    public static Result<BaseProjectTask> Create(BaseProjectTaskCreateProperties properties, UserId ownerId)
+    {
+        var task = new BaseProjectTask(new ProjectTaskId(Guid.NewGuid()));
+        var result = task.PopulateBaseProperties(properties, ownerId);
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        return Result.Ok(task);
     }
 }
