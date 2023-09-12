@@ -86,9 +86,15 @@ jobs:
           username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
           password: ${{ secrets.AZURE_REGISTRY_TOKEN }}
 
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date '+%c' --utc)"
+
       - name: Docker build
         uses: docker/build-push-action@v4
         with:
+          build-args: |
+            "now=${{ steps.date.outputs.date }}"
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.IMAGE_NAME }}
           file: ${{ env.DOCKERFILE }}
