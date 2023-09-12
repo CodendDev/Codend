@@ -71,7 +71,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// Adds new task to project.
     /// </summary>
     /// <param name="task">Task to be added.</param>
-    public void AddTask(AbstractProjectTask task)
+    public void AddTask(ProjectTaskBase task)
     {
         var evt = new ProjectTaskAddedToProjectEvent(task, Id);
         Raise(evt);
@@ -81,7 +81,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// Deletes task from project.
     /// </summary>
     /// <param name="task">Task to be deleted.</param>
-    public void DeleteTask(AbstractProjectTask task)
+    public void DeleteTask(ProjectTaskBase task)
     {
         var evt = new ProjectTaskDeletedFromProjectEvent(task, Id);
         Raise(evt);
@@ -168,7 +168,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// </summary>
     /// <param name="task">Task to be added to sprint.</param>
     /// <param name="sprint">Sprint to which we add a task.</param>
-    public void AddTaskToSprint(Sprint sprint, AbstractProjectTask task)
+    public void AddTaskToSprint(Sprint sprint, ProjectTaskBase task)
     {
         var evt = new ProjectTaskAddedToSprintEvent(sprint, task);
         Raise(evt);
@@ -179,7 +179,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// </summary>
     /// <param name="task">Task to be removed from sprint.</param>
     /// <param name="sprint">Sprint from which we remove a task.</param>
-    public void RemoveTaskFromSprint(Sprint sprint, AbstractProjectTask task)
+    public void RemoveTaskFromSprint(Sprint sprint, ProjectTaskBase task)
     {
         var evt = new ProjectTaskRemovedFromSprintEvent(sprint, task);
         Raise(evt);

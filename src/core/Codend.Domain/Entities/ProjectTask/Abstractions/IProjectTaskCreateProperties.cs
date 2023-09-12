@@ -2,7 +2,7 @@ namespace Codend.Domain.Entities.ProjectTask.Abstractions;
 
 /// <summary>
 /// Interface used for creating any ProjectTask.
-/// Contains all properties which are necessary for <see cref="AbstractProjectTask"/> creation.
+/// Contains all properties which are necessary for <see cref="ProjectTaskBase"/> creation.
 /// </summary>
 public interface IProjectTaskCreateProperties
 {

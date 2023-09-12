@@ -9,13 +9,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codend.Persistence.Configurations;
 
 /// <summary>
-/// Entity framework configuration for the <see cref="AbstractProjectTask"/> entity.
+/// Entity framework configuration for the <see cref="ProjectTaskBase"/> entity.
 /// </summary>
-internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<AbstractProjectTask>
+internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<ProjectTaskBase>
 {
     /// <inheritdoc />
-    public void Configure(EntityTypeBuilder<AbstractProjectTask> builder)
+    public void Configure(EntityTypeBuilder<ProjectTaskBase> builder)
     {
+        builder.ToTable("ProjectTask");
         builder.ConfigureKeyId((Guid guid) => new ProjectTaskId(guid));
         builder.ConfigureSoftDeletableEntity();
         builder.ConfigureCreatableEntity();
@@ -25,7 +26,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Abstra
                 projectTaskNameBuilder =>
                 {
                     projectTaskNameBuilder.WithOwner();
-                    projectTaskNameBuilder.ConfigureStringValueObject(nameof(AbstractProjectTask.Name));
+                    projectTaskNameBuilder.ConfigureStringValueObject(nameof(ProjectTaskBase.Name));
                 });
 
         builder
@@ -33,7 +34,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Abstra
                 projectNameBuilder =>
                 {
                     projectNameBuilder.WithOwner();
-                    projectNameBuilder.ConfigureNullableStringValueObject(nameof(AbstractProjectTask.Description));
+                    projectNameBuilder.ConfigureNullableStringValueObject(nameof(ProjectTaskBase.Description));
                 });
 
         builder
@@ -43,7 +44,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Abstra
             .HasColumnName(nameof(ProjectTaskPriority))
             .IsRequired();
 
-        builder 
+        builder
             .HasOne<ProjectTaskStatus>()
             .WithMany()
             .HasForeignKey(projectTask => projectTask.StatusId)
@@ -52,7 +53,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Abstra
 
         builder
             .Property(projectTask => projectTask.DueDate)
-            .HasColumnName(nameof(AbstractProjectTask.DueDate));
+            .HasColumnName(nameof(ProjectTaskBase.DueDate));
 
         builder
             .HasUserIdProperty(projectTask => projectTask.OwnerId);

@@ -8,12 +8,12 @@ namespace Codend.Domain.Core.Events;
 /// </summary>
 public class ProjectTaskRemovedFromSprintEvent : IDomainEvent
 {
-    public ProjectTaskRemovedFromSprintEvent(Sprint sprint, AbstractProjectTask projectTask)
+    public ProjectTaskRemovedFromSprintEvent(Sprint sprint, ProjectTaskBase projectTask)
     {
         Sprint = sprint;
         ProjectTask = projectTask;
     }
 
     public Sprint Sprint { get; set; }
-    public AbstractProjectTask ProjectTask { get; set; }
+    public ProjectTaskBase ProjectTask { get; set; }
 }

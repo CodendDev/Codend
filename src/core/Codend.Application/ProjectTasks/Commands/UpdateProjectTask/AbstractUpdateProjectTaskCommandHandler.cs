@@ -10,7 +10,7 @@ using FluentResults;
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 
 /// <summary>
-/// Abstract handler for updating any <see cref="AbstractProjectTask"/>. 
+/// Abstract handler for updating any <see cref="ProjectTaskBase"/>. 
 /// </summary>
 /// <typeparam name="TCommand">
 /// Command that implements <see cref="IUpdateProjectTaskCommand"/> interface.
@@ -21,7 +21,7 @@ namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProjectTask>
     : ICommandHandler<TCommand>
     where TCommand : ICommand, IUpdateProjectTaskCommand
-    where TProjectTask : AbstractProjectTask
+    where TProjectTask : ProjectTaskBase
 {
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
