@@ -19,7 +19,7 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.ConfigureCreatableEntity();
 
         builder
-            .HasMany<ProjectTaskBase>()
+            .HasMany<BaseProjectTask>()
             .WithOne()
             .HasForeignKey(projectTask => projectTask.ProjectId)
             .OnDelete(DeleteBehavior.NoAction);

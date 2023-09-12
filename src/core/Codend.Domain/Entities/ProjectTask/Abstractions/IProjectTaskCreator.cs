@@ -9,7 +9,7 @@ namespace Codend.Domain.Entities.ProjectTask.Abstractions;
 /// <typeparam name="TProjectTask">ProjectTask class.</typeparam>
 /// <typeparam name="TProps">Properties which will be used for creation.</typeparam>
 public interface IProjectTaskCreator<TProjectTask, in TProps>
-    where TProjectTask : ProjectTaskBase
+    where TProjectTask : BaseProjectTask
     where TProps : IProjectTaskCreateProperties
 {
     /// <summary>

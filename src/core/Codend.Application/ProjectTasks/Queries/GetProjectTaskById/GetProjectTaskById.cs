@@ -30,7 +30,7 @@ public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, Abstrac
         _statusRepository = statusRepository;
     }
 
-    private AbstractProjectTaskResponse Map(ProjectTaskBase task)
+    private AbstractProjectTaskResponse Map(BaseProjectTask task)
     {
         AbstractProjectTaskResponse dto;
         if (task is BugfixProjectTask)

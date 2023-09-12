@@ -10,7 +10,7 @@ using Codend.Domain.Entities.ProjectTask.Abstractions;
 namespace Codend.Presentation.Requests.ProjectTasks.Update;
 
 /// <summary>
-/// Request for updating <see cref="ProjectTaskBase"/>.
+/// Request for updating <see cref="BaseProjectTask"/>.
 /// </summary>
 public record UpdateProjectTaskRequest
 (

@@ -1,5 +1,6 @@
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
+using Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Domain.Core.Errors;
 using Codend.Presentation.Infrastructure;

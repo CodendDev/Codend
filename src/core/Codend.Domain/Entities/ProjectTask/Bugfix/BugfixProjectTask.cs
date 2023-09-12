@@ -4,7 +4,7 @@ using FluentResults;
 namespace Codend.Domain.Entities.ProjectTask.Bugfix;
 
 public class BugfixProjectTask :
-    ProjectTaskBase,
+    BaseProjectTask,
     IProjectTaskCreator<BugfixProjectTask, BugfixProjectTaskCreateProperties>
 {
     private BugfixProjectTask(ProjectTaskId id) : base(id)

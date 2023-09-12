@@ -2,7 +2,7 @@ using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
-using Codend.Domain.Entities.ProjectTask.Bugfix;
+using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
@@ -12,18 +12,18 @@ namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 /// with properties needed for BugfixTask creation.
 /// </summary>
 /// <param name="TaskProperties">BugfixProjectTask properties.</param>
-public sealed record CreateBugfixProjectTaskCommand
+public sealed record CreateBaseProjectTaskCommand
 (
-    BugfixProjectTaskCreateProperties TaskProperties
-) : ICommand<Guid>, ICreateProjectTaskCommand<BugfixProjectTaskCreateProperties>;
+    BaseProjectTaskCreateProperties TaskProperties
+) : ICommand<Guid>, ICreateProjectTaskCommand<BaseProjectTaskCreateProperties>;
 
-public class CreateBugfixProjectTaskCommandHandler :
+public class CreateBaseProjectTaskCommandHandler :
     CreateProjectTaskCommandAbstractHandler<
-        CreateBugfixProjectTaskCommand,
-        BugfixProjectTask,
-        BugfixProjectTaskCreateProperties>
+        CreateBaseProjectTaskCommand,
+        BaseProjectTask,
+        BaseProjectTaskCreateProperties>
 {
-    public CreateBugfixProjectTaskCommandHandler(
+    public CreateBaseProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
         IUserIdentityProvider identityProvider)

@@ -12,9 +12,12 @@ namespace Codend.Domain.Entities;
 /// <summary>
 /// Abstract base ProjectTask class.
 /// </summary>
-public class ProjectTaskBase : Aggregate<ProjectTaskId>, ISoftDeletableEntity
+public class BaseProjectTask :
+    Aggregate<ProjectTaskId>,
+    ISoftDeletableEntity,
+    IProjectTaskCreator<BaseProjectTask, BaseProjectTaskCreateProperties>
 {
-    protected ProjectTaskBase(ProjectTaskId id) : base(id)
+    protected BaseProjectTask(ProjectTaskId id) : base(id)
     {
     }
 
@@ -164,7 +167,7 @@ public class ProjectTaskBase : Aggregate<ProjectTaskId>, ISoftDeletableEntity
         return Result.Ok(storyPoints);
     }
 
-    protected Result<ProjectTaskBase> PopulateBaseProperties(IProjectTaskCreateProperties properties, UserId ownerId)
+    protected Result<BaseProjectTask> PopulateBaseProperties(IProjectTaskCreateProperties properties, UserId ownerId)
     {
         var resultName = ProjectTaskName.Create(properties.Name);
         var resultDescription = ProjectTaskDescription.Create(properties.Description);
@@ -191,9 +194,9 @@ public class ProjectTaskBase : Aggregate<ProjectTaskId>, ISoftDeletableEntity
         return Result.Ok();
     }
 
-    public static Result<ProjectTaskBase> Create(IProjectTaskCreateProperties properties, UserId ownerId)
+    public static Result<BaseProjectTask> Create(BaseProjectTaskCreateProperties properties, UserId ownerId)
     {
-        var task = new ProjectTaskBase(new ProjectTaskId(Guid.NewGuid()));
+        var task = new BaseProjectTask(new ProjectTaskId(Guid.NewGuid()));
         var result = task.PopulateBaseProperties(properties, ownerId);
         return result;
     }

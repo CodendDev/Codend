@@ -9,12 +9,12 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codend.Persistence.Configurations;
 
 /// <summary>
-/// Entity framework configuration for the <see cref="ProjectTaskBase"/> entity.
+/// Entity framework configuration for the <see cref="BaseProjectTask"/> entity.
 /// </summary>
-internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<ProjectTaskBase>
+internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<BaseProjectTask>
 {
     /// <inheritdoc />
-    public void Configure(EntityTypeBuilder<ProjectTaskBase> builder)
+    public void Configure(EntityTypeBuilder<BaseProjectTask> builder)
     {
         builder.ToTable("ProjectTask");
         builder.ConfigureKeyId((Guid guid) => new ProjectTaskId(guid));
@@ -26,7 +26,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
                 projectTaskNameBuilder =>
                 {
                     projectTaskNameBuilder.WithOwner();
-                    projectTaskNameBuilder.ConfigureStringValueObject(nameof(ProjectTaskBase.Name));
+                    projectTaskNameBuilder.ConfigureStringValueObject(nameof(BaseProjectTask.Name));
                 });
 
         builder
@@ -34,7 +34,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
                 projectNameBuilder =>
                 {
                     projectNameBuilder.WithOwner();
-                    projectNameBuilder.ConfigureNullableStringValueObject(nameof(ProjectTaskBase.Description));
+                    projectNameBuilder.ConfigureNullableStringValueObject(nameof(BaseProjectTask.Description));
                 });
 
         builder
@@ -53,7 +53,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
 
         builder
             .Property(projectTask => projectTask.DueDate)
-            .HasColumnName(nameof(ProjectTaskBase.DueDate));
+            .HasColumnName(nameof(BaseProjectTask.DueDate));
 
         builder
             .HasUserIdProperty(projectTask => projectTask.OwnerId);

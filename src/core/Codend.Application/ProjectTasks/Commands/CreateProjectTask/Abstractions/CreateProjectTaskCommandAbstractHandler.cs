@@ -7,24 +7,7 @@ using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Domain.Repositories;
 using FluentResults;
 
-namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
-
-public interface ICreateProjectTaskCommand
-{
-}
-
-/// <summary>
-/// Create ProjectTask Command.
-/// </summary>
-/// <typeparam name="TProjectTaskProperties">
-/// Properties interface needed for task creation.
-/// Must implement <see cref="IProjectTaskCreateProperties"/> interface.
-/// </typeparam>
-public interface ICreateProjectTaskCommand<out TProjectTaskProperties> : ICreateProjectTaskCommand
-    where TProjectTaskProperties : IProjectTaskCreateProperties
-{
-    TProjectTaskProperties TaskProperties { get; }
-}
+namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 
 /// <summary>
 /// Creates ProjectTask using <see cref="IProjectTaskCreator{TProjectTask,TProps}.Create"/> and persists it.
@@ -38,10 +21,10 @@ public interface ICreateProjectTaskCommand<out TProjectTaskProperties> : ICreate
 /// <typeparam name="TProjectTaskProperties">
 /// Must implement <see cref="IProjectTaskCreateProperties"/> interface.
 /// </typeparam>
-public abstract class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TProjectTaskProperties>
+public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TProjectTaskProperties>
     : ICommandHandler<TCommand, Guid>
     where TCommand : ICommand<Guid>, ICreateProjectTaskCommand<TProjectTaskProperties>
-    where TProjectTask : ProjectTaskBase, IProjectTaskCreator<TProjectTask, TProjectTaskProperties>
+    where TProjectTask : BaseProjectTask, IProjectTaskCreator<TProjectTask, TProjectTaskProperties>
     where TProjectTaskProperties : IProjectTaskCreateProperties
 {
     private readonly IProjectTaskRepository _projectTaskRepository;

@@ -8,6 +8,6 @@ public sealed class AbstractProjectTaskResponseProfile : Profile
 {
     public AbstractProjectTaskResponseProfile()
     {
-        CreateMap<ProjectTaskBase, AbstractProjectTaskResponse>();
+        CreateMap<BaseProjectTask, AbstractProjectTaskResponse>();
     }
 }

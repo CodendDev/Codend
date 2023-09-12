@@ -6,7 +6,7 @@ namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstraction
 public interface IUpdateProjectTaskCommand
 {
     /// <summary>
-    /// Id of <see cref="ProjectTaskBase"/> which will be updated.
+    /// Id of <see cref="BaseProjectTask"/> which will be updated.
     /// </summary>
     ProjectTaskId TaskId { get; }
 
