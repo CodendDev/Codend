@@ -1,6 +1,7 @@
 ﻿using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
-using Codend.Domain.Core.Primitives;
+using Codend.Domain.ValueObjects.Abstractions;
+using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
 using NameNullOrEmpty = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskName.NameNullOrEmpty;
 using NameTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskName.NameTooLong;
@@ -10,39 +11,28 @@ namespace Codend.Domain.ValueObjects;
 /// <summary>
 /// ProjectTask name value object
 /// </summary>
-public sealed class ProjectTaskName : ValueObject
+public sealed class ProjectTaskName : StringValueObject, IStringValueObject<ProjectTaskName>
 {
     /// <summary>
-    /// Maximum description length.
+    /// Maximum name length.
     /// </summary>
-    public const int MaxLength = 150;
+    public static int MaxLength => 150;
 
-    /// <summary>
-    /// ProjectTaskName value.
-    /// </summary>
-    public string Name { get; }
-
-    private ProjectTaskName(string name)
+    private ProjectTaskName(string value) : base(value)
     {
-        Name = name;
     }
 
     /// <summary>
-    /// Creates new <see cref="ProjectTaskName"/> value object with given <paramref name="name"/> string.
+    /// Creates new <see cref="ProjectTaskName"/> value object with given <paramref name="value"/> string.
     /// Additionally checks whether the maximum length is exceeded or string value is not null or empty.
     /// </summary>
-    /// <param name="name">Name for the ProjectTask.</param>
+    /// <param name="value">Name for the ProjectTask.</param>
     /// <returns>The <see cref="Result"/> of creation. Contains <see cref="ProjectTaskName"/> or an <see cref="DomainErrors.DomainError"/>.</returns>
-    public static Result<ProjectTaskName> Create(string name)
+    public static Result<ProjectTaskName> Create(string value)
     {
         return Result
-            .Ok(new ProjectTaskName(name))
-            .Ensure<ProjectTaskName, NameNullOrEmpty>(() => !string.IsNullOrEmpty(name))
-            .Ensure<ProjectTaskName, NameTooLong>(() => name.Length < MaxLength);
-    }
-
-    protected override IEnumerable<object> GetAtomicValues()
-    {
-        yield return Name;
+            .Ok(new ProjectTaskName(value))
+            .Ensure<ProjectTaskName, NameNullOrEmpty>(() => !string.IsNullOrEmpty(value))
+            .Ensure<ProjectTaskName, NameTooLong>(() => value.Length < MaxLength);
     }
 }

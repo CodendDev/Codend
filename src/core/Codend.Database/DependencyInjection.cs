@@ -1,6 +1,8 @@
 ﻿using Codend.Application.Core.Abstractions.Data;
+using Codend.Domain.Repositories;
 using Codend.Persistence;
 using Codend.Persistence.Postgres;
+using Codend.Persistence.Repositories;
 using Codend.Persistence.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +20,8 @@ public static class DependencyInjection
     /// <returns>The same service collection.</returns>
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddRepositories();
+
         // Add Postgres
         var postgresConnectionString = configuration.GetConnectionString("PostgresDatabase");
         if (!string.IsNullOrEmpty(postgresConnectionString))
@@ -42,13 +46,22 @@ public static class DependencyInjection
     private static IServiceCollection AddCodendDbContext<T>(
         this IServiceCollection services,
         Action<DbContextOptionsBuilder> optionsAction)
-        where T : DbContext, IUnitOfWork, IMigratable
+        where T : CodendApplicationDbContext, IUnitOfWork, IMigratable
     {
-        services.AddDbContext<T>(optionsAction);
+        services.AddDbContext<CodendApplicationDbContext, T>(optionsAction);
 
-        services.AddScoped<IUnitOfWork, T>();
+        services.AddScoped<IUnitOfWork, T>(serviceProvider => serviceProvider.GetRequiredService<T>()); // Save changes
+        services.AddScoped<IDbContextSets, T>(); // Entities DbSets 
+        services.AddScoped<IMigratable, T>(); // Migrations at startup
 
-        services.AddScoped<IMigratable, T>();
+        return services;
+    }
+
+    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IProjectTaskRepository, ProjectTaskRepository>();
+        services.AddScoped<IProjectTaskStatusRepository, ProjectTaskStatusRepository>();
 
         return services;
     }

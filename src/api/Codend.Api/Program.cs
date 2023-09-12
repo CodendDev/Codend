@@ -1,7 +1,6 @@
-using System.Reflection;
-using Codend.Api;
 using Codend.Api.Extensions;
 using Codend.Application;
+using Codend.Contracts;
 using Codend.Database;
 using Codend.Infrastructure;
 using Codend.Presentation;
@@ -11,9 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(builder =>
+{
+    builder.SupportNonNullableReferenceTypes();
+});
 
 builder.Services
+    .AddContracts()
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddDatabase(builder.Configuration)

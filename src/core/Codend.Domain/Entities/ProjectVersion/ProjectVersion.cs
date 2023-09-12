@@ -15,10 +15,10 @@ public class ProjectVersion : Entity<ProjectVersionId>, ISoftDeletableEntity
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
     public ProjectId ProjectId { get; private set; }
-    public ProjectVersionName? Name { get; private set; }
+    public ProjectVersionName Name { get; private set; }
     public ProjectVersionTag Tag { get; private set; }
     public DateTime ReleaseDate { get; private set; }
-    public ProjectVersionChangelog? Changelog { get; private set; }
+    public ProjectVersionChangelog Changelog { get; private set; }
 
     /// <summary>
     /// Creates new ProjectVersion instance.
@@ -37,24 +37,12 @@ public class ProjectVersion : Entity<ProjectVersionId>, ISoftDeletableEntity
         };
 
         var projectVersionTag = ProjectVersionTag.Create(versionTag);
-        var projectVersionName = versionName is null ? null : ProjectVersionName.Create(versionName);
-        var projectVersionChangelog =
-            versionChangelog is null ? null : ProjectVersionChangelog.Create(versionChangelog);
+        var projectVersionName = ProjectVersionName.Create(versionName);
+        var projectVersionChangelog = ProjectVersionChangelog.Create(versionChangelog);
 
         projectVersion.Tag = projectVersionTag.ValueOrDefault;
-        if (projectVersionName is null)
-        {
-            projectVersion.Name = null;
-            projectVersionName = Result.Ok();
-        }
-        else projectVersion.Name = projectVersionName.ValueOrDefault;
-
-        if (projectVersionChangelog is null)
-        {
-            projectVersion.Changelog = null;
-            projectVersionChangelog = Result.Ok();
-        }
-        else projectVersion.Changelog = projectVersionChangelog.ValueOrDefault;
+        projectVersion.Name = projectVersionName.ValueOrDefault;
+        projectVersion.Changelog = projectVersionChangelog.ValueOrDefault;
 
         return Result.Ok(projectVersion)
             .MergeReasons(

@@ -1,4 +1,6 @@
-﻿using Codend.Application.Core.Abstractions.Common;
+﻿using Codend.Application.Core.Abstractions.Authentication;
+using Codend.Application.Core.Abstractions.Common;
+using Codend.Infrastructure.Authentication;
 using Codend.Infrastructure.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +18,8 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<IDateTime, MachineDateTime>();
+
+        services.AddScoped<IUserIdentityProvider, UserIdentityProvider>();
 
         return services;
     }

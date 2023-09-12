@@ -9,25 +9,24 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codend.Persistence.Configurations;
 
 /// <summary>
-/// Entity framework configuration for the <see cref="ProjectTask"/> entity.
+/// Entity framework configuration for the <see cref="BaseProjectTask"/> entity.
 /// </summary>
-internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<ProjectTask>
+internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<BaseProjectTask>
 {
     /// <inheritdoc />
-    public void Configure(EntityTypeBuilder<ProjectTask> builder)
+    public void Configure(EntityTypeBuilder<BaseProjectTask> builder)
     {
+        builder.ToTable("ProjectTask");
         builder.ConfigureKeyId((Guid guid) => new ProjectTaskId(guid));
+        builder.ConfigureSoftDeletableEntity();
+        builder.ConfigureCreatableEntity();
 
         builder
             .OwnsOne(projectTask => projectTask.Name,
                 projectTaskNameBuilder =>
                 {
                     projectTaskNameBuilder.WithOwner();
-
-                    projectTaskNameBuilder.Property(projectTaskName => projectTaskName.Name)
-                        .HasColumnName(nameof(ProjectTask.Name))
-                        .HasMaxLength(ProjectTaskName.MaxLength)
-                        .IsRequired();
+                    projectTaskNameBuilder.ConfigureStringValueObject(nameof(BaseProjectTask.Name));
                 });
 
         builder
@@ -35,11 +34,7 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
                 projectNameBuilder =>
                 {
                     projectNameBuilder.WithOwner();
-
-                    projectNameBuilder.Property(projectTaskName => projectTaskName.Description)
-                        .HasColumnName(nameof(ProjectTask.Description))
-                        .HasMaxLength(ProjectTaskDescription.MaxLength)
-                        .IsRequired();
+                    projectNameBuilder.ConfigureNullableStringValueObject(nameof(BaseProjectTask.Description));
                 });
 
         builder
@@ -58,20 +53,13 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<Projec
 
         builder
             .Property(projectTask => projectTask.DueDate)
-            .HasColumnName(nameof(ProjectTask.DueDate));
+            .HasColumnName(nameof(BaseProjectTask.DueDate));
 
         builder
-            .Property(projectTask => projectTask.OwnerId)
-            .HasConversion(ownerId => ownerId.Value,
-                ownerGuidId => new UserId(ownerGuidId))
-            .IsRequired();
+            .HasUserIdProperty(projectTask => projectTask.OwnerId);
 
         builder
-            .Property(projectTask => projectTask.AssigneeId)
-            .HasConversion(assigneeId => assigneeId.Value.Value,
-                assigneeGuidId => new UserId(assigneeGuidId));
-
-        builder.ConfigureSoftDeletableEntity();
+            .HasUserIdProperty(projectTask => projectTask.AssigneeId);
 
         builder
             .Property(projectTask => projectTask.EstimatedTime)

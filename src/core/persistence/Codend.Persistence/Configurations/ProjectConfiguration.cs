@@ -15,9 +15,11 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
     public void Configure(EntityTypeBuilder<Project> builder)
     {
         builder.ConfigureKeyId((Guid guid) => new ProjectId(guid));
+        builder.ConfigureSoftDeletableEntity();
+        builder.ConfigureCreatableEntity();
 
         builder
-            .HasMany<ProjectTask>()
+            .HasMany<BaseProjectTask>()
             .WithOne()
             .HasForeignKey(projectTask => projectTask.ProjectId)
             .OnDelete(DeleteBehavior.NoAction);
@@ -36,29 +38,18 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
 
-        builder.ConfigureSoftDeletableEntity();
-
         builder.OwnsOne(project => project.Name,
             projectNameBuilder =>
             {
                 projectNameBuilder.WithOwner();
-
-                projectNameBuilder
-                    .Property(projectName => projectName.Name)
-                    .HasColumnName(nameof(Project.Name))
-                    .HasMaxLength(ProjectName.MaxLength)
-                    .IsRequired();
+                projectNameBuilder.ConfigureStringValueObject(nameof(Project.Name));
             });
 
         builder.OwnsOne(project => project.Description,
             projectDescriptionBuilder =>
             {
                 projectDescriptionBuilder.WithOwner();
-
-                projectDescriptionBuilder
-                    .Property(projectDescription => projectDescription.Description)
-                    .HasColumnName(nameof(Project.Description))
-                    .HasMaxLength(ProjectDescription.MaxLength);
+                projectDescriptionBuilder.ConfigureNullableStringValueObject(nameof(Project.Description));
             });
 
         builder
@@ -68,15 +59,6 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .OnDelete(DeleteBehavior.NoAction);
 
         builder
-            .HasOne<User>()
-            .WithMany(user => user.ProjectsOwned)
-            .HasForeignKey(project => project.OwnerId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.NoAction);
-
-        builder
-            .HasMany<User>()
-            .WithMany(user => user.ParticipatingInProjects)
-            .UsingEntity("ProjectMember");
+            .HasUserIdProperty(project => project.OwnerId);
     }
 }

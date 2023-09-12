@@ -16,8 +16,29 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
     public ProjectName Name { get; private set; }
-    public ProjectDescription? Description { get; private set; }
+    public ProjectDescription Description { get; private set; }
     public UserId OwnerId { get; private set; }
+
+    public static Result<Project> Create(UserId ownerId, string name, string? description = null)
+    {
+        var project = new Project();
+
+        var resultName = ProjectName.Create(name);
+        var resultDescription = ProjectDescription.Create(description);
+
+        var result = Result.Ok(project).MergeReasons(resultName.ToResult(), resultDescription.ToResult());
+
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        project.OwnerId = ownerId;
+        project.Name = resultName.Value;
+        project.Description = resultDescription.Value;
+
+        return result;
+    }
 
     /// <summary>
     /// Edits name and description of the Project, and validates new name.
@@ -25,7 +46,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// <param name="name">New name.</param>
     /// <param name="description">New description</param>
     /// <returns>Ok result with ProjectName object or an error.</returns>
-    public Result<Project> EditProject(string name, string description)
+    public Result<Project> Edit(string name, string? description)
     {
         var resultName = ProjectName.Create(name);
         var resultDescription = ProjectDescription.Create(description);
@@ -40,7 +61,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
         Name = resultName.Value;
         Description = resultDescription.Value;
 
-        var evt = new ProjectEditedEvent(resultName.Value, resultDescription.Value, Id);
+        var evt = new ProjectEditedEvent(this);
         Raise(evt);
 
         return result;
@@ -50,7 +71,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// Adds new task to project.
     /// </summary>
     /// <param name="task">Task to be added.</param>
-    public void AddTask(ProjectTask task)
+    public void AddTask(BaseProjectTask task)
     {
         var evt = new ProjectTaskAddedToProjectEvent(task, Id);
         Raise(evt);
@@ -60,7 +81,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// Deletes task from project.
     /// </summary>
     /// <param name="task">Task to be deleted.</param>
-    public void DeleteTask(ProjectTask task)
+    public void DeleteTask(BaseProjectTask task)
     {
         var evt = new ProjectTaskDeletedFromProjectEvent(task, Id);
         Raise(evt);
@@ -147,7 +168,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// </summary>
     /// <param name="task">Task to be added to sprint.</param>
     /// <param name="sprint">Sprint to which we add a task.</param>
-    public void AddTaskToSprint(Sprint sprint, ProjectTask task)
+    public void AddTaskToSprint(Sprint sprint, BaseProjectTask task)
     {
         var evt = new ProjectTaskAddedToSprintEvent(sprint, task);
         Raise(evt);
@@ -158,7 +179,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// </summary>
     /// <param name="task">Task to be removed from sprint.</param>
     /// <param name="sprint">Sprint from which we remove a task.</param>
-    public void RemoveTaskFromSprint(Sprint sprint, ProjectTask task)
+    public void RemoveTaskFromSprint(Sprint sprint, BaseProjectTask task)
     {
         var evt = new ProjectTaskRemovedFromSprintEvent(sprint, task);
         Raise(evt);
@@ -167,20 +188,20 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     /// <summary>
     /// Adds user to project.
     /// </summary>
-    /// <param name="user">User to be added.</param>
-    public void AddUserToProject(User user)
+    /// <param name="userId">User to be added.</param>
+    public void AddUserToProject(UserId userId)
     {
-        var evt = new UserAddedToProjectEvent(user, Id);
+        var evt = new UserAddedToProjectEvent(userId, Id);
         Raise(evt);
     }
 
     /// <summary>
     /// Removes user from project.
     /// </summary>
-    /// <param name="user">User to be removed.</param>
-    public void RemoveUserFromProject(User user)
+    /// <param name="userId">User to be removed.</param>
+    public void RemoveUserFromProject(UserId userId)
     {
-        var evt = new UserRemovedFromProjectEvent(user, Id);
+        var evt = new UserRemovedFromProjectEvent(userId, Id);
         Raise(evt);
     }
 
@@ -204,7 +225,7 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     }
 
     /// <summary>
-    /// Eddits projectTask status.
+    /// Edits projectTask status.
     /// </summary>
     /// <param name="status">Status to be edited.</param>
     /// <param name="statusName">New status name.</param>

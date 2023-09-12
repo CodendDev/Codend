@@ -8,12 +8,12 @@ namespace Codend.Domain.Core.Events;
 /// </summary>
 public class ProjectTaskDueDateSetEvent : IDomainEvent
 {
-    public ProjectTaskDueDateSetEvent(DateTime dueDate, ProjectTaskId projectTaskId)
+    public ProjectTaskDueDateSetEvent(DateTime? dueDate, ProjectTaskId projectTaskId)
     {
         DueDate = dueDate;
         ProjectTaskId = projectTaskId;
     }
 
-    public DateTime DueDate { get; set; }
+    public DateTime? DueDate { get; set; }
     public ProjectTaskId ProjectTaskId { get; set; }
 }

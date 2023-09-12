@@ -30,6 +30,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codend.Persistence.Postgres
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codend.Database", "src\core\Codend.Database\Codend.Database.csproj", "{44856A3D-867E-400B-8E06-8D7207733631}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codend.Contracts", "src\core\Codend.Contracts\Codend.Contracts.csproj", "{1DAC7ED1-91B5-47AF-91A0-42F070687178}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5DCADEC7-EBD4-4646-9D78-65F216ABC851}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		docker-compose.yml = docker-compose.yml
+		.env = .env
+		nginx\nginx.conf = nginx\nginx.conf
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +59,7 @@ Global
 		{26BCD3FE-AEBB-4C41-9B77-F67C805A8ECC} = {A2675A39-ADE3-424A-9132-0A775247C29B}
 		{491A8A5B-A7C7-4324-ACEA-E4F201311C7A} = {A2675A39-ADE3-424A-9132-0A775247C29B}
 		{44856A3D-867E-400B-8E06-8D7207733631} = {5F854B30-5C9E-484E-AD59-6EB15CEE2C79}
+		{1DAC7ED1-91B5-47AF-91A0-42F070687178} = {5F854B30-5C9E-484E-AD59-6EB15CEE2C79}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E79B0EEC-5CA0-4B8D-8E88-580F62C1AF14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -91,5 +102,9 @@ Global
 		{44856A3D-867E-400B-8E06-8D7207733631}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44856A3D-867E-400B-8E06-8D7207733631}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44856A3D-867E-400B-8E06-8D7207733631}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DAC7ED1-91B5-47AF-91A0-42F070687178}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DAC7ED1-91B5-47AF-91A0-42F070687178}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DAC7ED1-91B5-47AF-91A0-42F070687178}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DAC7ED1-91B5-47AF-91A0-42F070687178}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

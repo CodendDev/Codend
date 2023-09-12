@@ -1,6 +1,5 @@
 ﻿using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
-using Codend.Domain.ValueObjects;
 
 namespace Codend.Domain.Core.Events;
 
@@ -9,14 +8,10 @@ namespace Codend.Domain.Core.Events;
 /// </summary>
 public class ProjectEditedEvent : IDomainEvent
 {
-    public ProjectEditedEvent(ProjectName name, ProjectDescription description, ProjectId projectId)
+    public ProjectEditedEvent(Project project)
     {
-        Name = name;
-        Description = description;
-        ProjectId = projectId;
+        Project = project;
     }
 
-    public ProjectName Name { get; set; }
-    public ProjectDescription Description { get; set; }
-    public ProjectId ProjectId { get; set; }
+    public Project Project { get; set; }
 }

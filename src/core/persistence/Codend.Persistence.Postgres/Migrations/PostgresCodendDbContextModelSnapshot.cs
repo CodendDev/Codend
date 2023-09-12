@@ -22,27 +22,7 @@ namespace Codend.Persistence.Postgres.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Deleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Project");
-                });
-
-            modelBuilder.Entity("Codend.Domain.Entities.ProjectTask", b =>
+            modelBuilder.Entity("Codend.Domain.Entities.BaseProjectTask", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -50,10 +30,18 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<Guid?>("AssigneeId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
                     b.Property<bool>("Deleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
+
+                    b.Property<DateTime>("DeletedOnUtc")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
@@ -89,17 +77,46 @@ namespace Codend.Persistence.Postgres.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("ProjectTask");
+                    b.ToTable("ProjectTask", (string)null);
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("ProjectTask");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("BaseProjectTask");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("DeletedOnUtc")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Project");
                 });
 
             modelBuilder.Entity("Codend.Domain.Entities.ProjectTaskStatus", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
@@ -116,10 +133,18 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
                     b.Property<bool>("Deleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
+
+                    b.Property<DateTime>("DeletedOnUtc")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
@@ -140,13 +165,18 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
                     b.Property<bool>("Deleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
                     b.Property<DateTime>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
@@ -158,68 +188,94 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.ToTable("Sprint");
                 });
 
-            modelBuilder.Entity("Codend.Domain.Entities.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("User");
-                });
-
-            modelBuilder.Entity("ProjectMember", b =>
-                {
-                    b.Property<Guid>("ParticipatingInProjectsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("ParticipatingInProjectsId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ProjectMember");
-                });
-
             modelBuilder.Entity("SprintProjectTask", b =>
                 {
-                    b.Property<Guid>("ProjectTaskId")
+                    b.Property<Guid>("BaseProjectTaskId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("SprintId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("ProjectTaskId", "SprintId");
+                    b.HasKey("BaseProjectTaskId", "SprintId");
 
                     b.HasIndex("SprintId");
 
                     b.ToTable("SprintProjectTask");
                 });
 
-            modelBuilder.Entity("Codend.Domain.Entities.BugFixProjectTask", b =>
+            modelBuilder.Entity("Codend.Domain.Entities.ProjectTask.Bugfix.BugfixProjectTask", b =>
                 {
-                    b.HasBaseType("Codend.Domain.Entities.ProjectTask");
+                    b.HasBaseType("Codend.Domain.Entities.BaseProjectTask");
 
-                    b.HasDiscriminator().HasValue("BugFixProjectTask");
+                    b.HasDiscriminator().HasValue("BugfixProjectTask");
+                });
+
+            modelBuilder.Entity("Codend.Domain.Entities.BaseProjectTask", b =>
+                {
+                    b.HasOne("Codend.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Codend.Domain.Entities.ProjectTaskStatus", null)
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.OwnsOne("Codend.Domain.ValueObjects.ProjectTaskDescription", "Description", b1 =>
+                        {
+                            b1.Property<Guid>("BaseProjectTaskId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .HasMaxLength(2000)
+                                .HasColumnType("character varying(2000)")
+                                .HasColumnName("Description");
+
+                            b1.HasKey("BaseProjectTaskId");
+
+                            b1.ToTable("ProjectTask");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BaseProjectTaskId");
+                        });
+
+                    b.OwnsOne("Codend.Domain.ValueObjects.ProjectTaskName", "Name", b1 =>
+                        {
+                            b1.Property<Guid>("BaseProjectTaskId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("Name");
+
+                            b1.HasKey("BaseProjectTaskId");
+
+                            b1.ToTable("ProjectTask");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BaseProjectTaskId");
+                        });
+
+                    b.Navigation("Description")
+                        .IsRequired();
+
+                    b.Navigation("Name")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
                 {
-                    b.HasOne("Codend.Domain.Entities.User", null)
-                        .WithMany("ProjectsOwned")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.OwnsOne("Codend.Domain.ValueObjects.ProjectDescription", "Description", b1 =>
                         {
                             b1.Property<Guid>("ProjectId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Description")
-                                .IsRequired()
+                            b1.Property<string>("Value")
                                 .HasMaxLength(2000)
                                 .HasColumnType("character varying(2000)")
                                 .HasColumnName("Description");
@@ -237,7 +293,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Name")
+                            b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)")
@@ -251,65 +307,8 @@ namespace Codend.Persistence.Postgres.Migrations
                                 .HasForeignKey("ProjectId");
                         });
 
-                    b.Navigation("Description");
-
-                    b.Navigation("Name")
+                    b.Navigation("Description")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Codend.Domain.Entities.ProjectTask", b =>
-                {
-                    b.HasOne("Codend.Domain.Entities.Project", null)
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Codend.Domain.Entities.ProjectTaskStatus", null)
-                        .WithMany()
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.OwnsOne("Codend.Domain.ValueObjects.ProjectTaskDescription", "Description", b1 =>
-                        {
-                            b1.Property<Guid>("ProjectTaskId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Description")
-                                .IsRequired()
-                                .HasMaxLength(2000)
-                                .HasColumnType("character varying(2000)")
-                                .HasColumnName("Description");
-
-                            b1.HasKey("ProjectTaskId");
-
-                            b1.ToTable("ProjectTask");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProjectTaskId");
-                        });
-
-                    b.OwnsOne("Codend.Domain.ValueObjects.ProjectTaskName", "Name", b1 =>
-                        {
-                            b1.Property<Guid>("ProjectTaskId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("character varying(150)")
-                                .HasColumnName("Name");
-
-                            b1.HasKey("ProjectTaskId");
-
-                            b1.ToTable("ProjectTask");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProjectTaskId");
-                        });
-
-                    b.Navigation("Description");
 
                     b.Navigation("Name")
                         .IsRequired();
@@ -328,7 +327,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectTaskStatusId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Name")
+                            b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(150)
                                 .HasColumnType("character varying(150)")
@@ -359,8 +358,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectVersionId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Changelog")
-                                .IsRequired()
+                            b1.Property<string>("Value")
                                 .HasMaxLength(3000)
                                 .HasColumnType("character varying(3000)")
                                 .HasColumnName("Changelog");
@@ -378,8 +376,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectVersionId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Name")
-                                .IsRequired()
+                            b1.Property<string>("Value")
                                 .HasMaxLength(50)
                                 .HasColumnType("character varying(50)")
                                 .HasColumnName("Name");
@@ -397,7 +394,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("ProjectVersionId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Tag")
+                            b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(20)
                                 .HasColumnType("character varying(20)")
@@ -411,9 +408,11 @@ namespace Codend.Persistence.Postgres.Migrations
                                 .HasForeignKey("ProjectVersionId");
                         });
 
-                    b.Navigation("Changelog");
+                    b.Navigation("Changelog")
+                        .IsRequired();
 
-                    b.Navigation("Name");
+                    b.Navigation("Name")
+                        .IsRequired();
 
                     b.Navigation("Tag")
                         .IsRequired();
@@ -432,8 +431,7 @@ namespace Codend.Persistence.Postgres.Migrations
                             b1.Property<Guid>("SprintId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Goal")
-                                .IsRequired()
+                            b1.Property<string>("Value")
                                 .HasMaxLength(200)
                                 .HasColumnType("character varying(200)")
                                 .HasColumnName("Goal");
@@ -469,32 +467,18 @@ namespace Codend.Persistence.Postgres.Migrations
                                 .HasForeignKey("SprintId");
                         });
 
-                    b.Navigation("Goal");
+                    b.Navigation("Goal")
+                        .IsRequired();
 
                     b.Navigation("Period")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProjectMember", b =>
-                {
-                    b.HasOne("Codend.Domain.Entities.Project", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipatingInProjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Codend.Domain.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("SprintProjectTask", b =>
                 {
-                    b.HasOne("Codend.Domain.Entities.ProjectTask", null)
+                    b.HasOne("Codend.Domain.Entities.BaseProjectTask", null)
                         .WithMany()
-                        .HasForeignKey("ProjectTaskId")
+                        .HasForeignKey("BaseProjectTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -503,11 +487,6 @@ namespace Codend.Persistence.Postgres.Migrations
                         .HasForeignKey("SprintId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Codend.Domain.Entities.User", b =>
-                {
-                    b.Navigation("ProjectsOwned");
                 });
 #pragma warning restore 612, 618
         }
