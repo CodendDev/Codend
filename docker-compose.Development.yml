@@ -1,37 +1,6 @@
 version: '3.8'
 
 services:
-  nginx:
-    container_name: codend_nginx
-    image: nginx:latest
-    depends_on:
-      - backend
-    ports:
-      - "8080:80"
-    volumes:
-      - "./nginx:/etc/nginx:ro"
-    networks:
-      - codend_backend
-
-  backend:
-    container_name: codend_backend
-    depends_on:
-      - postgres
-    build:
-      context: .
-      dockerfile: src/api/Codend.Api/Dockerfile
-    environment:
-      - "ConnectionStrings:PostgresDatabase=Host=postgres; Database=codendDatabase; Username=${POSTGRES_USER}; Password=${POSTGRES_PASSWORD}"
-      - "Fusionauth:ApiKey=${FUSIONAUTH_API_KEY}"
-      - "Fusionauth:ApiUrl=http://fusionauth:9011/"
-      - "Fusionauth:Issuer=${FUSIONAUTH_ISSUER}"
-      - "Fusionauth:ApplicationId=${FUSIONAUTH_APPLICATION_ID}"
-      - "Fusionauth:SigningKey=${FUSIONAUTH_SIGNING_KEY}"
-      - "Fusionauth:TenantId=${FUSIONAUTH_TENANT_ID}"
-      - "ASPNETCORE_URLS=http://+:5000"
-    networks:
-      - codend_database
-      - codend_backend
 
   postgres:
     container_name: codend_postgres
@@ -42,9 +11,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
       - codend_database
+    ports:
+      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-  
+        
   fusionauth:
     container_name: codend_fusionauth
     image: fusionauth/fusionauth-app:latest
@@ -63,14 +34,15 @@ services:
       FUSIONAUTH_APP_KICKSTART_FILE: ${FUSIONAUTH_APP_KICKSTART_FILE}
     networks:
       - codend_database
+    restart: unless-stopped
+    ports:
+      - "9011:9011"
     volumes:
       - fusionauth_config:/usr/local/fusionauth/config
       - ./kickstart:/usr/local/fusionauth/kickstart
 
 networks:
-  codend_backend:
   codend_database:
-
 
 volumes:
   db_data:

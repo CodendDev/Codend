@@ -32,12 +32,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codend.Database", "src\core
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codend.Contracts", "src\core\Codend.Contracts\Codend.Contracts.csproj", "{1DAC7ED1-91B5-47AF-91A0-42F070687178}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{5DCADEC7-EBD4-4646-9D78-65F216ABC851}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{643F1687-D56C-4B39-8AC5-194F2019B196}"
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
-		docker-compose.yml = docker-compose.yml
 		.env = .env
+		docker-compose.Development.yml = docker-compose.Development.yml
+		docker-compose.yml = docker-compose.yml
 		nginx\nginx.conf = nginx\nginx.conf
+		kickstart\kickstart.json = kickstart\kickstart.json
 	EndProjectSection
 EndProject
 Global
