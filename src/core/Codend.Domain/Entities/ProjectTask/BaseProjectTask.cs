@@ -198,6 +198,11 @@ public class BaseProjectTask :
     {
         var task = new BaseProjectTask(new ProjectTaskId(Guid.NewGuid()));
         var result = task.PopulateBaseProperties(properties, ownerId);
-        return result;
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        return Result.Ok(task);
     }
 }
