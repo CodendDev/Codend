@@ -21,8 +21,14 @@ public class BaseProjectTask :
     {
     }
 
+    #region ISoftDeletableEntity properties
+
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
+
+    #endregion
+
+    #region BaseProjectTask properties
 
     public ProjectTaskName Name { get; private set; }
     public ProjectTaskDescription Description { get; private set; }
@@ -34,8 +40,11 @@ public class BaseProjectTask :
     public ProjectId ProjectId { get; private set; }
     public TimeSpan? EstimatedTime { get; private set; }
     public uint? StoryPoints { get; private set; }
-
     public StoryId? StoryId { get; set; }
+
+    #endregion
+
+    #region Domain methods
 
     /// <summary>
     /// Edits name of the ProjectTask, and validates new name.
@@ -170,6 +179,26 @@ public class BaseProjectTask :
     }
 
     /// <summary>
+    /// Creates <see cref="BaseProjectTask"/>.
+    /// </summary>
+    /// <param name="properties"><see cref="BaseProjectTaskCreateProperties"/> used for creation.</param>
+    /// <param name="ownerId">Owner of the task.</param>
+    /// <returns>Created &lt;see cref="BaseProjectTask"/&gt; or error.</returns>
+    public static Result<BaseProjectTask> Create(BaseProjectTaskCreateProperties properties, UserId ownerId)
+    {
+        var task = new BaseProjectTask();
+        var result = task.PopulateBaseProperties(properties, ownerId);
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        return Result.Ok(task);
+    }
+
+    #endregion
+
+    /// <summary>
     /// Populates properties of base task.
     /// </summary>
     /// <param name="properties"><see cref="IProjectTaskCreateProperties"/> properties.</param>
@@ -202,17 +231,5 @@ public class BaseProjectTask :
         StoryId = properties.StoryId;
 
         return Result.Ok();
-    }
-
-    public static Result<BaseProjectTask> Create(BaseProjectTaskCreateProperties properties, UserId ownerId)
-    {
-        var task = new BaseProjectTask();
-        var result = task.PopulateBaseProperties(properties, ownerId);
-        if (result.IsFailed)
-        {
-            return result;
-        }
-
-        return Result.Ok(task);
     }
 }
