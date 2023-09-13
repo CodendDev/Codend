@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Codend.Application.Exceptions;
+using FluentValidation;
 using MediatR;
 using ValidationException = Codend.Application.Exceptions.ValidationException;
 
@@ -26,17 +27,29 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
 
         var context = new ValidationContext<TRequest>(request);
 
-        var failures = _validators
-            .Select(x => x.Validate(context))
-            .SelectMany(x => x.Errors)
+        var validationFailures = _validators
+            .Select(x => x.ValidateAsync(context, cancellationToken))
+            .SelectMany(x => x.Result.Errors)
             .Where(x => x != null)
             .ToList();
 
-        if (failures.Any())
-        {
-            throw new ValidationException(failures);
-        }
+        // NotFound validation errors are marked as Warning
+        var notFoundFailures = validationFailures
+            .Where(x => x.Severity == Severity.Warning)
+            .ToList();
 
+        // If there are more 'all' errors than notFound errors it means that there is validation error
+        // therefor validation exception is thrown.
+        if (validationFailures.Any() && validationFailures.Count > notFoundFailures.Count)
+        {
+            throw new ValidationException(validationFailures);
+        }
+        // If there are only notFound errors, notFoundValidationException is thrown.
+        if (notFoundFailures.Any())
+        {
+            throw new NotFoundValidationException(notFoundFailures);
+        }
+        
         return await next();
     }
 }
