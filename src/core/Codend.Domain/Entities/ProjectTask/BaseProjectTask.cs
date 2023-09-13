@@ -13,7 +13,7 @@ namespace Codend.Domain.Entities;
 /// Abstract base ProjectTask class.
 /// </summary>
 public class BaseProjectTask :
-    Aggregate<ProjectTaskId>,
+    DomainEventsAggregate<ProjectTaskId>,
     ISoftDeletableEntity,
     IProjectTaskCreator<BaseProjectTask, BaseProjectTaskCreateProperties>
 {
@@ -61,9 +61,6 @@ public class BaseProjectTask :
 
         Name = result.Value;
 
-        var evt = new ProjectTaskNameEditedEvent(result.Value, Id);
-        Raise(evt);
-
         return result;
     }
 
@@ -82,9 +79,6 @@ public class BaseProjectTask :
 
         Description = result.Value;
 
-        var evt = new ProjectTaskDescriptionEditedEvent(result.Value, Id);
-        Raise(evt);
-
         return result;
     }
 
@@ -96,9 +90,6 @@ public class BaseProjectTask :
     public Result<ProjectTaskPriority> ChangePriority(ProjectTaskPriority priority)
     {
         Priority = priority;
-
-        var evt = new ProjectTaskPriorityChangedEvent(priority, Id);
-        Raise(evt);
 
         return Result.Ok(priority);
     }
@@ -112,9 +103,6 @@ public class BaseProjectTask :
     {
         StatusId = statusId;
 
-        var evt = new ProjectTaskStatusIdChangedEvent(statusId, Id);
-        Raise(evt);
-
         return Result.Ok(statusId);
     }
 
@@ -126,9 +114,6 @@ public class BaseProjectTask :
     public Result<DateTime?> SetDueDate(DateTime? dueDate)
     {
         DueDate = dueDate;
-
-        var evt = new ProjectTaskDueDateSetEvent(dueDate, Id);
-        Raise(evt);
 
         return Result.Ok(dueDate);
     }
@@ -157,9 +142,6 @@ public class BaseProjectTask :
     {
         EstimatedTime = estimatedTime;
 
-        var evt = new ProjectTaskEstimatedTimeEditedEvent(estimatedTime, Id);
-        Raise(evt);
-
         return Result.Ok(estimatedTime);
     }
 
@@ -171,9 +153,6 @@ public class BaseProjectTask :
     public Result<uint?> EditStoryPoints(uint? storyPoints)
     {
         StoryPoints = storyPoints;
-
-        var evt = new ProjectTaskStoryPointsEditedEvent(storyPoints, Id);
-        Raise(evt);
 
         return Result.Ok(storyPoints);
     }
