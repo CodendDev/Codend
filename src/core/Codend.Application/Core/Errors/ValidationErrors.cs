@@ -5,7 +5,7 @@ namespace Codend.Application.Core.Errors;
 /// <summary>
 /// Validation error static class.
 /// </summary>
-public static class ValidationErrors
+public static partial class ValidationErrors
 {
     /// <summary>
     /// Validation error base class.
