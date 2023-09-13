@@ -13,4 +13,5 @@ public interface IUpdateBaseProjectTaskRequest
     IShouldUpdate<Guid>? StatusId { get; }
     IShouldUpdate<EstimatedTimeRequest>? EstimatedTime { get; }
     IShouldUpdate<Guid?>? AssigneeId { get; }
+    IShouldUpdate<Guid?>? StoryId { get; }
 }
