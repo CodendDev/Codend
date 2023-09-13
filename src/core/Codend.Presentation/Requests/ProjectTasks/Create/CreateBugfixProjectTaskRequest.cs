@@ -7,6 +7,7 @@ using Codend.Presentation.Requests.ProjectTasks.Create.Abstractions;
 
 namespace Codend.Presentation.Requests.ProjectTasks.Create;
 
+/// <inheritdoc cref="Codend.Contracts.Requests.ProjectTasks.Create.ICreateBugfixProjectTaskRequest" />
 public sealed record CreateBugfixProjectTaskRequest
 (
     string Name,
@@ -17,9 +18,11 @@ public sealed record CreateBugfixProjectTaskRequest
     EstimatedTimeRequest? EstimatedTime,
     DateTime? DueDate,
     uint? StoryPoints,
-    Guid? AssigneeId
+    Guid? AssigneeId,
+    Guid? StoryId
 ) : ICreateBugfixProjectTaskRequest, ICreateProjectTaskMapToCommand<CreateBugfixProjectTaskCommand>
 {
+    /// <inheritdoc />
     public CreateBugfixProjectTaskCommand MapToCommand()
     {
         var command = new CreateBugfixProjectTaskCommand(
@@ -37,7 +40,8 @@ public sealed record CreateBugfixProjectTaskRequest
                     : null,
                 DueDate,
                 StoryPoints,
-                AssigneeId is not null ? new UserId(AssigneeId.Value) : null
+                AssigneeId is not null ? new UserId(AssigneeId.Value) : null,
+                StoryId is not null ? new StoryId(StoryId.Value) : null
             ));
 
         return command;

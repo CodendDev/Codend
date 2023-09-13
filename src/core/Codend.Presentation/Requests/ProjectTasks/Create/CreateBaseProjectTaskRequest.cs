@@ -6,6 +6,7 @@ using Codend.Presentation.Requests.ProjectTasks.Create.Abstractions;
 
 namespace Codend.Presentation.Requests.ProjectTasks.Create;
 
+/// <inheritdoc cref="Codend.Contracts.Requests.ProjectTasks.Create.ICreateBaseProjectTaskRequest" />
 public sealed record CreateBaseProjectTaskRequest
 (
     string Name,
@@ -16,9 +17,11 @@ public sealed record CreateBaseProjectTaskRequest
     EstimatedTimeRequest? EstimatedTime,
     DateTime? DueDate,
     uint? StoryPoints,
-    Guid? AssigneeId
+    Guid? AssigneeId,
+    Guid? StoryId
 ) : ICreateBaseProjectTaskRequest, ICreateProjectTaskMapToCommand<CreateBaseProjectTaskCommand>
 {
+    /// <inheritdoc />
     public CreateBaseProjectTaskCommand MapToCommand()
     {
         var command = new CreateBaseProjectTaskCommand(
@@ -36,7 +39,8 @@ public sealed record CreateBaseProjectTaskRequest
                     : null,
                 DueDate,
                 StoryPoints,
-                AssigneeId is not null ? new UserId(AssigneeId.Value) : null
+                AssigneeId is not null ? new UserId(AssigneeId.Value) : null,
+                StoryId is not null ? new StoryId(StoryId.Value) : null
             ));
 
         return command;
