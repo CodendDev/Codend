@@ -21,7 +21,8 @@ public record UpdateBugfixProjectTaskRequest
     ShouldUpdateBinder<uint?>? _StoryPoints,
     ShouldUpdateBinder<Guid>? _StatusId,
     ShouldUpdateBinder<EstimatedTimeRequest>? _EstimatedTime,
-    ShouldUpdateBinder<Guid?>? _AssigneeId
+    ShouldUpdateBinder<Guid?>? _AssigneeId,
+    ShouldUpdateBinder<Guid?>? _StoryId
 ) : UpdateProjectTaskAbstractRequest<UpdateBugfixProjectTaskCommand>
 (
     TaskId,
@@ -32,7 +33,8 @@ public record UpdateBugfixProjectTaskRequest
     _StoryPoints,
     _StatusId,
     _EstimatedTime,
-    _AssigneeId
+    _AssigneeId,
+    _StoryId
 ), IUpdateBugfixProjectTaskRequest
 {
     /// <inheritdoc />
@@ -56,6 +58,10 @@ public record UpdateBugfixProjectTaskRequest
             ? ShouldUpdateProperty.DontUpdate<UserId?>()
             : ShouldUpdateProperty.Update<UserId?>(new UserId(AssigneeId.Value.Value));
 
+        var storyId = StoryId?.Value is null
+            ? ShouldUpdateProperty.DontUpdate<StoryId?>()
+            : ShouldUpdateProperty.Update<StoryId?>(new StoryId(StoryId.Value.Value));
+
         var command = new UpdateBugfixProjectTaskCommand(
             new ProjectTaskId(TaskId),
             name,
@@ -65,7 +71,8 @@ public record UpdateBugfixProjectTaskRequest
             estimatedTime,
             dueDate,
             storyPoints,
-            assigneeId
+            assigneeId,
+            storyId
         );
 
         return command;
