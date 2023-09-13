@@ -19,22 +19,26 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
     private readonly IProjectTaskStatusRepository _statusRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserIdentityProvider _identityProvider;
+    private readonly IProjectMemberRepository _projectMemberRepository;
 
     public CreateProjectCommandHandler(
         IProjectRepository projectRepository,
         IUnitOfWork unitOfWork,
         IUserIdentityProvider identityProvider,
-        IProjectTaskStatusRepository statusRepository)
+        IProjectTaskStatusRepository statusRepository,
+        IProjectMemberRepository projectMemberRepository)
     {
         _projectRepository = projectRepository;
         _unitOfWork = unitOfWork;
         _identityProvider = identityProvider;
         _statusRepository = statusRepository;
+        _projectMemberRepository = projectMemberRepository;
     }
 
     public async Task<Result<Guid>> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
-        var resultProject = Project.Create(_identityProvider.UserId, request.Name, request.Description);
+        var userId = _identityProvider.UserId;
+        var resultProject = Project.Create(userId, request.Name, request.Description);
         if (resultProject.IsFailed)
         {
             return resultProject.ToResult();
@@ -51,12 +55,19 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
             return result.ToResult();
         }
 
+        var resultProjectMember = ProjectMember.Create(project.Id, userId);
+        if (resultProjectMember.IsFailed)
+        {
+            return resultProjectMember.ToResult();
+        }
+
         var statuses = resultStatuses.Select(r => r.Value);
 
         await _statusRepository.AddRangeAsync(statuses);
         _projectRepository.Add(project);
+        _projectMemberRepository.Add(resultProjectMember.Value);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
+        
         return project.Id.Value;
     }
 }
