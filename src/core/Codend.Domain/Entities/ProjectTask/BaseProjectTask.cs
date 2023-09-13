@@ -179,6 +179,18 @@ public class BaseProjectTask :
     }
 
     /// <summary>
+    /// Edits Story to which task belongs.
+    /// </summary>
+    /// <param name="storyId">New story Id.</param>
+    public void EditStory(StoryId? storyId)
+    {
+        StoryId = storyId;
+
+        var evt = new ProjectTaskStoryEditedEvent(Id, storyId);
+        Raise(evt);
+    }
+
+    /// <summary>
     /// Creates <see cref="BaseProjectTask"/>.
     /// </summary>
     /// <param name="properties"><see cref="BaseProjectTaskCreateProperties"/> used for creation.</param>
