@@ -1,4 +1,5 @@
 using Codend.Application.Stories.Commands.CreateStory;
+using Codend.Application.Stories.Commands.DeleteStory;
 using Codend.Contracts;
 using Codend.Presentation.Infrastructure;
 using MediatR;
@@ -26,5 +27,19 @@ public class StoryController : ApiController
         }
 
         return BadRequest(response.MapToApiErrorsResponse());
+    }
+
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(DeleteStoryCommand command)
+    {
+        var response = await Mediator.Send(command);
+        if (response.IsSuccess)
+        {
+            return Ok();
+        }
+
+        return NotFound();
     }
 }
