@@ -3,7 +3,7 @@ using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.ProjectTasks.Create;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
-using Codend.Presentation.Requests.ProjectTasks.Create.Abstractions;
+using Codend.Presentation.Requests.Abstractions;
 
 namespace Codend.Presentation.Requests.ProjectTasks.Create;
 
@@ -20,7 +20,7 @@ public sealed record CreateBugfixProjectTaskRequest
     uint? StoryPoints,
     Guid? AssigneeId,
     Guid? StoryId
-) : ICreateBugfixProjectTaskRequest, ICreateProjectTaskMapToCommand<CreateBugfixProjectTaskCommand>
+) : ICreateBugfixProjectTaskRequest, IMapRequestToCommand<CreateBugfixProjectTaskCommand, Guid>
 {
     /// <inheritdoc />
     public CreateBugfixProjectTaskCommand MapToCommand()

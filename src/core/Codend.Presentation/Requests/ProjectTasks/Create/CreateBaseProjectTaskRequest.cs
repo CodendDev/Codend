@@ -2,7 +2,7 @@ using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.ProjectTasks.Create;
 using Codend.Domain.Entities;
-using Codend.Presentation.Requests.ProjectTasks.Create.Abstractions;
+using Codend.Presentation.Requests.Abstractions;
 
 namespace Codend.Presentation.Requests.ProjectTasks.Create;
 
@@ -19,7 +19,7 @@ public sealed record CreateBaseProjectTaskRequest
     uint? StoryPoints,
     Guid? AssigneeId,
     Guid? StoryId
-) : ICreateBaseProjectTaskRequest, ICreateProjectTaskMapToCommand<CreateBaseProjectTaskCommand>
+) : ICreateBaseProjectTaskRequest, IMapRequestToCommand<CreateBaseProjectTaskCommand, Guid>
 {
     /// <inheritdoc />
     public CreateBaseProjectTaskCommand MapToCommand()
