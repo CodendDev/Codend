@@ -103,8 +103,8 @@ public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigr
     /// <param name="cancellationToken">The cancellation token.</param>
     private async Task PublishDomainEvents(CancellationToken cancellationToken)
     {
-        List<EntityEntry<IAggregate>> aggregateRoots = ChangeTracker
-            .Entries<IAggregate>()
+        List<EntityEntry<IDomainEventsAggregate>> aggregateRoots = ChangeTracker
+            .Entries<IDomainEventsAggregate>()
             .Where(entityEntry => entityEntry.Entity.DomainEvents.Any())
             .ToList();
 
