@@ -176,7 +176,7 @@ public class BaseProjectTask :
     /// </summary>
     /// <param name="properties"><see cref="BaseProjectTaskCreateProperties"/> used for creation.</param>
     /// <param name="ownerId">Owner of the task.</param>
-    /// <returns>Created &lt;see cref="BaseProjectTask"/&gt; or error.</returns>
+    /// <returns>Created <see cref="BaseProjectTask"/> or error.</returns>
     public static Result<BaseProjectTask> Create(BaseProjectTaskCreateProperties properties, UserId ownerId)
     {
         var task = new BaseProjectTask();

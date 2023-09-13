@@ -22,10 +22,6 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
         Description = description;
     }
 
-    /// <summary>
-    /// ProjectId which story belongs to.
-    /// </summary>
-    public ProjectId ProjectId { get; set; }
 
     #region ISoftDeletableEntity properties
 
@@ -37,6 +33,14 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
 
     #endregion
 
+
+    #region Story properties
+
+    /// <summary>
+    /// ProjectId which story belongs to.
+    /// </summary>
+    public ProjectId ProjectId { get; set; }
+
     /// <summary>
     /// User story name.
     /// </summary>
@@ -46,6 +50,11 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     /// User story description.
     /// </summary>
     public StoryDescription Description { get; set; }
+
+    #endregion
+
+
+    #region Domain methods
 
     /// <summary>
     /// User story creator.
@@ -69,4 +78,40 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
 
         return Result.Ok(story);
     }
+
+    /// <summary>
+    /// Edits story name.
+    /// </summary>
+    /// <param name="name">New name.</param>
+    /// <returns>Ok <see cref="Result"/> with new story name or failure with errors.</returns>
+    public Result<StoryName> EditName(string name)
+    {
+        var resultName = StoryName.Create(name);
+        if (resultName.IsFailed)
+        {
+            return resultName;
+        }
+
+        Name = resultName.Value;
+        return resultName;
+    }
+
+    /// <summary>
+    /// Edit story description.
+    /// </summary>
+    /// <param name="description">New description.</param>
+    /// <returns>Ok <see cref="Result"/> with new story description or failure with errors.</returns>
+    public Result<StoryDescription> EditDescription(string description)
+    {
+        var resultDescription = StoryDescription.Create(description);
+        if (resultDescription.IsFailed)
+        {
+            return resultDescription;
+        }
+
+        Description = resultDescription.Value;
+        return resultDescription;
+    }
+
+    #endregion
 }
