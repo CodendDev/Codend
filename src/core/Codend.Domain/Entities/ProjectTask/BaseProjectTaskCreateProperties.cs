@@ -12,5 +12,6 @@ public record BaseProjectTaskCreateProperties
     TimeSpan? EstimatedTime = null,
     DateTime? DueDate = null,
     uint? StoryPoints = null,
-    UserId? AssigneeId = null
+    UserId? AssigneeId = null,
+    StoryId? StoryId = null
 ) : IProjectTaskCreateProperties;
