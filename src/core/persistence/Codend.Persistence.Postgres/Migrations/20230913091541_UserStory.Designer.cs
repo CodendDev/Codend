@@ -3,6 +3,7 @@ using System;
 using Codend.Persistence.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Codend.Persistence.Postgres.Migrations
 {
     [DbContext(typeof(PostgresCodendDbContext))]
-    partial class PostgresCodendDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230913091541_UserStory")]
+    partial class UserStory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,31 +116,6 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Project");
-                });
-
-            modelBuilder.Entity("Codend.Domain.Entities.ProjectMember", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasPrecision(0)
-                        .HasColumnType("timestamp(0) with time zone");
-
-                    b.Property<bool>("IsFavourite")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("MemberId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ProjectMember");
                 });
 
             modelBuilder.Entity("Codend.Domain.Entities.ProjectTaskStatus", b =>
@@ -374,15 +352,6 @@ namespace Codend.Persistence.Postgres.Migrations
                         .IsRequired();
 
                     b.Navigation("Name")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Codend.Domain.Entities.ProjectMember", b =>
-                {
-                    b.HasOne("Codend.Domain.Entities.Project", null)
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 

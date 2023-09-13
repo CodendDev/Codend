@@ -35,6 +35,8 @@ public class BaseProjectTask :
     public TimeSpan? EstimatedTime { get; private set; }
     public uint? StoryPoints { get; private set; }
 
+    public StoryId? StoryId { get; set; }
+
     /// <summary>
     /// Edits name of the ProjectTask, and validates new name.
     /// </summary>
