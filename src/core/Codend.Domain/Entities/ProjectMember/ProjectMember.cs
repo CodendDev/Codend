@@ -1,4 +1,4 @@
-using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using FluentResults;
 
@@ -17,14 +17,27 @@ public class ProjectMember : Entity<ProjectMemberId>
     public UserId MemberId { get; private set; }
     public bool IsFavourite { get; private set; }
     
-
     public static Result<ProjectMember> Create(ProjectId projectId, UserId memberId)
     {
-        return new ProjectMember()
+        var projectMember = new ProjectMember()
         {
             ProjectId = projectId,
             MemberId = memberId,
             IsFavourite = false
         };
+
+        return Result.Ok(projectMember);
+    }
+
+    public Result<ProjectMember> SetIsFavourite(bool isFavourite)
+    {
+        if (IsFavourite == isFavourite)
+        {
+            return Result.Fail(new DomainErrors.ProjectMemberIsFavourite.IsFavouriteNotChanged());
+        }
+
+        IsFavourite = isFavourite;
+
+        return Result.Ok(this);
     }
 }
