@@ -17,7 +17,7 @@ public class BaseProjectTask :
     ISoftDeletableEntity,
     IProjectTaskCreator<BaseProjectTask, BaseProjectTaskCreateProperties>
 {
-    protected BaseProjectTask(ProjectTaskId id) : base(id)
+    protected BaseProjectTask() : base(new ProjectTaskId(Guid.NewGuid()))
     {
     }
 
@@ -169,6 +169,13 @@ public class BaseProjectTask :
         return Result.Ok(storyPoints);
     }
 
+    /// <summary>
+    /// Populates properties of base task.
+    /// </summary>
+    /// <param name="properties"><see cref="IProjectTaskCreateProperties"/> properties.</param>
+    /// <param name="ownerId">Owner of the task.</param>
+    /// <returns>Created <see cref="BaseProjectTask"/> or error.</returns>
+    /// <exception cref="ArgumentException">Throws when OwnerId is null.</exception>
     protected Result<BaseProjectTask> PopulateBaseProperties(IProjectTaskCreateProperties properties, UserId ownerId)
     {
         var resultName = ProjectTaskName.Create(properties.Name);
@@ -192,13 +199,14 @@ public class BaseProjectTask :
         DueDate = properties.DueDate;
         StoryPoints = properties.StoryPoints;
         AssigneeId = properties.AssigneeId;
+        StoryId = properties.StoryId;
 
         return Result.Ok();
     }
 
     public static Result<BaseProjectTask> Create(BaseProjectTaskCreateProperties properties, UserId ownerId)
     {
-        var task = new BaseProjectTask(new ProjectTaskId(Guid.NewGuid()));
+        var task = new BaseProjectTask();
         var result = task.PopulateBaseProperties(properties, ownerId);
         if (result.IsFailed)
         {
