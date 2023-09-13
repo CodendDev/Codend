@@ -18,4 +18,5 @@ public interface IUpdateProjectTaskCommand
     IShouldUpdate<DateTime?> DueDate { get; }
     IShouldUpdate<uint?> StoryPoints { get; }
     IShouldUpdate<UserId?> AssigneeId { get; }
+    IShouldUpdate<StoryId?> StoryId { get; }
 }

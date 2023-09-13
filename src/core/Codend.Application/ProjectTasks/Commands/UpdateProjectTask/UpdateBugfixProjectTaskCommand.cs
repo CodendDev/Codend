@@ -17,7 +17,8 @@ public sealed record UpdateBugfixProjectTaskCommand(
     IShouldUpdate<TimeSpan?> EstimatedTime,
     IShouldUpdate<DateTime?> DueDate,
     IShouldUpdate<uint?> StoryPoints,
-    IShouldUpdate<UserId?> AssigneeId
+    IShouldUpdate<UserId?> AssigneeId,
+    IShouldUpdate<StoryId?> StoryId
 ) : ICommand, IUpdateProjectTaskCommand;
 
 public class UpdateBugfixProjectTaskCommandHandler :
