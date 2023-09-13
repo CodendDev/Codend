@@ -37,17 +37,15 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
         var notFoundFailures = validationFailures
             .Where(x => x.Severity == Severity.Warning)
             .ToList();
-
-        // If there are more 'all' errors than notFound errors it means that there is validation error
-        // therefor validation exception is thrown.
-        if (validationFailures.Any() && validationFailures.Count > notFoundFailures.Count)
-        {
-            throw new ValidationException(validationFailures);
-        }
-        // If there are only notFound errors, notFoundValidationException is thrown.
+        
+        // If there are any notFound errors, notFoundValidationException is thrown.
         if (notFoundFailures.Any())
         {
             throw new NotFoundValidationException(notFoundFailures);
+        }
+        if (validationFailures.Any())
+        {
+            throw new ValidationException(validationFailures);
         }
         
         return await next();

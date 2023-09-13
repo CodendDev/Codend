@@ -25,24 +25,27 @@ public class UpdateProjectCommandValidator : AbstractValidator<UpdateProjectComm
         _projectMemberRepository = projectMemberRepository;
         _identityProvider = identityProvider;
 
-        RuleFor(x => x.Name)
-            .NotEmpty()
-            .WithError(new ValidationErrors.Common.StringPropertyNullOrEmpty(nameof(UpdateProjectCommand.Name)));
-
-        RuleFor(x => x.Name)
-            .MaximumLength(ProjectName.MaxLength)
-            .WithError(new ValidationErrors.Common.StringPropertyTooLong(nameof(UpdateProjectCommand.Name),
-                ProjectName.MaxLength));
-
-        RuleFor(x => x.Description)
-            .MaximumLength(ProjectDescription.MaxLength)
-            .When(x => !string.IsNullOrEmpty(x.Description))
-            .WithError(new ValidationErrors.Common.StringPropertyTooLong(nameof(UpdateProjectCommand.Description),
-                ProjectDescription.MaxLength));
-
         RuleFor(x => x.ProjectId)
             .MustAsync(ProjectExistsAndUserIsMember)
-            .WithError(new ValidationErrors.Project.NotFoundOrUserUnauthorized());
+            .WithError(new ValidationErrors.Project.NotFoundOrUserUnauthorized())
+            .WithSeverity(Severity.Warning)
+            .DependentRules(() =>
+            {
+                RuleFor(x => x.Name)
+                    .NotEmpty()
+                    .WithError(new ValidationErrors.Common.StringPropertyNullOrEmpty(nameof(UpdateProjectCommand.Name)));
+
+                RuleFor(x => x.Name)
+                    .MaximumLength(ProjectName.MaxLength)
+                    .WithError(new ValidationErrors.Common.StringPropertyTooLong(nameof(UpdateProjectCommand.Name),
+                        ProjectName.MaxLength));
+
+                RuleFor(x => x.Description)
+                    .MaximumLength(ProjectDescription.MaxLength)
+                    .When(x => !string.IsNullOrEmpty(x.Description))
+                    .WithError(new ValidationErrors.Common.StringPropertyTooLong(nameof(UpdateProjectCommand.Description),
+                        ProjectDescription.MaxLength));
+            });
     }
 
     private async Task<bool> ProjectExistsAndUserIsMember(Guid projectId, CancellationToken cancellationToken)

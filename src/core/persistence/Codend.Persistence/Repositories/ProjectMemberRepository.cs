@@ -13,7 +13,6 @@ public class ProjectMemberRepository : GenericRepository<ProjectMemberId, Guid, 
     public Task<ProjectMember?> GetByProjectAndMemberId(ProjectId projectId, UserId memberId, CancellationToken cancellationToken)
     {
         return Context.Set<ProjectMember>().FirstOrDefaultAsync(projectMember =>
-            projectMember.ProjectId.Value.Equals(projectId.Value) &&
-            projectMember.MemberId.Value.Equals(memberId.Value), cancellationToken: cancellationToken);
+            Equals(projectMember.ProjectId, projectId) && Equals(projectMember.MemberId, memberId) ,cancellationToken: cancellationToken);
     }
 }
