@@ -60,5 +60,12 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         builder
             .HasUserIdProperty(project => project.OwnerId);
+
+        builder
+            .HasMany<ProjectMember>()
+            .WithOne()
+            .HasForeignKey(projectMember => projectMember.ProjectId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
