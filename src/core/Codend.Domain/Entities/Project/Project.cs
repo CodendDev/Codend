@@ -7,17 +7,30 @@ using FluentResults;
 
 namespace Codend.Domain.Entities;
 
-public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
+public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
 {
     private Project() : base(new ProjectId(Guid.NewGuid()))
     {
     }
 
+    #region ISoftDeletableEntity properties
+
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
+
+    #endregion
+
+
+    #region Project properties
+
     public ProjectName Name { get; private set; }
     public ProjectDescription Description { get; private set; }
     public UserId OwnerId { get; private set; }
+
+    #endregion
+
+
+    #region Domain methods
 
     public static Result<Project> Create(UserId ownerId, string name, string? description = null)
     {
@@ -68,26 +81,6 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     }
 
     /// <summary>
-    /// Adds new task to project.
-    /// </summary>
-    /// <param name="task">Task to be added.</param>
-    public void AddTask(BaseProjectTask task)
-    {
-        var evt = new ProjectTaskAddedToProjectEvent(task, Id);
-        Raise(evt);
-    }
-
-    /// <summary>
-    /// Deletes task from project.
-    /// </summary>
-    /// <param name="task">Task to be deleted.</param>
-    public void DeleteTask(BaseProjectTask task)
-    {
-        var evt = new ProjectTaskDeletedFromProjectEvent(task, Id);
-        Raise(evt);
-    }
-
-    /// <summary>
     /// Releases new Project version.
     /// </summary>
     /// <param name="versionTag">Version tag.</param>
@@ -110,16 +103,6 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
     }
 
     /// <summary>
-    /// Deletes Project version.
-    /// </summary>
-    /// <param name="projectVersion">ProjectVersion to be deleted.</param>
-    public void DeleteVersion(ProjectVersion projectVersion)
-    {
-        var evt = new ProjectVersionDeletedEvent(projectVersion, Id);
-        Raise(evt);
-    }
-
-    /// <summary>
     /// Edits Project version.
     /// </summary>
     /// <param name="projectVersion">Project version to be edited.</param>
@@ -135,9 +118,6 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
         {
             return result;
         }
-
-        var evt = new ProjectVersionEditedEvent(result.Value, Id);
-        Raise(evt);
 
         return result;
     }
@@ -161,28 +141,6 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
         Raise(evt);
 
         return result;
-    }
-
-    /// <summary>
-    /// Adds task to sprint.
-    /// </summary>
-    /// <param name="task">Task to be added to sprint.</param>
-    /// <param name="sprint">Sprint to which we add a task.</param>
-    public void AddTaskToSprint(Sprint sprint, BaseProjectTask task)
-    {
-        var evt = new ProjectTaskAddedToSprintEvent(sprint, task);
-        Raise(evt);
-    }
-
-    /// <summary>
-    /// Removes task from sprint.
-    /// </summary>
-    /// <param name="task">Task to be removed from sprint.</param>
-    /// <param name="sprint">Sprint from which we remove a task.</param>
-    public void RemoveTaskFromSprint(Sprint sprint, BaseProjectTask task)
-    {
-        var evt = new ProjectTaskRemovedFromSprintEvent(sprint, task);
-        Raise(evt);
     }
 
     /// <summary>
@@ -218,9 +176,6 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
             return result;
         }
 
-        var evt = new ProjectTaskStatusAddedToProjectEvent(result.Value, Id);
-        Raise(evt);
-
         return result;
     }
 
@@ -238,19 +193,8 @@ public class Project : Aggregate<ProjectId>, ISoftDeletableEntity
             return result;
         }
 
-        var evt = new ProjectTaskStatusEditedEvent(result.Value, Id);
-        Raise(evt);
-
         return result;
     }
 
-    /// <summary>
-    /// Removes ProjectTaskStatus from project.
-    /// </summary>
-    /// <param name="status">Status to be removed.</param>
-    public void RemoveProjectTaskStatusFromProject(ProjectTaskStatus status)
-    {
-        var evt = new ProjectTaskStatusRemovedFromProjectEvent(status, Id);
-        Raise(evt);
-    }
+    #endregion
 }
