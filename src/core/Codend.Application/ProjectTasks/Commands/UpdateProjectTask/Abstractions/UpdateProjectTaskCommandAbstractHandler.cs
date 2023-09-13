@@ -99,6 +99,11 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
             results.Add(task.AssignUser(request.AssigneeId.Value).ToResult());
         }
 
+        if (request.StoryId.ShouldUpdate)
+        {
+            results.Add(task.EditStory(request.StoryId.Value).ToResult());
+        }
+
         return Result.Merge(results.ToArray());
     }
 }

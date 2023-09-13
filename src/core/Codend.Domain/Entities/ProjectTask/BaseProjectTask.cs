@@ -182,12 +182,14 @@ public class BaseProjectTask :
     /// Edits Story to which task belongs.
     /// </summary>
     /// <param name="storyId">New story Id.</param>
-    public void EditStory(StoryId? storyId)
+    public Result<StoryId?> EditStory(StoryId? storyId)
     {
         StoryId = storyId;
 
         var evt = new ProjectTaskStoryEditedEvent(Id, storyId);
         Raise(evt);
+
+        return Result.Ok(storyId);
     }
 
     /// <summary>
