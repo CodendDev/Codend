@@ -1,10 +1,11 @@
+using Codend.Application.Core;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Domain.Core.Enums;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
+using static Codend.Application.Core.Errors.ValidationErrors.Project;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
@@ -24,6 +25,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
 {
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IProjectMemberRepository _memberRepository;
 
     /// <summary>
     /// Constructs implementation of <see cref="UpdateProjectTaskCommandAbstractHandler{TCommand,TProjectTask}"/> with
@@ -31,10 +33,15 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     /// </summary>
     /// <param name="taskRepository">Repository used for <see cref="BaseProjectTask"/>s.</param>
     /// <param name="unitOfWork">Unit of work.</param>
-    protected UpdateProjectTaskCommandAbstractHandler(IProjectTaskRepository taskRepository, IUnitOfWork unitOfWork)
+    /// <param name="memberRepository">Repository for <see cref="ProjectMember"/>.</param>
+    protected UpdateProjectTaskCommandAbstractHandler(
+        IProjectTaskRepository taskRepository,
+        IUnitOfWork unitOfWork,
+        IProjectMemberRepository memberRepository)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
+        _memberRepository = memberRepository;
     }
 
     /// <summary>
@@ -47,7 +54,26 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     {
         if (await _taskRepository.GetByIdAsync(request.TaskId) is not TProjectTask task)
         {
-            return Result.Fail(new DomainErrors.ProjectTaskErrors.ProjectTaskNotFound());
+            return Result.Fail(new ProjectTaskNotFound());
+        }
+
+        if (request.StatusId.ShouldUpdate)
+        {
+            var statusExists = _taskRepository.ProjectTaskStatusIsValid(task.ProjectId, request.StatusId.Value);
+            if (!statusExists)
+            {
+                return Result.Fail(new InvalidStatusId());
+            }
+        }
+
+        if (request.AssigneeId.ShouldUpdate)
+        {
+            var assigneeValid = await
+                _memberRepository.IsProjectMember(request.AssigneeId.Value!, task.ProjectId, cancellationToken);
+            if (!assigneeValid)
+            {
+                return Result.Fail(new NotFoundOrUserUnauthorized());
+            }
         }
 
         var result = HandleUpdate(task, request);
@@ -71,58 +97,19 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     /// <returns><see cref="Result"/>.Ok() or a failure with errors.</returns>
     protected virtual Result HandleUpdate(TProjectTask task, TCommand request)
     {
-        var results = new List<Result>();
+        var result = Result.Merge
+        (
+            request.Name.HandleUpdateWithResult(task.EditName),
+            request.Description.HandleUpdateWithResult(task.EditDescription),
+            request.EstimatedTime.HandleUpdate(task.EditEstimatedTime),
+            request.DueDate.HandleUpdate(task.EditDueDate),
+            request.StoryPoints.HandleUpdate(task.EditStoryPoints),
+            request.AssigneeId.HandleUpdate(task.AssignUser),
+            request.StoryId.HandleUpdate(task.EditStory),
+            request.StatusId.HandleUpdate(task.EditStatus),
+            request.Priority.HandleUpdateWithResult(task.EditPriority)
+        );
 
-        if (request.Name.ShouldUpdate)
-        {
-            results.Add(task.EditName(request.Name.Value!).ToResult());
-        }
-
-        if (request.Priority.ShouldUpdate)
-        {
-            var priorityParsed = ProjectTaskPriority.TryFromName(request.Priority.Value, true, out var priority);
-            var resultPriority = priorityParsed
-                ? Result.Ok(priority)
-                : Result.Fail(new DomainErrors.ProjectTaskPriority.InvalidPriorityName());
-            task.ChangePriority(priority);
-            results.Add(resultPriority.ToResult());
-        }
-
-        if (request.StatusId.ShouldUpdate)
-        {
-            results.Add(task.ChangeStatus(request.StatusId.Value).ToResult());
-        }
-
-        if (request.Description.ShouldUpdate)
-        {
-            results.Add(task.EditDescription(request.Description.Value!).ToResult());
-        }
-
-        if (request.EstimatedTime.ShouldUpdate)
-        {
-            results.Add(task.EditEstimatedTime(request.EstimatedTime.Value).ToResult());
-        }
-
-        if (request.DueDate.ShouldUpdate)
-        {
-            results.Add(task.SetDueDate(request.DueDate.Value).ToResult());
-        }
-
-        if (request.StoryPoints.ShouldUpdate)
-        {
-            results.Add(task.EditStoryPoints(request.StoryPoints.Value).ToResult());
-        }
-
-        if (request.AssigneeId.ShouldUpdate)
-        {
-            results.Add(task.AssignUser(request.AssigneeId.Value).ToResult());
-        }
-
-        if (request.StoryId.ShouldUpdate)
-        {
-            results.Add(task.EditStory(request.StoryId.Value).ToResult());
-        }
-
-        return Result.Merge(results.ToArray());
+        return result;
     }
 }

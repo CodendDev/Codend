@@ -44,7 +44,7 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     public async Task<Result<Guid>> Handle(TCommand request, CancellationToken cancellationToken)
     {
         var projectStatusIsValid =
-            _projectTaskRepository.ProjectTaskIsValid(
+            _projectTaskRepository.ProjectTaskStatusIsValid(
                 request.TaskProperties.ProjectId,
                 request.TaskProperties.StatusId);
         var resultProjectTaskStatus =

@@ -31,8 +31,11 @@ public class UpdateAbstractProjectTaskCommandHandler :
     UpdateProjectTaskCommandAbstractHandler<UpdateBaseProjectTaskCommand, BaseProjectTask>
 {
     /// <inheritdoc />
-    public UpdateAbstractProjectTaskCommandHandler(IProjectTaskRepository taskRepository, IUnitOfWork unitOfWork)
-        : base(taskRepository, unitOfWork)
+    public UpdateAbstractProjectTaskCommandHandler(
+        IProjectTaskRepository taskRepository,
+        IUnitOfWork unitOfWork,
+        IProjectMemberRepository memberRepository)
+        : base(taskRepository, unitOfWork, memberRepository)
     {
     }
 }

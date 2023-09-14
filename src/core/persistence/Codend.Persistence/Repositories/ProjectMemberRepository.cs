@@ -9,10 +9,25 @@ public class ProjectMemberRepository : GenericRepository<ProjectMemberId, Guid, 
     public ProjectMemberRepository(CodendApplicationDbContext context) : base(context)
     {
     }
-    
-    public Task<ProjectMember?> GetByProjectAndMemberId(ProjectId projectId, UserId memberId, CancellationToken cancellationToken)
+
+    public Task<ProjectMember?> GetByProjectAndMemberId(ProjectId projectId, UserId memberId,
+        CancellationToken cancellationToken)
     {
-        return Context.Set<ProjectMember>().FirstOrDefaultAsync(projectMember =>
-            Equals(projectMember.ProjectId, projectId) && Equals(projectMember.MemberId, memberId) ,cancellationToken: cancellationToken);
+        return Context.Set<ProjectMember>()
+            .FirstOrDefaultAsync(projectMember =>
+                    Equals(projectMember.ProjectId, projectId) &&
+                    Equals(projectMember.MemberId, memberId),
+                cancellationToken);
+    }
+
+    public Task<bool> IsProjectMember(UserId memberId, ProjectId projectId, CancellationToken cancellationToken)
+    {
+        var isMember = Context.Set<ProjectMember>()
+            .AnyAsync(projectMember =>
+                    projectMember.MemberId == memberId &&
+                    projectMember.ProjectId == projectId,
+                cancellationToken);
+
+        return isMember;
     }
 }

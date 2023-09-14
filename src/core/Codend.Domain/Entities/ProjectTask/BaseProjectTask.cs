@@ -74,7 +74,7 @@ public class BaseProjectTask :
     /// </summary>
     /// <param name="description">New description.</param>
     /// <returns>Ok result with ProjectTaskDescription object or an error.</returns>
-    public Result<ProjectTaskDescription> EditDescription(string description)
+    public Result<ProjectTaskDescription> EditDescription(string? description)
     {
         var result = ProjectTaskDescription.Create(description);
         if (result.IsFailed)
@@ -92,11 +92,15 @@ public class BaseProjectTask :
     /// </summary>
     /// <param name="priority">New priority.</param>
     /// <returns>Ok result with ProjectTaskPriority object.</returns>
-    public Result<ProjectTaskPriority> ChangePriority(ProjectTaskPriority priority)
+    public Result<ProjectTaskPriority> EditPriority(string priority)
     {
-        Priority = priority;
+        var priorityResult = ProjectTaskPriority.ParseFromString(priority);
+        if (priorityResult.IsSuccess)
+        {
+            Priority = priorityResult.Value;
+        }
 
-        return Result.Ok(priority);
+        return Result.Ok(Priority);
     }
 
     /// <summary>
@@ -104,7 +108,7 @@ public class BaseProjectTask :
     /// </summary>
     /// <param name="statusId">New status id.</param>
     /// <returns>Ok result with ProjectTaskStatusId object.</returns>
-    public Result<ProjectTaskStatusId> ChangeStatus(ProjectTaskStatusId statusId)
+    public Result<ProjectTaskStatusId> EditStatus(ProjectTaskStatusId statusId)
     {
         StatusId = statusId;
 
@@ -116,7 +120,7 @@ public class BaseProjectTask :
     /// </summary>
     /// <param name="dueDate">New dueDate.</param>
     /// <returns>Ok result with DateTime object.</returns>
-    public Result<DateTime?> SetDueDate(DateTime? dueDate)
+    public Result<DateTime?> EditDueDate(DateTime? dueDate)
     {
         DueDate = dueDate;
 

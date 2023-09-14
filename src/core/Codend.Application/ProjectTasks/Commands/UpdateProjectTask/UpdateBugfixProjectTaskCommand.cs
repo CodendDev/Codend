@@ -31,8 +31,11 @@ public class UpdateBugfixProjectTaskCommandHandler :
     UpdateProjectTaskCommandAbstractHandler<UpdateBugfixProjectTaskCommand, BugfixProjectTask>
 {
     /// <inheritdoc />
-    public UpdateBugfixProjectTaskCommandHandler(IProjectTaskRepository taskRepository, IUnitOfWork unitOfWork)
-        : base(taskRepository, unitOfWork)
+    public UpdateBugfixProjectTaskCommandHandler(
+        IProjectTaskRepository taskRepository,
+        IUnitOfWork unitOfWork,
+        IProjectMemberRepository memberRepository)
+        : base(taskRepository, unitOfWork, memberRepository)
     {
     }
 }
