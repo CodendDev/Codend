@@ -1,10 +1,10 @@
 using Codend.Application.Core;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
@@ -47,9 +47,18 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     {
         if (await _taskRepository.GetByIdAsync(request.TaskId) is not TProjectTask task)
         {
-            return Result.Fail(new DomainErrors.ProjectTaskErrors.ProjectTaskNotFound());
+            return Result.Fail(new ProjectTaskNotFound());
         }
-        //TODO status asagnee
+
+        if (request.StatusId.ShouldUpdate)
+        {
+            var statusExists = _taskRepository.ProjectTaskStatusIsValid(task.ProjectId, request.StatusId.Value);
+            if (!statusExists)
+            {
+                return Result.Fail(new InvalidStatusId());
+            }
+        }
+        //TODO  asagnee
 
         var result = HandleUpdate(task, request);
         if (result.IsFailed)

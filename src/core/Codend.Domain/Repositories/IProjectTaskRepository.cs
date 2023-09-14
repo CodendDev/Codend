@@ -22,7 +22,7 @@ public interface IProjectTaskRepository
     /// Checks whether project exists and checks whether status is contained by given project.
     /// </summary>
     /// <returns>true id status is valid for this project, otherwise false</returns>
-    bool ProjectTaskIsValid(ProjectId projectId, ProjectTaskStatusId statusId);
+    bool ProjectTaskStatusIsValid(ProjectId projectId, ProjectTaskStatusId statusId);
 
     /// <summary>
     /// Collects tasks which belongs to a given story.

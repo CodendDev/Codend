@@ -1,6 +1,5 @@
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
 
@@ -11,7 +10,7 @@ public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, Base
     }
 
     /// <inheritdoc/>
-    public bool ProjectTaskIsValid(ProjectId projectId, ProjectTaskStatusId statusId)
+    public bool ProjectTaskStatusIsValid(ProjectId projectId, ProjectTaskStatusId statusId)
     {
         var valid =
             Context.Set<ProjectTaskStatus>()
