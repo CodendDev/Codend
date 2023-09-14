@@ -23,15 +23,9 @@ public class UpdateStoryCommandHandlerTests
         story.Setup(s => s.EditDescription(It.IsAny<string>())).Returns(Result.Fail(error.Object));
 
         var storyId = new StoryId(Guid.NewGuid());
-        var name = new Mock<IShouldUpdate<string>>();
-        name.Setup(isu => isu.ShouldUpdate).Returns(true);
-
-        var description = new Mock<IShouldUpdate<string>>();
-        description.Setup(isu => isu.ShouldUpdate).Returns(true);
         _storyRepository.Setup(r => r.GetByIdAsync(storyId)).Returns(async () => story.Object);
 
-        var request = new UpdateStoryCommand(storyId.Value, name.Object, description.Object);
-
+        var request = new UpdateStoryCommand(storyId.Value, "", "");
         var handler = new UpdateStoryCommandHandler(_storyRepository.Object, _unitOfWork.Object);
 
         // act

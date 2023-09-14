@@ -1,6 +1,5 @@
 ﻿using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Contracts.Abstractions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -12,13 +11,13 @@ namespace Codend.Application.Stories.Commands.UpdateStory;
 /// Command used for updating a story.
 /// </summary>
 /// <param name="StoryId">Id of story which will be updated.</param>
-/// <param name="Name"><see cref="IShouldUpdate{T}"/> name.</param>
-/// <param name="Description"><see cref="IShouldUpdate{T}"/> description.</param>
+/// <param name="Name">New name of the story.</param>
+/// <param name="Description">New description of the story.</param>
 public sealed record UpdateStoryCommand
 (
     Guid StoryId,
-    IShouldUpdate<string> Name,
-    IShouldUpdate<string> Description
+    string? Name,
+    string? Description
 ) : ICommand;
 
 /// <summary>
@@ -56,14 +55,14 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
         }
 
         var results = new List<Result>();
-        if (request.Name.ShouldUpdate)
+        if (request.Name is not null)
         {
-            results.Add(story.EditName(request.Name.Value!).ToResult());
+            results.Add(story.EditName(request.Name).ToResult());
         }
 
-        if (request.Description.ShouldUpdate)
+        if (request.Description is not null)
         {
-            results.Add(story.EditDescription(request.Description.Value!).ToResult());
+            results.Add(story.EditDescription(request.Description).ToResult());
         }
 
         var result = Result.Merge(results.ToArray());
