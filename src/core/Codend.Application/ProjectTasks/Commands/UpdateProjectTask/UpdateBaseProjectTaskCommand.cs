@@ -1,3 +1,4 @@
+using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
@@ -30,12 +31,22 @@ public sealed record UpdateBaseProjectTaskCommand
 public class UpdateAbstractProjectTaskCommandHandler :
     UpdateProjectTaskCommandAbstractHandler<UpdateBaseProjectTaskCommand, BaseProjectTask>
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateAbstractProjectTaskCommandHandler"/> class.
+    /// </summary>
     public UpdateAbstractProjectTaskCommandHandler(
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
-        IProjectMemberRepository memberRepository)
-        : base(taskRepository, unitOfWork, memberRepository)
+        IProjectMemberRepository memberRepository,
+        IProjectTaskStatusRepository projectTaskStatusRepository,
+        IStoryRepository storyRepository,
+        IUserIdentityProvider identityProvider)
+        : base(taskRepository,
+            unitOfWork,
+            memberRepository,
+            projectTaskStatusRepository,
+            storyRepository,
+            identityProvider)
     {
     }
 }
