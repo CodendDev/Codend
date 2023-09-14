@@ -1,5 +1,4 @@
-﻿using System.Xml.Linq;
-using Codend.Application.Core.Errors;
+﻿using Codend.Application.Core.Errors;
 using Codend.Application.Extensions;
 using Codend.Domain.ValueObjects;
 using FluentValidation;
@@ -19,10 +18,12 @@ public class CreateProjectCommandValidator : AbstractValidator<CreateProjectComm
         RuleFor(x => x.Name)
             .NotEmpty()
             .WithError(new ValidationErrors.Common.StringPropertyNullOrEmpty(nameof(CreateProjectCommand.Name)));
+
         RuleFor(x => x.Name)
             .MaximumLength(ProjectName.MaxLength)
             .WithError(new ValidationErrors.Common.StringPropertyTooLong(nameof(CreateProjectCommand.Name),
                 ProjectName.MaxLength));
+
         RuleFor(x => x.Description)
             .MaximumLength(ProjectDescription.MaxLength)
             .When(x => !string.IsNullOrEmpty(x.Description))
