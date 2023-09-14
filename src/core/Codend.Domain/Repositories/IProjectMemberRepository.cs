@@ -20,4 +20,6 @@ public interface IProjectMemberRepository
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>First matching ProjectMember found or null.</returns>
     Task<ProjectMember?> GetByProjectAndMemberId(ProjectId projectId, UserId memberId, CancellationToken cancellationToken);
+    
+    Task<bool> IsProjectMember(UserId memberId, ProjectId projectId, CancellationToken cancellationToken);
 }

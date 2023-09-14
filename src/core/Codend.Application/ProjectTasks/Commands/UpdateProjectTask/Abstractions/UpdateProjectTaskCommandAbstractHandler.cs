@@ -4,6 +4,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
+using static Codend.Application.Core.Errors.ValidationErrors.Project;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
@@ -24,6 +25,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
 {
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IProjectMemberRepository _memberRepository;
 
     /// <summary>
     /// Constructs implementation of <see cref="UpdateProjectTaskCommandAbstractHandler{TCommand,TProjectTask}"/> with
@@ -31,10 +33,15 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     /// </summary>
     /// <param name="taskRepository">Repository used for <see cref="BaseProjectTask"/>s.</param>
     /// <param name="unitOfWork">Unit of work.</param>
-    protected UpdateProjectTaskCommandAbstractHandler(IProjectTaskRepository taskRepository, IUnitOfWork unitOfWork)
+    /// <param name="memberRepository">Repository for <see cref="ProjectMember"/>.</param>
+    protected UpdateProjectTaskCommandAbstractHandler(
+        IProjectTaskRepository taskRepository,
+        IUnitOfWork unitOfWork,
+        IProjectMemberRepository memberRepository)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
+        _memberRepository = memberRepository;
     }
 
     /// <summary>
@@ -58,7 +65,16 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
                 return Result.Fail(new InvalidStatusId());
             }
         }
-        //TODO  asagnee
+
+        if (request.AssigneeId.ShouldUpdate)
+        {
+            var assigneeValid = await
+                _memberRepository.IsProjectMember(request.AssigneeId.Value!, task.ProjectId, cancellationToken);
+            if (!assigneeValid)
+            {
+                return Result.Fail(new NotFoundOrUserUnauthorized());
+            }
+        }
 
         var result = HandleUpdate(task, request);
         if (result.IsFailed)
