@@ -25,4 +25,10 @@ public interface IStoryRepository
     /// </summary>
     /// <param name="story">Story to be deleted.</param>
     void Remove(Story story);
+
+    /// <summary>
+    /// Updates given story.
+    /// </summary>
+    /// <param name="story">Story be update.</param>
+    void Update(Story story);
 }
