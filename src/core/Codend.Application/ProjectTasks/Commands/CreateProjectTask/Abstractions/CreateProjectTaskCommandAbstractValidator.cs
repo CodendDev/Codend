@@ -1,4 +1,5 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
+using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.Core.Errors;
 using Codend.Application.Extensions;
 using Codend.Domain.Core.Enums;
@@ -16,7 +17,7 @@ namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstraction
 /// </summary>
 public abstract class CreateProjectTaskCommandAbstractValidator<TCreateProjectTaskCommand, TCreateProjectTaskProperties>
     : AbstractValidator<TCreateProjectTaskCommand>
-    where TCreateProjectTaskCommand : ICreateProjectTaskCommand<TCreateProjectTaskProperties>
+    where TCreateProjectTaskCommand : ICommand<Guid>, ICreateProjectTaskCommand<TCreateProjectTaskProperties>
     where TCreateProjectTaskProperties : IProjectTaskCreateProperties
 {
     /// <summary>
@@ -86,7 +87,7 @@ public abstract class CreateProjectTaskCommandAbstractValidator<TCreateProjectTa
                         ProjectTaskDescription.MaxLength));
 
                 RuleFor(x => x.TaskProperties.DueDate)
-                    .Must(x => x.HasValue && x.Value.CompareTo(DateTime.UtcNow) > 0)
+                    .Must(x => !x.HasValue || x.Value.CompareTo(DateTime.UtcNow) > 0)
                     .WithError(new Common.DateIsInThePast(nameof(IProjectTaskCreateProperties.DueDate)));
 
                 RuleFor(x => x.TaskProperties)
