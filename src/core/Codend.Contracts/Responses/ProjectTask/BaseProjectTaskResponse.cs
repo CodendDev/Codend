@@ -1,6 +1,6 @@
 namespace Codend.Contracts.Responses.ProjectTask;
 
-public record AbstractProjectTaskResponse
+public record BaseProjectTaskResponse
 (
     string Name,
     string Priority,

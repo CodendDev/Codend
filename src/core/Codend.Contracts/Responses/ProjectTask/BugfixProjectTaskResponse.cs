@@ -9,7 +9,7 @@ public record BugfixProjectTaskResponse
     uint? StoryPoints,
     Guid? AssigneeId,
     EstimatedTimeResponse? EstimatedTime
-) : AbstractProjectTaskResponse
+) : BaseProjectTaskResponse
 (
     Name,
     Priority,

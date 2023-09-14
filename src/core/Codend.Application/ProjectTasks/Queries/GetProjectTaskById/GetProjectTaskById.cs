@@ -12,9 +12,9 @@ namespace Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 
 public sealed record GetProjectTaskByIdQuery(
         Guid ProjectTaskId)
-    : IQuery<AbstractProjectTaskResponse>;
+    : IQuery<BaseProjectTaskResponse>;
 
-public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, AbstractProjectTaskResponse>
+public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, BaseProjectTaskResponse>
 {
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IProjectTaskStatusRepository _statusRepository;
@@ -30,9 +30,9 @@ public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, Abstrac
         _statusRepository = statusRepository;
     }
 
-    private AbstractProjectTaskResponse Map(BaseProjectTask task)
+    private BaseProjectTaskResponse Map(BaseProjectTask task)
     {
-        AbstractProjectTaskResponse dto;
+        BaseProjectTaskResponse dto;
         if (task is BugfixProjectTask)
         {
             dto = _mapper.Map<BugfixProjectTaskResponse>(task);
@@ -45,7 +45,7 @@ public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, Abstrac
         return dto;
     }
 
-    public async Task<Result<AbstractProjectTaskResponse>> Handle(
+    public async Task<Result<BaseProjectTaskResponse>> Handle(
         GetProjectTaskByIdQuery request,
         CancellationToken cancellationToken)
     {
