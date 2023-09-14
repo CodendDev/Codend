@@ -32,15 +32,11 @@ public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, BasePro
 
     private BaseProjectTaskResponse Map(BaseProjectTask task)
     {
-        BaseProjectTaskResponse dto;
-        if (task is BugfixProjectTask)
+        var dto = task switch
         {
-            dto = _mapper.Map<BugfixProjectTaskResponse>(task);
-        }
-        else
-        {
-            throw new InvalidOperationException("Can't cast ProjectTask");
-        }
+            BugfixProjectTask => _mapper.Map<BugfixProjectTaskResponse>(task),
+            _ => _mapper.Map<BaseProjectTaskResponse>(task)
+        };
 
         return dto;
     }

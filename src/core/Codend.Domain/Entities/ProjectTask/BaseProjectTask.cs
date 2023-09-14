@@ -21,6 +21,11 @@ public class BaseProjectTask :
     {
     }
 
+    /// <summary>
+    /// String representation of task type. 
+    /// </summary>
+    public string TaskType => GetType().Name.Replace("ProjectTask", "");
+
     #region ISoftDeletableEntity properties
 
     public DateTime DeletedOnUtc { get; }

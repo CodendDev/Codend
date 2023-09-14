@@ -2,6 +2,7 @@ namespace Codend.Contracts.Responses.ProjectTask;
 
 public record BaseProjectTaskResponse
 (
+    string TaskType,
     string Name,
     string Priority,
     string? Description,
