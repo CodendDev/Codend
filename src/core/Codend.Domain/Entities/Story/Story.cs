@@ -10,7 +10,8 @@ namespace Codend.Domain.Entities;
 /// </summary>
 public class Story : Entity<StoryId>, ISoftDeletableEntity
 {
-    private Story() : base(new StoryId(Guid.NewGuid()))
+    [Obsolete("Public for 1 unit test 👍🤑🤓", true)]
+    public Story() : base(new StoryId(Guid.NewGuid()))
     {
     }
 
@@ -84,7 +85,7 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     /// </summary>
     /// <param name="name">New name.</param>
     /// <returns>Ok <see cref="Result"/> with new story name or failure with errors.</returns>
-    public Result<StoryName> EditName(string name)
+    public virtual Result<StoryName> EditName(string name)
     {
         var resultName = StoryName.Create(name);
         if (resultName.IsFailed)
@@ -101,7 +102,7 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     /// </summary>
     /// <param name="description">New description.</param>
     /// <returns>Ok <see cref="Result"/> with new story description or failure with errors.</returns>
-    public Result<StoryDescription> EditDescription(string description)
+    public virtual Result<StoryDescription> EditDescription(string description)
     {
         var resultDescription = StoryDescription.Create(description);
         if (resultDescription.IsFailed)

@@ -26,6 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\core\Codend.Application\Codend.Application.csproj" />
       <ProjectReference Include="..\..\src\core\Codend.Domain\Codend.Domain.csproj" />
     </ItemGroup>
 
