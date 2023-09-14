@@ -4,7 +4,7 @@ using MediatR;
 namespace Codend.Application.Core.Abstractions.Messaging.Commands;
 
 /// <summary>
-/// Interface of command handler without response type
+/// Command handler without response type
 /// </summary>
 /// <typeparam name="TCommand">Type of handled command</typeparam>
 public interface ICommandHandler<in TCommand> : IRequestHandler<TCommand, Result> where TCommand : ICommand
@@ -12,7 +12,7 @@ public interface ICommandHandler<in TCommand> : IRequestHandler<TCommand, Result
 }
 
 /// <summary>
-/// Interface of command handler
+/// Command handler with response type.
 /// </summary>
 /// <typeparam name="TCommand">Type of handled command</typeparam>
 /// <typeparam name="TResponse">Result response type</typeparam>

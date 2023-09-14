@@ -17,16 +17,13 @@ public class CreateProjectCommandValidator : AbstractValidator<CreateProjectComm
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithError(new Common.PropertyNullOrEmpty(nameof(CreateProjectCommand.Name)));
-
-        RuleFor(x => x.Name)
+            .WithError(new Common.PropertyNullOrEmpty(nameof(CreateProjectCommand.Name)))
             .MaximumLength(ProjectName.MaxLength)
             .WithError(new Common.StringPropertyTooLong(nameof(CreateProjectCommand.Name),
                 ProjectName.MaxLength));
-
+        
         RuleFor(x => x.Description)
             .MaximumLength(ProjectDescription.MaxLength)
-            .When(x => !string.IsNullOrEmpty(x.Description))
             .WithError(new Common.StringPropertyTooLong(nameof(CreateProjectCommand.Description),
                 ProjectDescription.MaxLength));
     }
