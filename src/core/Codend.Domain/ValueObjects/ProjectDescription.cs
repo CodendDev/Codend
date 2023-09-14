@@ -3,7 +3,7 @@ using Codend.Domain.Core.Extensions;
 using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
-using DescriptionTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectDescription.DescriptionTooLong;
+using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
 
 namespace Codend.Domain.ValueObjects;
 
@@ -30,6 +30,7 @@ public sealed class ProjectDescription : NullableStringValueObject, INullableStr
     {
         return Result
             .Ok(new ProjectDescription(value))
-            .Ensure<ProjectDescription, DescriptionTooLong>(() => value is null || value.Length < MaxLength);
+            .Ensure(() => value is null || value.Length < MaxLength,
+                new TooLong(nameof(ProjectDescription), MaxLength));
     }
 }

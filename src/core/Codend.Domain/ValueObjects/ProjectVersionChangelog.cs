@@ -3,7 +3,7 @@ using Codend.Domain.Core.Extensions;
 using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
-using DescriptionTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionChangelog.DescriptionTooLong;
+using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
 
 namespace Codend.Domain.ValueObjects;
 
@@ -31,6 +31,7 @@ public sealed class ProjectVersionChangelog : NullableStringValueObject,
     {
         return Result
             .Ok(new ProjectVersionChangelog(value))
-            .Ensure<ProjectVersionChangelog, DescriptionTooLong>(() => value is null || value.Length < MaxLength);
+            .Ensure(() => value is null || value.Length < MaxLength,
+                new TooLong(nameof(ProjectVersionChangelog), MaxLength));
     }
 }
