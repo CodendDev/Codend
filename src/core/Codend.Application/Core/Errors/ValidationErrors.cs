@@ -1,4 +1,5 @@
-﻿using Codend.Domain.Core.Errors;
+﻿using Codend.Domain.Core.Enums;
+using Codend.Domain.Core.Errors;
 
 namespace Codend.Application.Core.Errors;
 
@@ -49,6 +50,23 @@ public static partial class ValidationErrors
             /// <inheritdoc />
             public DateIsInThePast(string fieldName) : base("Common.DateIsInThePast",
                 $"Given date field {fieldName} is the past.")
+            {
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Project task validation error static class.
+    /// </summary>
+    public static class ProjectTask
+    {
+        
+        /// <inheritdoc />
+        public class PriorityNotDefined : ValidationError
+        {
+            /// <inheritdoc />
+            public PriorityNotDefined() : base("ProjectTask.PriorityNotDefined",
+                $"Given priority is not defined. Valid priorities: '{string.Join(',',ProjectTaskPriority.DefaultList())}'")
             {
             }
         }
