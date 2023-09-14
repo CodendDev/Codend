@@ -6,7 +6,7 @@ using static Codend.Application.Core.Errors.ValidationErrors.Common;
 namespace Codend.Application.Projects.Commands.CreateProject;
 
 /// <summary>
-/// Validates create project command.
+/// Validates <see cref="CreateProjectCommand"/>.
 /// </summary>
 public class CreateProjectCommandValidator : AbstractValidator<CreateProjectCommand>
 {
@@ -21,7 +21,7 @@ public class CreateProjectCommandValidator : AbstractValidator<CreateProjectComm
             .MaximumLength(ProjectName.MaxLength)
             .WithError(new StringPropertyTooLong(nameof(CreateProjectCommand.Name),
                 ProjectName.MaxLength));
-        
+
         RuleFor(x => x.Description)
             .MaximumLength(ProjectDescription.MaxLength)
             .WithError(new StringPropertyTooLong(nameof(CreateProjectCommand.Description),

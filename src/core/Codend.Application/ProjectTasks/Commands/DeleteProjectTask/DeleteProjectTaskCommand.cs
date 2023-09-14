@@ -14,7 +14,9 @@ namespace Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 /// <param name="ProjectTaskId">Id of the task that will be deleted.</param>
 public sealed record DeleteProjectTaskCommand(Guid ProjectTaskId) : ICommand;
 
-/// <inheritdoc />
+/// <summary>
+/// <see cref="DeleteProjectTaskCommand"/> handler.
+/// </summary>
 public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTaskCommand>
 {
     private readonly IProjectTaskRepository _taskRepository;

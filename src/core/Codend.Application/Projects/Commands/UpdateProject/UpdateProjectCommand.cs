@@ -20,7 +20,9 @@ public sealed record UpdateProjectCommand(
         string? Description)
     : ICommand;
 
-/// <inheritdoc />
+/// <summary>
+/// <see cref="UpdateProjectCommand"/> handler.
+/// </summary>
 public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
 {
     private readonly IProjectRepository _projectRepository;

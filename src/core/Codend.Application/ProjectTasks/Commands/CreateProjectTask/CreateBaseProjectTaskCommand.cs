@@ -8,16 +8,17 @@ using Codend.Domain.Repositories;
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 
 /// <summary>
-/// CreateBugfixProjectTaskCommand implements <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/>
-/// with properties needed for BugfixTask creation.
+/// Command for creating <see cref="BaseProjectTask"/>.
 /// </summary>
-/// <param name="TaskProperties">BugfixProjectTask properties.</param>
+/// <param name="TaskProperties"><see cref="BaseProjectTaskCreateProperties"/> properties.</param>
 public sealed record CreateBaseProjectTaskCommand
 (
     BaseProjectTaskCreateProperties TaskProperties
 ) : ICommand<Guid>, ICreateProjectTaskCommand<BaseProjectTaskCreateProperties>;
 
-/// <inheritdoc />
+/// <summary>
+/// <see cref="CreateBaseProjectTaskCommand"/> handler.
+/// </summary>
 public class CreateBaseProjectTaskCommandHandler :
     CreateProjectTaskCommandAbstractHandler<
         CreateBaseProjectTaskCommand,

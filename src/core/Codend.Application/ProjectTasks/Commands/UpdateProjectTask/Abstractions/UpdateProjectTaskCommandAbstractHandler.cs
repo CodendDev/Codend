@@ -11,13 +11,13 @@ using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
 /// <summary>
-/// Abstract handler for updating any <see cref="BaseProjectTask"/>. 
+/// Abstract handler for updating any <see cref="BaseProjectTask"/> class. 
 /// </summary>
 /// <typeparam name="TCommand">
 /// Command that implements <see cref="IUpdateProjectTaskCommand"/> interface.
 /// </typeparam>
 /// <typeparam name="TProjectTask">
-/// Derived from AbstractProjectTask class.
+/// ProjectTask derived from <see cref="BaseProjectTask"/> class.
 /// </typeparam>
 public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProjectTask>
     : ICommandHandler<TCommand>

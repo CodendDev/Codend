@@ -18,7 +18,9 @@ public sealed record CreateProjectCommand(
         string? Description)
     : ICommand<Guid>;
 
-/// <inheritdoc />
+/// <summary>
+/// <see cref="CreateProjectCommand"/> handler.
+/// </summary>
 public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand, Guid>
 {
     private readonly IProjectRepository _projectRepository;
@@ -77,7 +79,7 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
         _projectRepository.Add(project);
         _projectMemberRepository.Add(resultProjectMember.Value);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         return project.Id.Value;
     }
 }

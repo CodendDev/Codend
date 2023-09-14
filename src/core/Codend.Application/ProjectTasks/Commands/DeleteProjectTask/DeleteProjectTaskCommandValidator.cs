@@ -5,7 +5,7 @@ using FluentValidation;
 namespace Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 
 /// <summary>
-/// Validator for <see cref="DeleteProjectTaskCommand"/>
+/// Validator for <see cref="DeleteProjectTaskCommand"/>.
 /// </summary>
 public class DeleteProjectTaskCommandValidator : AbstractValidator<DeleteProjectTaskCommand>
 {

@@ -11,7 +11,8 @@ using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 
 /// <summary>
-/// Creates ProjectTask using <see cref="IProjectTaskCreator{TProjectTask,TProps}.Create"/> and persists it.
+/// Abstract handler for commands implementing <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/> interface.
+/// Creates <see cref="TProjectTask"/> using <see cref="IProjectTaskCreator{TProjectTask,TProps}.Create"/> and persists it.
 /// </summary>
 /// <typeparam name="TCommand">
 /// Must implement <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/> interface.
@@ -35,7 +36,7 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     private readonly IStoryRepository _storyRepository;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CreateProjectTaskCommandAbstractHandler"/> class.
+    /// Initializes a new instance of the <see cref="CreateProjectTaskCommandAbstractHandler{TCommand,TProjectTask,TProjectTaskProperties}"/> class.
     /// </summary>
     protected CreateProjectTaskCommandAbstractHandler(
         IProjectTaskRepository projectTaskRepository,
