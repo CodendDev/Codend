@@ -3,8 +3,7 @@ using Codend.Domain.Core.Extensions;
 using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
-using NameNullOrEmpty = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus.NameNullOrEmpty;
-using NameTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus.NameTooLong;
+using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
 
 namespace Codend.Domain.ValueObjects;
 
@@ -32,7 +31,7 @@ public sealed class ProjectTaskStatusName : StringValueObject, IStringValueObjec
     {
         return Result
             .Ok(new ProjectTaskStatusName(value))
-            .Ensure<ProjectTaskStatusName, NameNullOrEmpty>(() => !string.IsNullOrEmpty(value))
-            .Ensure<ProjectTaskStatusName, NameTooLong>(() => value.Length < MaxLength);
+            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty(nameof(ProjectTaskStatusName)))
+            .Ensure(() => value.Length < MaxLength, new TooLong(nameof(ProjectTaskStatusName), MaxLength));
     }
 }

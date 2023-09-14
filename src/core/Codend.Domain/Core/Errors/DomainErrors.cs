@@ -1,6 +1,4 @@
-﻿using FluentResults;
-
-namespace Codend.Domain.Core.Errors;
+﻿namespace Codend.Domain.Core.Errors;
 
 /// <summary>
 /// Contains the domain errors.
@@ -25,7 +23,27 @@ public static partial class DomainErrors
     {
         public class ServerError : DomainError
         {
-            public ServerError() : base("General.ServerError", "Unexpected server error.")
+            public ServerError() : base("General.ServerError", $"Unexpected server error.")
+            {
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Common errors for string value objects.
+    /// </summary>
+    public static class StringValueObject
+    {
+        public class NullOrEmpty : DomainError
+        {
+            public NullOrEmpty(string fieldName) : base($"StringValueObject.NullOrEmpty.{fieldName}", $"Field {fieldName} cannot be null nor empty.")
+            {
+            }
+        }
+        
+        public class TooLong : DomainError
+        {
+            public TooLong(string fieldName, int maxLength) : base($"StringValueObject.TooLong.{fieldName}", $"Field {fieldName} is longer than allowed {maxLength}.")
             {
             }
         }

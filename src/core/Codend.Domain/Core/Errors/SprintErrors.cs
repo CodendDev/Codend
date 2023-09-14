@@ -15,26 +15,4 @@ public static partial class DomainErrors
             }
         }
     }
-
-    /// <summary>
-    /// Sprint goal domain errors.
-    /// </summary>
-    public static class SprintGoal
-    {
-        public class GoalTooLong : DomainError
-        {
-            public GoalTooLong()
-                : base("SprintGoal.GoalTooLong", "Given goal is too long.")
-            {
-            }
-        }
-
-        public class NullOrEmpty : DomainError
-        {
-            public NullOrEmpty()
-                : base("SprintGoal.NullOrEmpty", "Given goal is null or empty.")
-            {
-            }
-        }
-    }
 }

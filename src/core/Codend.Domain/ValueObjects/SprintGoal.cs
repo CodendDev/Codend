@@ -1,9 +1,8 @@
-﻿using Codend.Domain.Core.Errors;
-using Codend.Domain.Core.Extensions;
+﻿using Codend.Domain.Core.Extensions;
 using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
-using GoalTooLong = Codend.Domain.Core.Errors.DomainErrors.SprintGoal.GoalTooLong;
+using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
 
 namespace Codend.Domain.ValueObjects;
 
@@ -30,6 +29,6 @@ public sealed class SprintGoal : NullableStringValueObject, INullableStringValue
     {
         return Result
             .Ok(new SprintGoal(value))
-            .Ensure<SprintGoal, GoalTooLong>(() => value is null || value.Length < MaxLength);
+            .Ensure(() => value is null || value.Length < MaxLength, new TooLong(nameof(SprintGoal), MaxLength));
     }
 }

@@ -10,5 +10,5 @@ public interface INullableStringValueObject
 
 public interface INullableStringValueObject<T> : INullableStringValueObject
 {
-    static abstract Result<T> Create(string value);
+    static abstract Result<T> Create(string? value);
 }
