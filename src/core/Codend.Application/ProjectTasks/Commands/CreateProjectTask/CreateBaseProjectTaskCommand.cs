@@ -17,17 +17,27 @@ public sealed record CreateBaseProjectTaskCommand
     BaseProjectTaskCreateProperties TaskProperties
 ) : ICommand<Guid>, ICreateProjectTaskCommand<BaseProjectTaskCreateProperties>;
 
+/// <inheritdoc />
 public class CreateBaseProjectTaskCommandHandler :
     CreateProjectTaskCommandAbstractHandler<
         CreateBaseProjectTaskCommand,
         BaseProjectTask,
         BaseProjectTaskCreateProperties>
 {
-    public CreateBaseProjectTaskCommandHandler(
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateBaseProjectTaskCommandHandler"/> class.
+    /// </summary>
+    protected CreateBaseProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider)
-        : base(projectTaskRepository, unitOfWork, identityProvider)
+        IUserIdentityProvider identityProvider,
+        IProjectMemberRepository projectMemberRepository,
+        IStoryRepository storyRepository)
+        : base(projectTaskRepository,
+            unitOfWork,
+            identityProvider,
+            projectMemberRepository,
+            storyRepository)
     {
     }
 }

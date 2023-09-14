@@ -33,5 +33,21 @@ public static partial class DomainErrors
             {
             }
         }
+
+        public class InvalidAssigneeId : DomainError
+        {
+            public InvalidAssigneeId() : base("ProjectTaskErrors.InvalidAssigneeId",
+                "User with given does not exist or is not a member of the project.")
+            {
+            }
+        }
+        
+        public class InvalidStoryId : DomainError
+        {
+            public InvalidStoryId() : base("ProjectTaskErrors.InvalidStoryId",
+                "Story with given does not exist or is not a member of the project.")
+            {
+            }
+        }
     }
 }

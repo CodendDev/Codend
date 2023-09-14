@@ -17,17 +17,27 @@ public sealed record CreateBugfixProjectTaskCommand
     BugfixProjectTaskCreateProperties TaskProperties
 ) : ICommand<Guid>, ICreateProjectTaskCommand<BugfixProjectTaskCreateProperties>;
 
+/// <inheritdoc />
 public class CreateBugfixProjectTaskCommandHandler :
     CreateProjectTaskCommandAbstractHandler<
         CreateBugfixProjectTaskCommand,
         BugfixProjectTask,
         BugfixProjectTaskCreateProperties>
 {
-    public CreateBugfixProjectTaskCommandHandler(
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateBugfixProjectTaskCommandHandler"/> class.
+    /// </summary>
+    protected CreateBugfixProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider)
-        : base(projectTaskRepository, unitOfWork, identityProvider)
+        IUserIdentityProvider identityProvider,
+        IProjectMemberRepository projectMemberRepository,
+        IStoryRepository storyRepository)
+        : base(projectTaskRepository,
+            unitOfWork,
+            identityProvider,
+            projectMemberRepository,
+            storyRepository)
     {
     }
 }
