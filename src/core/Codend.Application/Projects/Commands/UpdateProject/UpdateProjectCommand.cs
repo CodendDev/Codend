@@ -49,6 +49,11 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
         {
             return Result.Fail(new ProjectNotFound());
         }
+
+        if (await _projectMemberRepository.IsProjectMember(userId, project.Id, cancellationToken))
+        {
+            return Result.Fail(new ProjectNotFound());
+        }
         
         var result = project.Edit(request.Name, request.Description);
         if (result.IsFailed)
