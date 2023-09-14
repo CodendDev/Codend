@@ -1,7 +1,7 @@
-﻿using Codend.Application.Core.Errors;
-using Codend.Application.Extensions;
+﻿using Codend.Application.Extensions;
 using Codend.Domain.ValueObjects;
 using FluentValidation;
+using static Codend.Application.Core.Errors.ValidationErrors;
 
 namespace Codend.Application.Projects.Commands.CreateProject;
 
@@ -17,17 +17,17 @@ public class CreateProjectCommandValidator : AbstractValidator<CreateProjectComm
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithError(new ValidationErrors.Common.StringPropertyNullOrEmpty(nameof(CreateProjectCommand.Name)));
+            .WithError(new Common.PropertyNullOrEmpty(nameof(CreateProjectCommand.Name)));
 
         RuleFor(x => x.Name)
             .MaximumLength(ProjectName.MaxLength)
-            .WithError(new ValidationErrors.Common.StringPropertyTooLong(nameof(CreateProjectCommand.Name),
+            .WithError(new Common.StringPropertyTooLong(nameof(CreateProjectCommand.Name),
                 ProjectName.MaxLength));
 
         RuleFor(x => x.Description)
             .MaximumLength(ProjectDescription.MaxLength)
             .When(x => !string.IsNullOrEmpty(x.Description))
-            .WithError(new ValidationErrors.Common.StringPropertyTooLong(nameof(CreateProjectCommand.Description),
+            .WithError(new Common.StringPropertyTooLong(nameof(CreateProjectCommand.Description),
                 ProjectDescription.MaxLength));
     }
 }

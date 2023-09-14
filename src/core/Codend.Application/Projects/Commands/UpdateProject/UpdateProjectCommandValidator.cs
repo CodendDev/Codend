@@ -33,7 +33,7 @@ public class UpdateProjectCommandValidator : AbstractValidator<UpdateProjectComm
             {
                 RuleFor(x => x.Name)
                     .NotEmpty()
-                    .WithError(new ValidationErrors.Common.StringPropertyNullOrEmpty(nameof(UpdateProjectCommand.Name)));
+                    .WithError(new ValidationErrors.Common.PropertyNullOrEmpty(nameof(UpdateProjectCommand.Name)));
 
                 RuleFor(x => x.Name)
                     .MaximumLength(ProjectName.MaxLength)
