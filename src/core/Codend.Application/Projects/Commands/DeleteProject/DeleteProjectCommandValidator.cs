@@ -1,6 +1,6 @@
-﻿using Codend.Application.Core.Errors;
-using Codend.Application.Extensions;
+﻿using Codend.Application.Extensions;
 using FluentValidation;
+using static Codend.Application.Core.Errors.ValidationErrors.Common;
 
 namespace Codend.Application.Projects.Commands.DeleteProject;
 
@@ -16,6 +16,6 @@ public class DeleteProjectCommandValidator : AbstractValidator<DeleteProjectComm
     {
         RuleFor(x => x.ProjectId)
             .NotEmpty()
-            .WithError(new ValidationErrors.Common.PropertyNullOrEmpty(nameof(DeleteProjectCommand.ProjectId)));
+            .WithError(new PropertyNullOrEmpty(nameof(DeleteProjectCommand.ProjectId)));
     }
 }

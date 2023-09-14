@@ -50,7 +50,7 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
             return Result.Fail(new ProjectNotFound());
         }
 
-        if (await _projectMemberRepository.IsProjectMember(userId, project.Id, cancellationToken))
+        if (!await _projectMemberRepository.IsProjectMember(userId, project.Id, cancellationToken))
         {
             return Result.Fail(new ProjectNotFound());
         }
