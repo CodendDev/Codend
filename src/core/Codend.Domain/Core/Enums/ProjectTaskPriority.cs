@@ -1,9 +1,11 @@
 ﻿using Ardalis.SmartEnum;
+using FluentResults;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskPriority;
 
 namespace Codend.Domain.Core.Enums;
 
 /// <summary>
-/// Unmutable task priority values.
+/// Immutable task priority values.
 /// </summary>
 public sealed class ProjectTaskPriority : SmartEnum<ProjectTaskPriority>
 {
@@ -31,5 +33,14 @@ public sealed class ProjectTaskPriority : SmartEnum<ProjectTaskPriority>
 
     private ProjectTaskPriority(string name, int value) : base(name, value)
     {
+    }
+
+    public static Result<ProjectTaskPriority> ParseFromString(string requestPriority)
+    {
+        var priorityParsed = TryFromName(requestPriority, true, out var priority);
+        var resultPriority = priorityParsed
+            ? Result.Ok(priority)
+            : Result.Fail(new InvalidPriorityName());
+        return resultPriority;
     }
 }

@@ -1,6 +1,6 @@
+using Codend.Application.Core;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Domain.Core.Enums;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
@@ -49,6 +49,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         {
             return Result.Fail(new DomainErrors.ProjectTaskErrors.ProjectTaskNotFound());
         }
+        //TODO status asagnee
 
         var result = HandleUpdate(task, request);
         if (result.IsFailed)
@@ -71,58 +72,19 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     /// <returns><see cref="Result"/>.Ok() or a failure with errors.</returns>
     protected virtual Result HandleUpdate(TProjectTask task, TCommand request)
     {
-        var results = new List<Result>();
+        var result = Result.Merge
+        (
+            request.Name.HandleUpdateWithResult(task.EditName),
+            request.Description.HandleUpdateWithResult(task.EditDescription),
+            request.EstimatedTime.HandleUpdate(task.EditEstimatedTime),
+            request.DueDate.HandleUpdate(task.EditDueDate),
+            request.StoryPoints.HandleUpdate(task.EditStoryPoints),
+            request.AssigneeId.HandleUpdate(task.AssignUser),
+            request.StoryId.HandleUpdate(task.EditStory),
+            request.StatusId.HandleUpdate(task.EditStatus),
+            request.Priority.HandleUpdateWithResult(task.EditPriority)
+        );
 
-        if (request.Name.ShouldUpdate)
-        {
-            results.Add(task.EditName(request.Name.Value!).ToResult());
-        }
-
-        if (request.Priority.ShouldUpdate)
-        {
-            var priorityParsed = ProjectTaskPriority.TryFromName(request.Priority.Value, true, out var priority);
-            var resultPriority = priorityParsed
-                ? Result.Ok(priority)
-                : Result.Fail(new DomainErrors.ProjectTaskPriority.InvalidPriorityName());
-            task.ChangePriority(priority);
-            results.Add(resultPriority.ToResult());
-        }
-
-        if (request.StatusId.ShouldUpdate)
-        {
-            results.Add(task.ChangeStatus(request.StatusId.Value).ToResult());
-        }
-
-        if (request.Description.ShouldUpdate)
-        {
-            results.Add(task.EditDescription(request.Description.Value!).ToResult());
-        }
-
-        if (request.EstimatedTime.ShouldUpdate)
-        {
-            results.Add(task.EditEstimatedTime(request.EstimatedTime.Value).ToResult());
-        }
-
-        if (request.DueDate.ShouldUpdate)
-        {
-            results.Add(task.SetDueDate(request.DueDate.Value).ToResult());
-        }
-
-        if (request.StoryPoints.ShouldUpdate)
-        {
-            results.Add(task.EditStoryPoints(request.StoryPoints.Value).ToResult());
-        }
-
-        if (request.AssigneeId.ShouldUpdate)
-        {
-            results.Add(task.AssignUser(request.AssigneeId.Value).ToResult());
-        }
-
-        if (request.StoryId.ShouldUpdate)
-        {
-            results.Add(task.EditStory(request.StoryId.Value).ToResult());
-        }
-
-        return Result.Merge(results.ToArray());
+        return result;
     }
 }
