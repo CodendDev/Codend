@@ -75,7 +75,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         var userId = _identityProvider.UserId;
         if (!await _memberRepository.IsProjectMember(userId, task.ProjectId, cancellationToken))
         {
-            return Result.Fail(new ProjectNotFound());
+            return Result.Fail(new ProjectTaskNotFound());
         }
 
         // Validate status.
