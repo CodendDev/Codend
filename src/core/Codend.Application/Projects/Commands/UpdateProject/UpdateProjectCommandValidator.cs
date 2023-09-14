@@ -1,10 +1,7 @@
-﻿using Codend.Application.Core.Abstractions.Authentication;
-using Codend.Application.Core.Errors;
-using Codend.Application.Extensions;
-using Codend.Domain.Entities;
-using Codend.Domain.Repositories;
+﻿using Codend.Application.Extensions;
 using Codend.Domain.ValueObjects;
 using FluentValidation;
+using static Codend.Application.Core.Errors.ValidationErrors.Common;
 
 namespace Codend.Application.Projects.Commands.UpdateProject;
 
@@ -13,47 +10,25 @@ namespace Codend.Application.Projects.Commands.UpdateProject;
 /// </summary>
 public class UpdateProjectCommandValidator : AbstractValidator<UpdateProjectCommand>
 {
-    private readonly IProjectMemberRepository _projectMemberRepository;
-    private readonly IUserIdentityProvider _identityProvider;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateProjectCommandValidator"/> class.
     /// </summary>
-    public UpdateProjectCommandValidator(IProjectMemberRepository projectMemberRepository,
-        IUserIdentityProvider identityProvider)
+    public UpdateProjectCommandValidator()
     {
-        _projectMemberRepository = projectMemberRepository;
-        _identityProvider = identityProvider;
-
         RuleFor(x => x.ProjectId)
-            .MustAsync(ProjectExistsAndUserIsMember)
-            .WithError(new ValidationErrors.Project.NotFoundOrUserUnauthorized())
-            .WithSeverity(Severity.Warning)
-            .DependentRules(() =>
-            {
-                RuleFor(x => x.Name)
-                    .NotEmpty()
-                    .WithError(new ValidationErrors.Common.PropertyNullOrEmpty(nameof(UpdateProjectCommand.Name)));
+            .NotEmpty()
+            .WithError(new PropertyNullOrEmpty(nameof(UpdateProjectCommand.ProjectId)));
+        
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .WithError(new PropertyNullOrEmpty(nameof(UpdateProjectCommand.Name)))
+            .MaximumLength(ProjectName.MaxLength)
+            .WithError(new StringPropertyTooLong(nameof(UpdateProjectCommand.Name),
+                ProjectName.MaxLength));
 
-                RuleFor(x => x.Name)
-                    .MaximumLength(ProjectName.MaxLength)
-                    .WithError(new ValidationErrors.Common.StringPropertyTooLong(nameof(UpdateProjectCommand.Name),
-                        ProjectName.MaxLength));
-
-                RuleFor(x => x.Description)
-                    .MaximumLength(ProjectDescription.MaxLength)
-                    .When(x => !string.IsNullOrEmpty(x.Description))
-                    .WithError(new ValidationErrors.Common.StringPropertyTooLong(nameof(UpdateProjectCommand.Description),
-                        ProjectDescription.MaxLength));
-            });
-    }
-
-    private async Task<bool> ProjectExistsAndUserIsMember(Guid projectId, CancellationToken cancellationToken)
-    {
-        var userId = _identityProvider.UserId;
-        var projectMember =
-            await _projectMemberRepository.GetByProjectAndMemberId(new ProjectId(projectId), userId, cancellationToken);
-
-        return projectMember is not null;
+        RuleFor(x => x.Description)
+            .MaximumLength(ProjectDescription.MaxLength)
+            .WithError(new StringPropertyTooLong(nameof(UpdateProjectCommand.Description),
+                ProjectDescription.MaxLength));
     }
 }
