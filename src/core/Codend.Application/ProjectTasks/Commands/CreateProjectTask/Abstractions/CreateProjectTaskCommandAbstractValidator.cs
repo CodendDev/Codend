@@ -1,7 +1,6 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Errors;
 using Codend.Application.Extensions;
-using Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 using Codend.Domain.Core.Enums;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Abstractions;
@@ -10,7 +9,7 @@ using Codend.Domain.ValueObjects;
 using FluentValidation;
 using static Codend.Application.Core.Errors.ValidationErrors;
 
-namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
+namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 
 /// <summary>
 /// Abstract validator for ProjectTask classes.
