@@ -8,8 +8,8 @@ using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 using Codend.Domain.Core.Errors;
 using Codend.Presentation.Infrastructure;
+using Codend.Presentation.Requests.Abstractions;
 using Codend.Presentation.Requests.ProjectTasks.Create;
-using Codend.Presentation.Requests.ProjectTasks.Create.Abstractions;
 using Codend.Presentation.Requests.ProjectTasks.Update;
 using Codend.Presentation.Requests.ProjectTasks.Update.Abstractions;
 using MediatR;
@@ -28,7 +28,7 @@ public class ProjectTaskController : ApiController
     #region Private methods
 
     private async Task<IActionResult> CreateTask<TRequest, TCommand>(TRequest request)
-        where TRequest : ICreateProjectTaskMapToCommand<TCommand>
+        where TRequest : IMapRequestToCommand<TCommand, Guid>
         where TCommand : ICommand<Guid>, ICreateProjectTaskCommand
     {
         var command = request.MapToCommand();

@@ -3,10 +3,11 @@ using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.ProjectTasks.Create;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
-using Codend.Presentation.Requests.ProjectTasks.Create.Abstractions;
+using Codend.Presentation.Requests.Abstractions;
 
 namespace Codend.Presentation.Requests.ProjectTasks.Create;
 
+/// <inheritdoc cref="Codend.Contracts.Requests.ProjectTasks.Create.ICreateBugfixProjectTaskRequest" />
 public sealed record CreateBugfixProjectTaskRequest
 (
     string Name,
@@ -17,9 +18,11 @@ public sealed record CreateBugfixProjectTaskRequest
     EstimatedTimeRequest? EstimatedTime,
     DateTime? DueDate,
     uint? StoryPoints,
-    Guid? AssigneeId
-) : ICreateBugfixProjectTaskRequest, ICreateProjectTaskMapToCommand<CreateBugfixProjectTaskCommand>
+    Guid? AssigneeId,
+    Guid? StoryId
+) : ICreateBugfixProjectTaskRequest, IMapRequestToCommand<CreateBugfixProjectTaskCommand, Guid>
 {
+    /// <inheritdoc />
     public CreateBugfixProjectTaskCommand MapToCommand()
     {
         var command = new CreateBugfixProjectTaskCommand(
@@ -37,7 +40,8 @@ public sealed record CreateBugfixProjectTaskRequest
                     : null,
                 DueDate,
                 StoryPoints,
-                AssigneeId is not null ? new UserId(AssigneeId.Value) : null
+                AssigneeId is not null ? new UserId(AssigneeId.Value) : null,
+                StoryId is not null ? new StoryId(StoryId.Value) : null
             ));
 
         return command;

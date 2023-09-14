@@ -15,4 +15,5 @@ public interface IProjectTaskCreateProperties
     DateTime? DueDate { get; }
     uint? StoryPoints { get; }
     UserId? AssigneeId { get; }
+    StoryId? StoryId { get; }
 }

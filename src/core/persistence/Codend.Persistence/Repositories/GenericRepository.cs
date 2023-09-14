@@ -39,4 +39,9 @@ public abstract class GenericRepository<TKey, TKeyPrimitive, TEntity>
     {
         Context.Set<TEntity>().Update(entity);
     }
+
+    public void UpdateRange(IEnumerable<TEntity> entities)
+    {
+        Context.Set<TEntity>().UpdateRange(entities);
+    }
 }

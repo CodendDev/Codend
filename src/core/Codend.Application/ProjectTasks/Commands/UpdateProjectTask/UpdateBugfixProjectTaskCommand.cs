@@ -8,6 +8,9 @@ using Codend.Domain.Repositories;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 
+/// <summary>
+/// Record used for updating <see cref="BugfixProjectTask"/> properties.
+/// </summary>
 public sealed record UpdateBugfixProjectTaskCommand(
     ProjectTaskId TaskId,
     IShouldUpdate<string> Name,
@@ -17,12 +20,17 @@ public sealed record UpdateBugfixProjectTaskCommand(
     IShouldUpdate<TimeSpan?> EstimatedTime,
     IShouldUpdate<DateTime?> DueDate,
     IShouldUpdate<uint?> StoryPoints,
-    IShouldUpdate<UserId?> AssigneeId
+    IShouldUpdate<UserId?> AssigneeId,
+    IShouldUpdate<StoryId?> StoryId
 ) : ICommand, IUpdateProjectTaskCommand;
 
+/// <summary>
+/// Command handler for <see cref="UpdateBugfixProjectTaskCommand"/>.
+/// </summary>
 public class UpdateBugfixProjectTaskCommandHandler :
     UpdateProjectTaskCommandAbstractHandler<UpdateBugfixProjectTaskCommand, BugfixProjectTask>
 {
+    /// <inheritdoc />
     public UpdateBugfixProjectTaskCommandHandler(IProjectTaskRepository taskRepository, IUnitOfWork unitOfWork)
         : base(taskRepository, unitOfWork)
     {

@@ -17,12 +17,18 @@ public class BaseProjectTask :
     ISoftDeletableEntity,
     IProjectTaskCreator<BaseProjectTask, BaseProjectTaskCreateProperties>
 {
-    protected BaseProjectTask(ProjectTaskId id) : base(id)
+    protected BaseProjectTask() : base(new ProjectTaskId(Guid.NewGuid()))
     {
     }
 
+    #region ISoftDeletableEntity properties
+
     public DateTime DeletedOnUtc { get; }
     public bool Deleted { get; }
+
+    #endregion
+
+    #region BaseProjectTask properties
 
     public ProjectTaskName Name { get; private set; }
     public ProjectTaskDescription Description { get; private set; }
@@ -34,6 +40,11 @@ public class BaseProjectTask :
     public ProjectId ProjectId { get; private set; }
     public TimeSpan? EstimatedTime { get; private set; }
     public uint? StoryPoints { get; private set; }
+    public StoryId? StoryId { get; set; }
+
+    #endregion
+
+    #region Domain methods
 
     /// <summary>
     /// Edits name of the ProjectTask, and validates new name.
@@ -146,6 +157,47 @@ public class BaseProjectTask :
         return Result.Ok(storyPoints);
     }
 
+    /// <summary>
+    /// Edits Story to which task belongs.
+    /// </summary>
+    /// <param name="storyId">New story Id.</param>
+    public Result<StoryId?> EditStory(StoryId? storyId)
+    {
+        StoryId = storyId;
+
+        var evt = new ProjectTaskStoryEditedEvent(Id, storyId);
+        Raise(evt);
+
+        return Result.Ok(storyId);
+    }
+
+    /// <summary>
+    /// Creates <see cref="BaseProjectTask"/>.
+    /// </summary>
+    /// <param name="properties"><see cref="BaseProjectTaskCreateProperties"/> used for creation.</param>
+    /// <param name="ownerId">Owner of the task.</param>
+    /// <returns>Created <see cref="BaseProjectTask"/> or error.</returns>
+    public static Result<BaseProjectTask> Create(BaseProjectTaskCreateProperties properties, UserId ownerId)
+    {
+        var task = new BaseProjectTask();
+        var result = task.PopulateBaseProperties(properties, ownerId);
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        return Result.Ok(task);
+    }
+
+    #endregion
+
+    /// <summary>
+    /// Populates properties of base task.
+    /// </summary>
+    /// <param name="properties"><see cref="IProjectTaskCreateProperties"/> properties.</param>
+    /// <param name="ownerId">Owner of the task.</param>
+    /// <returns>Created <see cref="BaseProjectTask"/> or error.</returns>
+    /// <exception cref="ArgumentException">Throws when OwnerId is null.</exception>
     protected Result<BaseProjectTask> PopulateBaseProperties(IProjectTaskCreateProperties properties, UserId ownerId)
     {
         var resultName = ProjectTaskName.Create(properties.Name);
@@ -169,19 +221,8 @@ public class BaseProjectTask :
         DueDate = properties.DueDate;
         StoryPoints = properties.StoryPoints;
         AssigneeId = properties.AssigneeId;
+        StoryId = properties.StoryId;
 
         return Result.Ok();
-    }
-
-    public static Result<BaseProjectTask> Create(BaseProjectTaskCreateProperties properties, UserId ownerId)
-    {
-        var task = new BaseProjectTask(new ProjectTaskId(Guid.NewGuid()));
-        var result = task.PopulateBaseProperties(properties, ownerId);
-        if (result.IsFailed)
-        {
-            return result;
-        }
-
-        return Result.Ok(task);
     }
 }

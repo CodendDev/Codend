@@ -25,12 +25,24 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
 
+    /// <summary>
+    /// Constructs implementation of <see cref="UpdateProjectTaskCommandAbstractHandler{TCommand,TProjectTask}"/> with
+    /// <see cref="TCommand"/> and <see cref="TProjectTask"/> classes.
+    /// </summary>
+    /// <param name="taskRepository">Repository used for <see cref="BaseProjectTask"/>s.</param>
+    /// <param name="unitOfWork">Unit of work.</param>
     protected UpdateProjectTaskCommandAbstractHandler(IProjectTaskRepository taskRepository, IUnitOfWork unitOfWork)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
     }
 
+    /// <summary>
+    /// Handles command request. Calls <see cref="HandleUpdate"/> to update task.
+    /// </summary>
+    /// <param name="request">Command request.</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="Result"/>.Ok() or a failure with errors.</returns>
     public async Task<Result> Handle(TCommand request, CancellationToken cancellationToken)
     {
         if (await _taskRepository.GetByIdAsync(request.TaskId) is not TProjectTask task)
@@ -50,6 +62,13 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         return Result.Ok();
     }
 
+    /// <summary>
+    /// Implementation of <see cref="HandleUpdate"/> for <see cref="BaseProjectTask"/>.
+    /// Overwrite to create custom task updater.
+    /// </summary>
+    /// <param name="task">Task which will be updated.</param>
+    /// <param name="request">Command request.</param>
+    /// <returns><see cref="Result"/>.Ok() or a failure with errors.</returns>
     protected virtual Result HandleUpdate(TProjectTask task, TCommand request)
     {
         var results = new List<Result>();
@@ -97,6 +116,11 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         if (request.AssigneeId.ShouldUpdate)
         {
             results.Add(task.AssignUser(request.AssigneeId.Value).ToResult());
+        }
+
+        if (request.StoryId.ShouldUpdate)
+        {
+            results.Add(task.EditStory(request.StoryId.Value).ToResult());
         }
 
         return Result.Merge(results.ToArray());

@@ -68,5 +68,11 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<BasePr
 
         builder
             .Property(projectTask => projectTask.StoryPoints);
+
+        builder
+            .HasOne<Story>()
+            .WithMany()
+            .HasForeignKey(task => task.StoryId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
