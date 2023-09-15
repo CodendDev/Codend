@@ -9,7 +9,6 @@ using Codend.Contracts;
 using Codend.Contracts.Responses.ProjectTask;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
-using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Codend.Presentation.Infrastructure;
 using Codend.Presentation.Requests.Abstractions;
 using Codend.Presentation.Requests.ProjectTasks.Create;
@@ -159,18 +158,9 @@ public class ProjectTaskController : ApiController
     /// <summary>
     /// Creates new BaseProjectTask entity.
     /// </summary>
-    /// <param name="request">The create base project task request which body includes:
-    /// - Required fields:
-    ///     - name
-    ///     - priority
-    ///     - statusId
-    /// - Optional fields:
-    ///     - description
-    ///     - estimatedTime
-    ///     - dueDate
-    ///     - storyPoints
-    ///     - assigneeId
-    ///     - storyId
+    /// <param name="request">The create base project task request which body
+    /// includes required fields (name, priority, statusId) and
+    /// optional fields (description, estimatedTime, dueDate, storyPoints, assigneeId, storyId).
     /// </param>
     /// <remarks>
     /// Valid priorities: [VeryHigh, High, Normal, Low, VeryLow]
@@ -208,20 +198,7 @@ public class ProjectTaskController : ApiController
     /// Updates BaseProjectTask entity with given <paramref name="projectTaskId"/>.
     /// </summary>
     /// <param name="projectTaskId">Id of the base project task that will be updated.</param>
-    /// <param name="request">The update base project task request which body includes:
-    /// - Required fields:
-    ///     - name
-    ///     - priority
-    ///     - statusId
-    /// - Optional fields:
-    ///     - description
-    ///     - estimatedTime
-    ///     - dueDate
-    ///     - storyPoints
-    ///     - assigneeId
-    ///     - storyId
-    /// Where every field is packed within ShouldUpdate object body.
-    /// </param>
+    /// <param name="request">The update base project task request.</param>
     /// <remarks>
     /// Valid priorities: [VeryHigh, High, Normal, Low, VeryLow]
     /// TODO:replace with correct sample request
@@ -268,18 +245,9 @@ public class ProjectTaskController : ApiController
     /// <summary>
     /// Creates new BugfixProjectTask entity.
     /// </summary>
-    /// <param name="request">The create bugfix project task request which body includes:
-    /// - Required fields:
-    ///     - name
-    ///     - priority
-    ///     - statusId
-    /// - Optional fields:
-    ///     - description
-    ///     - estimatedTime
-    ///     - dueDate
-    ///     - storyPoints
-    ///     - assigneeId
-    ///     - storyId
+    /// <param name="request">The create bugfix project task request which body
+    /// includes required fields (name, priority, statusId) and
+    /// optional fields (description, estimatedTime, dueDate, storyPoints, assigneeId, storyId).
     /// </param>
     /// <remarks>
     /// Valid priorities: [VeryHigh, High, Normal, Low, VeryLow]
@@ -318,20 +286,7 @@ public class ProjectTaskController : ApiController
     /// Updates BugfixProjectTask entity with given <paramref name="projectTaskId"/>.
     /// </summary>
     /// <param name="projectTaskId">Id of the bugfix project task that will be updated.</param>
-    /// <param name="request">The update bugfix project task request which body includes:
-    /// - Required fields:
-    ///     - name
-    ///     - priority
-    ///     - statusId
-    /// - Optional fields:
-    ///     - description
-    ///     - estimatedTime
-    ///     - dueDate
-    ///     - storyPoints
-    ///     - assigneeId
-    ///     - storyId
-    /// Where every field is packed within ShouldUpdate object body.
-    /// </param>
+    /// <param name="request">The update bugfix project task request.</param>
     /// <remarks>
     /// Valid priorities: [VeryHigh, High, Normal, Low, VeryLow]
     /// TODO:replace with correct sample request
