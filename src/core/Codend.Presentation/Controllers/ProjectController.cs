@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Codend.Presentation.Controllers;
 
 /// <summary>
-/// Controller containing endpoints associated with Project entity management.
+/// Controller containing endpoints associated with <see cref="Project"/> entity management.
 /// </summary>
 [Route("api/project")]
 public class ProjectController : ApiController
@@ -28,7 +28,7 @@ public class ProjectController : ApiController
     }
 
     /// <summary>
-    /// Creates new <see cref="Project"/> entity.
+    /// Creates new Project entity.
     /// </summary>
     /// <param name="request">The create project request which includes project name and description.</param>
     /// <remarks>
@@ -58,7 +58,7 @@ public class ProjectController : ApiController
     }
 
     /// <summary>
-    /// Deletes <see cref="Project"/> entity with given <paramref name="projectId"/>.
+    /// Deletes Project entity with given <paramref name="projectId"/>.
     /// </summary>
     /// <param name="projectId">Id of the project that will be deleted.</param>
     /// <returns>
@@ -80,7 +80,7 @@ public class ProjectController : ApiController
     }
 
     /// <summary>
-    /// Updated the <see cref="Project"/> entity with given <paramref name="projectId"/>.
+    /// Updated the Project entity with given <paramref name="projectId"/>.
     /// </summary>
     /// <param name="projectId">Id of the project that will be updated.</param>
     /// <param name="request">The update project request which includes project name and description.</param>
@@ -117,7 +117,7 @@ public class ProjectController : ApiController
     }
 
     /// <summary>
-    /// Retrieves common information about <see cref="Project"/> with given <paramref name="projectId"/>
+    /// Retrieves common information about Project with given <paramref name="projectId"/>
     /// </summary>
     /// <param name="projectId">The id of the project which data will be returned.</param>
     /// <returns>
