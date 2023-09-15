@@ -18,7 +18,6 @@ using Codend.Presentation.Infrastructure;
 using Codend.Presentation.Requests.Abstractions;
 using Codend.Presentation.Requests.ProjectTasks.Create;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,7 +27,6 @@ namespace Codend.Presentation.Controllers;
 /// Controller containing endpoints associated with <see cref="BaseProjectTask"/> and it's derived entities management.
 /// </summary>
 [Route("api/task")]
-[AllowAnonymous]
 public class ProjectTaskController : ApiController
 {
     /// <summary>
