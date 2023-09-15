@@ -27,8 +27,16 @@ public static partial class DomainErrors
             {
             }
         }
+
+        public class DomainNotFound : DomainError
+        {
+            public DomainNotFound(string domainName)
+                : base($"General.DomainNotFound.{domainName}", $"{domainName} was not found.")
+            {
+            }
+        }
     }
-    
+
     /// <summary>
     /// Common errors for string value objects.
     /// </summary>
@@ -36,14 +44,16 @@ public static partial class DomainErrors
     {
         public class NullOrEmpty : DomainError
         {
-            public NullOrEmpty(string fieldName) : base($"StringValueObject.NullOrEmpty.{fieldName}", $"Field {fieldName} cannot be null nor empty.")
+            public NullOrEmpty(string fieldName) : base($"StringValueObject.NullOrEmpty.{fieldName}",
+                $"Field {fieldName} cannot be null nor empty.")
             {
             }
         }
-        
+
         public class TooLong : DomainError
         {
-            public TooLong(string fieldName, int maxLength) : base($"StringValueObject.TooLong.{fieldName}", $"Field {fieldName} is longer than allowed {maxLength}.")
+            public TooLong(string fieldName, int maxLength) : base($"StringValueObject.TooLong.{fieldName}",
+                $"Field {fieldName} is longer than allowed {maxLength}.")
             {
             }
         }
