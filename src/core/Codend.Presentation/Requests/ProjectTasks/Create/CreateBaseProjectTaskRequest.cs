@@ -1,6 +1,7 @@
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.ProjectTasks.Create;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Requests.Abstractions;
 
@@ -31,16 +32,11 @@ public sealed record CreateBaseProjectTaskRequest
                 new ProjectTaskStatusId(StatusId),
                 new ProjectId(ProjectId),
                 Description,
-                EstimatedTime is not null
-                    ? new TimeSpan(
-                        (int)EstimatedTime.Days,
-                        (int)EstimatedTime.Hours,
-                        (int)EstimatedTime.Minutes, 0)
-                    : null,
+                EstimatedTime.ToTimeSpan(),
                 DueDate,
                 StoryPoints,
-                AssigneeId is not null ? new UserId(AssigneeId.Value) : null,
-                StoryId is not null ? new StoryId(StoryId.Value) : null
+                EntityIdExtensions.ToKeyGuid<UserId>(AssigneeId),
+                EntityIdExtensions.ToKeyGuid<StoryId>(StoryId)
             ));
 
         return command;
