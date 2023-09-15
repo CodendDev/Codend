@@ -121,10 +121,10 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
         return resultDescription;
     }
 
-    public Result EditEpicId(EpicId? epicId)
+    public Result<EpicId?> EditEpicId(EpicId? epicId)
     {
         EpicId = epicId;
-        return Result.Ok();
+        return Result.Ok(EpicId);
     }
 
     #endregion

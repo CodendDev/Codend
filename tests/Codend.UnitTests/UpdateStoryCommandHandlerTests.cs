@@ -1,4 +1,5 @@
-﻿using Codend.Application.Core.Abstractions.Data;
+﻿using Codend.Application.Core;
+using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Stories.Commands.UpdateStory;
 using Codend.Contracts.Abstractions;
 using Codend.Domain.Entities;
@@ -12,6 +13,7 @@ namespace Codend.UnitTests;
 public class UpdateStoryCommandHandlerTests
 {
     private readonly Mock<IStoryRepository> _storyRepository = new();
+    private readonly Mock<IProjectRepository> _projectRepository = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
 
     [Fact]
@@ -25,8 +27,9 @@ public class UpdateStoryCommandHandlerTests
         var storyId = new StoryId(Guid.NewGuid());
         _storyRepository.Setup(r => r.GetByIdAsync(storyId)).Returns(async () => story.Object);
 
-        var request = new UpdateStoryCommand(storyId.Value, "", "");
-        var handler = new UpdateStoryCommandHandler(_storyRepository.Object, _unitOfWork.Object);
+        var request = new UpdateStoryCommand(storyId.Value, "", "", new ShouldUpdateBinder<EpicId?>(false, null));
+        var handler =
+            new UpdateStoryCommandHandler(_storyRepository.Object, _unitOfWork.Object, _projectRepository.Object);
 
         // act
         var result = await handler.Handle(request, default);
