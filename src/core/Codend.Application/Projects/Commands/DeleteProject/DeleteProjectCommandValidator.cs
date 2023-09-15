@@ -5,7 +5,7 @@ using static Codend.Application.Core.Errors.ValidationErrors.Common;
 namespace Codend.Application.Projects.Commands.DeleteProject;
 
 /// <summary>
-/// Validates delete project command.
+/// Validates <see cref="DeleteProjectCommand"/>.
 /// </summary>
 public class DeleteProjectCommandValidator : AbstractValidator<DeleteProjectCommand>
 {

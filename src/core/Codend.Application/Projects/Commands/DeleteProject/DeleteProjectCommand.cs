@@ -16,7 +16,9 @@ public sealed record DeleteProjectCommand(
         Guid ProjectId)
     : ICommand;
 
-/// <inheritdoc />
+/// <summary>
+/// <see cref="DeleteProjectCommand"/> handler.
+/// </summary>
 public class DeleteProjectCommandHandler : ICommandHandler<DeleteProjectCommand>
 {
     private readonly IProjectRepository _projectRepository;
@@ -32,7 +34,6 @@ public class DeleteProjectCommandHandler : ICommandHandler<DeleteProjectCommand>
         _projectRepository = projectRepository;
         _unitOfWork = unitOfWork;
         _identityProvider = identityProvider;
-        
     }
 
     /// <inheritdoc />

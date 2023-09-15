@@ -10,7 +10,7 @@ using static Codend.Application.Core.Errors.ValidationErrors.Common;
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
 /// <summary>
-/// Abstract validator for ProjectTask classes.
+/// Abstract validator for <see cref="TUpdateProjectTaskCommand"/>.
 /// </summary>
 public abstract class UpdateProjectTaskCommandAbstractValidator<TUpdateProjectTaskCommand>
     : AbstractValidator<TUpdateProjectTaskCommand>
@@ -43,7 +43,7 @@ public abstract class UpdateProjectTaskCommandAbstractValidator<TUpdateProjectTa
                 .Must(x => ProjectTaskPriority.TryFromName(x, true, out _))
                 .WithError(new ProjectTask.PriorityNotDefined());
         });
-        
+
         When(x => x.StatusId.ShouldUpdate, () =>
         {
             RuleFor(x => x.StatusId.Value)
@@ -58,7 +58,7 @@ public abstract class UpdateProjectTaskCommandAbstractValidator<TUpdateProjectTa
                 .WithError(new StringPropertyTooLong(nameof(IUpdateProjectTaskCommand.Description),
                     ProjectTaskDescription.MaxLength));
         });
-        
+
         When(x => x.DueDate.ShouldUpdate, () =>
         {
             RuleFor(x => x.DueDate.Value)

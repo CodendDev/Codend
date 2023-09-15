@@ -9,14 +9,16 @@ using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 namespace Codend.Application.ProjectTasks.Commands.AssignUser;
 
 /// <summary>
-/// AssignUser to a ProjectTask command.
+/// Assign user to a ProjectTask command.
 /// </summary>
 public sealed record AssignUserCommand(
         Guid ProjectTaskId,
         Guid AssigneeId)
     : ICommand;
 
-/// <inheritdoc />
+/// <summary>
+/// <see cref="AssignUserCommand"/> handler.
+/// </summary>
 public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
 {
     private readonly IProjectTaskRepository _taskRepository;

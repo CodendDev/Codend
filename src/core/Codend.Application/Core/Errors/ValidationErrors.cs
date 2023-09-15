@@ -39,11 +39,11 @@ public static partial class ValidationErrors
         {
             /// <inheritdoc />
             public StringPropertyTooLong(string stringName, int maxLength) : base("Common.StringPropertyTooLong",
-                $"Field {stringName} is longer than maximum {maxLength}.")
+                $"Field {stringName} is longer than maximum allowed length {maxLength}.")
             {
             }
         }
-        
+
         /// <inheritdoc />
         public class DateIsInThePast : ValidationError
         {
@@ -54,13 +54,12 @@ public static partial class ValidationErrors
             }
         }
     }
-    
+
     /// <summary>
     /// Project task validation error static class.
     /// </summary>
     public static class ProjectTask
     {
-        
         /// <inheritdoc />
         public class PriorityNotDefined : ValidationError
         {

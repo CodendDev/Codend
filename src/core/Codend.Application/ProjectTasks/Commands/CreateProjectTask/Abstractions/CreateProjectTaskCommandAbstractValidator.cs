@@ -10,7 +10,7 @@ using static Codend.Application.Core.Errors.ValidationErrors.Common;
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 
 /// <summary>
-/// Abstract validator for ProjectTask classes.
+/// Abstract validator for commands implementing <see cref="ICreateProjectTaskCommand"/> interface.
 /// </summary>
 public abstract class CreateProjectTaskCommandAbstractValidator<TCreateProjectTaskCommand, TCreateProjectTaskProperties>
     : AbstractValidator<TCreateProjectTaskCommand>

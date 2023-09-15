@@ -6,7 +6,7 @@ using static Codend.Application.Core.Errors.ValidationErrors.Common;
 namespace Codend.Application.Projects.Commands.UpdateProject;
 
 /// <summary>
-/// Validates update project command.
+/// Validates <see cref="UpdateProjectCommand"/>.
 /// </summary>
 public class UpdateProjectCommandValidator : AbstractValidator<UpdateProjectCommand>
 {
@@ -18,7 +18,7 @@ public class UpdateProjectCommandValidator : AbstractValidator<UpdateProjectComm
         RuleFor(x => x.ProjectId)
             .NotEmpty()
             .WithError(new PropertyNullOrEmpty(nameof(UpdateProjectCommand.ProjectId)));
-        
+
         RuleFor(x => x.Name)
             .NotEmpty()
             .WithError(new PropertyNullOrEmpty(nameof(UpdateProjectCommand.Name)))

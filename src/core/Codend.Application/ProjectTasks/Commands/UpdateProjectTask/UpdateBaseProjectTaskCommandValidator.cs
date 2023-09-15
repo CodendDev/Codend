@@ -3,7 +3,7 @@
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 
 /// <summary>
-/// Validator for BaseProjectTask class.
+/// Validator for <see cref="UpdateBaseProjectTaskCommand"/>.
 /// </summary>
 public class UpdateBaseProjectTaskCommandValidator
     : UpdateProjectTaskCommandAbstractValidator<UpdateBaseProjectTaskCommand>
