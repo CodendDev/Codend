@@ -8,26 +8,37 @@ using Codend.Domain.Repositories;
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 
 /// <summary>
-/// CreateBugfixProjectTaskCommand implements <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/>
-/// with properties needed for BugfixTask creation.
+/// Command for creating <see cref="BaseProjectTask"/>.
 /// </summary>
-/// <param name="TaskProperties">BugfixProjectTask properties.</param>
+/// <param name="TaskProperties"><see cref="BaseProjectTaskCreateProperties"/> properties.</param>
 public sealed record CreateBaseProjectTaskCommand
 (
     BaseProjectTaskCreateProperties TaskProperties
 ) : ICommand<Guid>, ICreateProjectTaskCommand<BaseProjectTaskCreateProperties>;
 
+/// <summary>
+/// <see cref="CreateBaseProjectTaskCommand"/> handler.
+/// </summary>
 public class CreateBaseProjectTaskCommandHandler :
     CreateProjectTaskCommandAbstractHandler<
         CreateBaseProjectTaskCommand,
         BaseProjectTask,
         BaseProjectTaskCreateProperties>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateBaseProjectTaskCommandHandler"/> class.
+    /// </summary>
     public CreateBaseProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider)
-        : base(projectTaskRepository, unitOfWork, identityProvider)
+        IUserIdentityProvider identityProvider,
+        IProjectMemberRepository projectMemberRepository,
+        IStoryRepository storyRepository)
+        : base(projectTaskRepository,
+            unitOfWork,
+            identityProvider,
+            projectMemberRepository,
+            storyRepository)
     {
     }
 }

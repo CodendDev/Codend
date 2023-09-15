@@ -8,11 +8,19 @@ using FluentResults;
 
 namespace Codend.Application.Projects.Commands.CreateProject;
 
+/// <summary>
+/// Command to create project with given properties.
+/// </summary>
+/// <param name="Name">Project Name.</param>
+/// <param name="Description">Project Description.</param>
 public sealed record CreateProjectCommand(
         string Name,
         string? Description)
     : ICommand<Guid>;
 
+/// <summary>
+/// <see cref="CreateProjectCommand"/> handler.
+/// </summary>
 public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand, Guid>
 {
     private readonly IProjectRepository _projectRepository;
@@ -21,6 +29,9 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
     private readonly IUserIdentityProvider _identityProvider;
     private readonly IProjectMemberRepository _projectMemberRepository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateProjectCommandHandler"/> class.
+    /// </summary>
     public CreateProjectCommandHandler(
         IProjectRepository projectRepository,
         IUnitOfWork unitOfWork,
@@ -35,6 +46,7 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
         _projectMemberRepository = projectMemberRepository;
     }
 
+    /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
         var userId = _identityProvider.UserId;
@@ -67,7 +79,7 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
         _projectRepository.Add(project);
         _projectMemberRepository.Add(resultProjectMember.Value);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         return project.Id.Value;
     }
 }
