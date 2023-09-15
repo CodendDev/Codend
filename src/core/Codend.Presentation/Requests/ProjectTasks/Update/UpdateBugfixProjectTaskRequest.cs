@@ -13,7 +13,6 @@ namespace Codend.Presentation.Requests.ProjectTasks.Update;
 /// </summary>
 public record UpdateBugfixProjectTaskRequest
 (
-    Guid TaskId,
     ShouldUpdateBinder<string>? _Name,
     ShouldUpdateBinder<string>? _Priority,
     ShouldUpdateBinder<string?>? _Description,
@@ -25,7 +24,6 @@ public record UpdateBugfixProjectTaskRequest
     ShouldUpdateBinder<Guid?>? _StoryId
 ) : UpdateProjectTaskAbstractRequest<UpdateBugfixProjectTaskCommand>
 (
-    TaskId,
     _Name,
     _Priority,
     _Description,
@@ -63,7 +61,6 @@ public record UpdateBugfixProjectTaskRequest
             : ShouldUpdateProperty.Update<StoryId?>(new StoryId(StoryId.Value.Value));
 
         var command = new UpdateBugfixProjectTaskCommand(
-            new ProjectTaskId(TaskId),
             name,
             priority,
             statusId,

@@ -8,11 +8,6 @@ namespace Codend.Contracts.Requests.ProjectTasks.Update;
 public interface IUpdateBaseProjectTaskRequest
 {
     /// <summary>
-    /// Id of the task which will be updated.
-    /// </summary>
-    public Guid TaskId { get; }
-
-    /// <summary>
     /// Name of the task.
     /// </summary>
     IShouldUpdate<string>? Name { get; }

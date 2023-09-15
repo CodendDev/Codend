@@ -12,7 +12,6 @@ namespace Codend.Presentation.Requests.ProjectTasks.Update;
 /// </summary>
 public record UpdateBaseProjectTaskRequest
 (
-    Guid TaskId,
     ShouldUpdateBinder<string>? _Name,
     ShouldUpdateBinder<string>? _Priority,
     ShouldUpdateBinder<string?>? _Description,
@@ -24,7 +23,6 @@ public record UpdateBaseProjectTaskRequest
     ShouldUpdateBinder<Guid?>? _StoryId
 ) : UpdateProjectTaskAbstractRequest<UpdateBaseProjectTaskCommand>
 (
-    TaskId,
     _Name,
     _Priority,
     _Description,
@@ -62,7 +60,6 @@ public record UpdateBaseProjectTaskRequest
             : ShouldUpdateProperty.Update<StoryId?>(new StoryId(StoryId.Value.Value));
 
         var command = new UpdateBaseProjectTaskCommand(
-            new ProjectTaskId(TaskId),
             name,
             priority,
             statusId,
