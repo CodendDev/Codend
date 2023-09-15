@@ -40,17 +40,22 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     /// <summary>
     /// ProjectId which story belongs to.
     /// </summary>
-    public ProjectId ProjectId { get; set; }
+    public ProjectId ProjectId { get; private set; }
 
     /// <summary>
     /// User story name.
     /// </summary>
-    public StoryName Name { get; set; }
+    public StoryName Name { get; private set; }
 
     /// <summary>
     /// User story description.
     /// </summary>
-    public StoryDescription Description { get; set; }
+    public StoryDescription Description { get; private set; }
+
+    /// <summary>
+    /// EpicId which story belongs to.
+    /// </summary>
+    public EpicId? EpicId { get; set; }
 
     #endregion
 

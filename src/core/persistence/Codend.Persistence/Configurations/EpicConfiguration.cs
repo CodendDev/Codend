@@ -33,5 +33,11 @@ public class EpicConfiguration : IEntityTypeConfiguration<Epic>
                 epicDescriptionBuilder.WithOwner();
                 epicDescriptionBuilder.ConfigureStringValueObject(nameof(Epic.Description));
             });
+
+        builder
+            .HasMany<Story>()
+            .WithOne()
+            .HasForeignKey(story => story.EpicId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
