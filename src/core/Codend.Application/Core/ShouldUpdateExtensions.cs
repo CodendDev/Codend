@@ -5,7 +5,7 @@ namespace Codend.Application.Core;
 
 internal static class ShouldUpdateExtensions
 {
-    internal static Result HandleUpdate<T>(this IShouldUpdate<T> shouldUpdate, Func<T, Result<T>> updateHandler)
+    internal static Result HandleUpdate<T>(this ShouldUpdateBinder<T> shouldUpdate, Func<T, Result<T>> updateHandler)
     {
         if (shouldUpdate.ShouldUpdate)
         {
@@ -15,7 +15,7 @@ internal static class ShouldUpdateExtensions
         return Result.Ok();
     }
 
-    internal static Result HandleUpdateWithResult<T, TResult>(this IShouldUpdate<T> shouldUpdate,
+    internal static Result HandleUpdateWithResult<T, TResult>(this ShouldUpdateBinder<T> shouldUpdate,
         Func<T, Result<TResult>> updateHandler)
     {
         if (shouldUpdate.ShouldUpdate)

@@ -1,18 +1,18 @@
 ﻿namespace Codend.Contracts.Abstractions;
 
 /// <summary>
-/// <see cref="IShouldUpdate{T}"/> implementation used for binding properties in request.
+/// Class used for defining if properties should be updated in requests and commands.
 /// </summary>
-public record ShouldUpdateBinder<T>
+public sealed record ShouldUpdateBinder<T>
 (
     bool ShouldUpdate,
     T? Value
-) : IShouldUpdate<T>
+)
 {
     /// <summary>
     /// Converts class wrapped with <see cref="ShouldUpdateBinder{T}"/> to another class.
     /// </summary>
-    /// <param name="conversion">Conversion from <see cref="TIn"/> to <see cref="TOut"/>/</param>
+    /// <param name="conversion">Lambda expression for conversion from current wrapped class <see cref="T"/> to <see cref="TOut"/> class.</param>
     /// <returns><see cref="ShouldUpdateBinder{T}"/> with <see cref="TOut"/> class wrapped.</returns>
     public ShouldUpdateBinder<TOut> HasConversion<TOut>(Func<T?, TOut> conversion)
     {
