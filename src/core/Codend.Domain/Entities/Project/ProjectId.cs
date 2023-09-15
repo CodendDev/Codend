@@ -2,7 +2,7 @@ using Codend.Domain.Core.Primitives;
 
 namespace Codend.Domain.Entities;
 
-public sealed class ProjectId : EntityId<Guid>
+public sealed record ProjectId : EntityId<Guid>
 {
     public ProjectId()
     {

@@ -2,7 +2,7 @@ using Codend.Domain.Core.Primitives;
 
 namespace Codend.Domain.Entities;
 
-public sealed class SprintId : EntityId<Guid>
+public sealed record SprintId : EntityId<Guid>
 {
     public SprintId()
     {

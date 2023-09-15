@@ -1,9 +1,8 @@
-﻿using Codend.Domain.Core.Abstractions;
-using Codend.Domain.Core.Primitives;
+﻿using Codend.Domain.Core.Primitives;
 
 namespace Codend.Domain.Entities;
 
-public sealed class UserId : EntityId<Guid>
+public sealed record UserId : EntityId<Guid>
 {
     public UserId()
     {
