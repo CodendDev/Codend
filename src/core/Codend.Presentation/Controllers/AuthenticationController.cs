@@ -8,8 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Codend.Presentation.Controllers;
 
+/// <summary>
+/// Controller containing endpoints associated with authentication.
+/// </summary>
 public class AuthenticationController : ApiController
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AuthenticationController"/> class.
+    /// </summary>
     public AuthenticationController(IMediator mediator) : base(mediator)
     {
     }

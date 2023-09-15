@@ -13,7 +13,6 @@ namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 /// </summary>
 public sealed record UpdateBaseProjectTaskCommand
 (
-    ProjectTaskId TaskId,
     IShouldUpdate<string> Name,
     IShouldUpdate<string> Priority,
     IShouldUpdate<ProjectTaskStatusId> StatusId,
@@ -23,7 +22,13 @@ public sealed record UpdateBaseProjectTaskCommand
     IShouldUpdate<uint?> StoryPoints,
     IShouldUpdate<UserId?> AssigneeId,
     IShouldUpdate<StoryId?> StoryId
-) : ICommand, IUpdateProjectTaskCommand;
+) : ICommand, IUpdateProjectTaskCommand
+{
+    /// <summary>
+    /// Id of the project task that will be updated.
+    /// </summary>
+    public ProjectTaskId TaskId { get; set; }
+}
 
 /// <summary>
 /// Command handler for <see cref="UpdateBaseProjectTaskCommand"/>.

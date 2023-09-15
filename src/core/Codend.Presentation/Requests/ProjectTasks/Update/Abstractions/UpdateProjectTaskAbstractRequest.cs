@@ -12,7 +12,6 @@ namespace Codend.Presentation.Requests.ProjectTasks.Update.Abstractions;
 /// <typeparam name="TCommand">Command implementing <see cref="IUpdateProjectTaskCommand"/>.</typeparam>
 public abstract record UpdateProjectTaskAbstractRequest<TCommand>
 (
-    Guid TaskId,
     ShouldUpdateBinder<string>? _Name,
     ShouldUpdateBinder<string>? _Priority,
     ShouldUpdateBinder<string?>? _Description,
