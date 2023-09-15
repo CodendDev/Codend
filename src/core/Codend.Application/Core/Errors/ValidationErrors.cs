@@ -39,7 +39,7 @@ public static partial class ValidationErrors
         {
             /// <inheritdoc />
             public StringPropertyTooLong(string stringName, int maxLength) : base("Common.StringPropertyTooLong",
-                $"Field {stringName} is longer than maximum {maxLength}")
+                $"Field {stringName} is longer than maximum {maxLength}.")
             {
             }
         }
@@ -49,7 +49,7 @@ public static partial class ValidationErrors
         {
             /// <inheritdoc />
             public DateIsInThePast(string fieldName) : base("Common.DateIsInThePast",
-                $"Given date field {fieldName} is the past.")
+                $"Given date field {fieldName} is in the past.")
             {
             }
         }
@@ -66,7 +66,7 @@ public static partial class ValidationErrors
         {
             /// <inheritdoc />
             public PriorityNotDefined() : base("ProjectTask.PriorityNotDefined",
-                $"Given priority is not defined. Valid priorities: '{string.Join(',',ProjectTaskPriority.DefaultList())}'")
+                $"Given priority is not defined. Valid priorities: '{string.Join(", ",ProjectTaskPriority.DefaultList())}'.")
             {
             }
         }

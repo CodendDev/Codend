@@ -27,7 +27,7 @@ public class CreateBaseProjectTaskCommandHandler :
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateBaseProjectTaskCommandHandler"/> class.
     /// </summary>
-    protected CreateBaseProjectTaskCommandHandler(
+    public CreateBaseProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
         IUserIdentityProvider identityProvider,

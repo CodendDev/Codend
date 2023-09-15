@@ -27,7 +27,7 @@ public class CreateBugfixProjectTaskCommandHandler :
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateBugfixProjectTaskCommandHandler"/> class.
     /// </summary>
-    protected CreateBugfixProjectTaskCommandHandler(
+    public CreateBugfixProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
         IUserIdentityProvider identityProvider,
