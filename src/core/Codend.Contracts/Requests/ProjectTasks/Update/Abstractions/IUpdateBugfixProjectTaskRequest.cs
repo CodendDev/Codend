@@ -1,4 +1,4 @@
-﻿namespace Codend.Contracts.Requests.ProjectTasks.Update;
+﻿namespace Codend.Contracts.Requests.ProjectTasks.Update.Abstractions;
 
 
 /// <summary>

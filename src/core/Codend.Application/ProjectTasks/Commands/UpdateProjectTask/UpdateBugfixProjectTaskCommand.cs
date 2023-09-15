@@ -13,15 +13,15 @@ namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 /// Record used for updating <see cref="BugfixProjectTask"/> properties.
 /// </summary>
 public sealed record UpdateBugfixProjectTaskCommand(
-    IShouldUpdate<string> Name,
-    IShouldUpdate<string> Priority,
-    IShouldUpdate<ProjectTaskStatusId> StatusId,
-    IShouldUpdate<string?> Description,
-    IShouldUpdate<TimeSpan?> EstimatedTime,
-    IShouldUpdate<DateTime?> DueDate,
-    IShouldUpdate<uint?> StoryPoints,
-    IShouldUpdate<UserId?> AssigneeId,
-    IShouldUpdate<StoryId?> StoryId
+    ShouldUpdateBinder<string> Name,
+    ShouldUpdateBinder<string> Priority,
+    ShouldUpdateBinder<ProjectTaskStatusId> StatusId,
+    ShouldUpdateBinder<string?> Description,
+    ShouldUpdateBinder<TimeSpan?> EstimatedTime,
+    ShouldUpdateBinder<DateTime?> DueDate,
+    ShouldUpdateBinder<uint?> StoryPoints,
+    ShouldUpdateBinder<UserId?> AssigneeId,
+    ShouldUpdateBinder<StoryId?> StoryId
 ) : ICommand, IUpdateProjectTaskCommand
 {
     /// <summary>

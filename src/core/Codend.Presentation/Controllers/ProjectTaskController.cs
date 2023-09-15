@@ -3,17 +3,22 @@ using Codend.Application.ProjectTasks.Commands.AssignUser;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
+using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 using Codend.Contracts;
+using Codend.Contracts.Abstractions;
+using Codend.Contracts.Requests;
+using Codend.Contracts.Requests.ProjectTasks.Update;
 using Codend.Contracts.Responses.ProjectTask;
 using Codend.Domain.Core.Errors;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
 using Codend.Presentation.Requests.Abstractions;
 using Codend.Presentation.Requests.ProjectTasks.Create;
-using Codend.Presentation.Requests.ProjectTasks.Update;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +28,7 @@ namespace Codend.Presentation.Controllers;
 /// Controller containing endpoints associated with <see cref="BaseProjectTask"/> and it's derived entities management.
 /// </summary>
 [Route("api/task")]
+[AllowAnonymous]
 public class ProjectTaskController : ApiController
 {
     /// <summary>
@@ -234,7 +240,22 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectTaskId,
         [FromBody] UpdateBaseProjectTaskRequest request)
     {
-        var command = request.MapToCommand() with { TaskId = new ProjectTaskId(projectTaskId) };
+        var command = new UpdateBaseProjectTaskCommand
+        (
+            request.Name.HandleNull(),
+            request.Priority.HandleNull(),
+            request.StatusId.HandleNull().HasConversion(guid => new ProjectTaskStatusId(guid)),
+            request.Description.HandleNull(),
+            request.EstimatedTime.HandleNull().HasConversion(EstimatedTimeRequestExtensions.ToTimeSpan),
+            request.DueDate.HandleNull(),
+            request.StoryPoints.HandleNull(),
+            request.AssigneeId.HandleNull().HasConversion(EntityIdExtensions.ToKeyGuid<UserId>),
+            request.StoryId.HandleNull().HasConversion(EntityIdExtensions.ToKeyGuid<StoryId>)
+        )
+        {
+            TaskId = new ProjectTaskId(projectTaskId)
+        };
+
         return await UpdateTask(command);
     }
 
@@ -321,7 +342,22 @@ public class ProjectTaskController : ApiController
     public async Task<IActionResult> UpdateBugfixTask([FromRoute] Guid projectTaskId,
         [FromBody] UpdateBugfixProjectTaskRequest request)
     {
-        var command = request.MapToCommand() with { TaskId = new ProjectTaskId(projectTaskId) };
+        var command = new UpdateBaseProjectTaskCommand
+        (
+            request.Name.HandleNull(),
+            request.Priority.HandleNull(),
+            request.StatusId.HandleNull().HasConversion(guid => new ProjectTaskStatusId(guid)),
+            request.Description.HandleNull(),
+            request.EstimatedTime.HandleNull().HasConversion(EstimatedTimeRequestExtensions.ToTimeSpan),
+            request.DueDate.HandleNull(),
+            request.StoryPoints.HandleNull(),
+            request.AssigneeId.HandleNull().HasConversion(EntityIdExtensions.ToKeyGuid<UserId>),
+            request.StoryId.HandleNull().HasConversion(EntityIdExtensions.ToKeyGuid<StoryId>)
+        )
+        {
+            TaskId = new ProjectTaskId(projectTaskId)
+        };
+
         return await UpdateTask(command);
     }
 
