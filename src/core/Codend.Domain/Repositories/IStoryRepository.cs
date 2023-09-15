@@ -31,4 +31,15 @@ public interface IStoryRepository
     /// </summary>
     /// <param name="story">Story be update.</param>
     void Update(Story story);
+
+    /// <summary>
+    /// Returns collection of stories which belongs to the given epic.
+    /// </summary>
+    IEnumerable<Story> GetByEpicId(EpicId epicId);
+
+    /// <summary>
+    /// Updates range.
+    /// </summary>
+    /// <param name="stories">Stories to update.</param>
+    void UpdateRange(IEnumerable<Story> stories);
 }
