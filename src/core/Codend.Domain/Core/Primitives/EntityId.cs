@@ -2,7 +2,7 @@
 
 namespace Codend.Domain.Core.Primitives;
 
-public abstract class EntityId<TKey> : IEntityId<TKey>
+public abstract record EntityId<TKey> : IEntityId<TKey>
 {
     protected EntityId()
     {
