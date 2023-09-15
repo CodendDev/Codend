@@ -1,5 +1,14 @@
-using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Primitives;
 
 namespace Codend.Domain.Entities;
 
-public sealed record StoryId(Guid Value) : IEntityId<Guid>;
+public sealed class StoryId : EntityId<Guid>
+{
+    public StoryId()
+    {
+    }
+
+    public StoryId(Guid value) : base(value)
+    {
+    }
+}
