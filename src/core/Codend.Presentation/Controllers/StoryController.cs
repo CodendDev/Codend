@@ -51,7 +51,7 @@ public class StoryController : ApiController
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
-            return Ok();
+            return Ok(response.Value);
         }
 
         return BadRequest(response.MapToApiErrorsResponse());
