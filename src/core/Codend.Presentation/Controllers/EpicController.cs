@@ -1,8 +1,9 @@
 using Codend.Application.Epics.Commands.CreateEpic;
 using Codend.Application.Epics.Commands.DeleteEpic;
-using Codend.Application.Stories.Commands.CreateStory;
+using Codend.Application.Epics.Commands.UpdateEpic;
 using Codend.Contracts;
 using Codend.Contracts.Requests.Epic;
+using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
 using MediatR;
@@ -76,5 +77,44 @@ public class EpicController : ApiController
         }
 
         return NotFound();
+    }
+
+    /// <summary>
+    /// Updates epic with id <paramref name="epicId"/>.
+    /// </summary>
+    /// <param name="epicId">Id of the epic that will be updated.</param>
+    /// <param name="request">Request name and description.</param>
+    /// <remarks>
+    /// Sample request:
+    ///     {
+    ///         "name": "New epic name",
+    ///         "description: "New epic description"
+    ///     }
+    /// </remarks>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 204 on success
+    /// - 400 with errors on failure
+    /// - 404 on failure
+    /// </returns>
+    [HttpPut("{epicId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update([FromRoute] Guid epicId, [FromBody] UpdateEpicRequest request)
+    {
+        var command = new UpdateEpicCommand(epicId, request.Name, request.Description);
+        var response = await Mediator.Send(command);
+        if (response.IsSuccess)
+        {
+            return NoContent();
+        }
+
+        if (response.HasError<DomainErrors.General.DomainNotFound>())
+        {
+            return NotFound();
+        }
+
+        return BadRequest(response.MapToApiErrorsResponse());
     }
 }
