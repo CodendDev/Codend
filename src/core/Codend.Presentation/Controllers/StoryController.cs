@@ -33,7 +33,8 @@ public class StoryController : ApiController
     ///     {
     ///         "name": "Story name",
     ///         "description: "Story description",
-    ///         "projectId: "bda4a1f5-e135-493c-852c-826e6f9fbcb0"
+    ///         "projectId: "bda4a1f5-e135-493c-852c-826e6f9fbcb0",
+    ///         "epicId: "bda4a1f5-e135-493c-852c-826e6f9fbcb0"
     ///     }
     /// </remarks>
     /// <returns>
@@ -44,9 +45,9 @@ public class StoryController : ApiController
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody]CreateStoryRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateStoryRequest request)
     {
-        var command = new CreateStoryCommand(request.Name, request.Description, request.ProjectId);
+        var command = new CreateStoryCommand(request.Name, request.Description, request.ProjectId, request.EpicId);
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -90,7 +91,13 @@ public class StoryController : ApiController
     ///
     ///     {
     ///         "name": "New story name",
-    ///         "description: "New story description",
+    ///         "description: "New story description"
+    ///         "epicId": {
+    ///             "shouldUpdate": true,
+    ///             "value": {
+    ///                 "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///             }
+    ///         }
     ///     }
     /// </remarks>
     /// <returns>
@@ -103,9 +110,9 @@ public class StoryController : ApiController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update([FromRoute] Guid storyId, [FromBody]UpdateStoryRequest request)
+    public async Task<IActionResult> Update([FromRoute] Guid storyId, [FromBody] UpdateStoryRequest request)
     {
-        var command = new UpdateStoryCommand(storyId, request.Name, request.Description);
+        var command = new UpdateStoryCommand(storyId, request.Name, request.Description, request.EpicId);
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {

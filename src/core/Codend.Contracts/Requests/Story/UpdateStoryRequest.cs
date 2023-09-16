@@ -1,4 +1,7 @@
-﻿namespace Codend.Contracts.Requests.Story;
+﻿using Codend.Contracts.Abstractions;
+using Codend.Domain.Entities;
+
+namespace Codend.Contracts.Requests.Story;
 
 /// <summary>
 /// Represents update story request.
@@ -7,4 +10,6 @@
 /// <param name="Description">Description of the story.</param>
 public record UpdateStoryRequest(
     string Name,
-    string Description);
+    string Description,
+    ShouldUpdateBinder<EpicId?> EpicId
+);
