@@ -1,7 +1,6 @@
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.ProjectTasks.Commands.AssignUser;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
-using Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
@@ -9,15 +8,16 @@ using Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 using Codend.Contracts;
 using Codend.Contracts.Abstractions;
 using Codend.Contracts.Requests;
+using Codend.Contracts.Requests.ProjectTasks.Create;
 using Codend.Contracts.Requests.ProjectTasks.Update;
 using Codend.Contracts.Responses.ProjectTask;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
+using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Codend.Presentation.Infrastructure;
-using Codend.Presentation.Requests.Abstractions;
-using Codend.Presentation.Requests.ProjectTasks.Create;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +26,7 @@ namespace Codend.Presentation.Controllers;
 /// <summary>
 /// Controller containing endpoints associated with <see cref="BaseProjectTask"/> and it's derived entities management.
 /// </summary>
+[AllowAnonymous]
 [Route("api/task")]
 public class ProjectTaskController : ApiController
 {
@@ -37,21 +38,6 @@ public class ProjectTaskController : ApiController
     }
 
     #region Private methods
-
-    private async Task<IActionResult> CreateTask<TRequest, TCommand>(TRequest request)
-        where TRequest : IMapRequestToCommand<TCommand, Guid>
-        where TCommand : ICommand<Guid>, ICreateProjectTaskCommand
-    {
-        var command = request.MapToCommand();
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
 
     private async Task<IActionResult> UpdateTask<TCommand>(TCommand command)
         where TCommand : ICommand, IUpdateProjectTaskCommand
@@ -196,7 +182,30 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateBaseTask([FromBody] CreateBaseProjectTaskRequest request)
-        => await CreateTask<CreateBaseProjectTaskRequest, CreateBaseProjectTaskCommand>(request);
+    {
+        var command = new CreateBaseProjectTaskCommand(
+            new BaseProjectTaskCreateProperties(
+                request.Name,
+                request.Priority,
+                new ProjectTaskStatusId(request.StatusId),
+                new ProjectId(request.ProjectId),
+                request.Description,
+                request.EstimatedTime.ToTimeSpan(),
+                request.DueDate,
+                request.StoryPoints,
+                request.AssigneeId.GuidConversion<UserId>(),
+                request.StoryId.GuidConversion<StoryId>()
+            )
+        );
+
+        var response = await Mediator.Send(command);
+        if (response.IsSuccess)
+        {
+            return Ok(response.Value);
+        }
+
+        return BadRequest(response.MapToApiErrorsResponse());
+    }
 
     /// <summary>
     /// Updates BaseProjectTask entity with given <paramref name="projectTaskId"/>.
@@ -247,8 +256,8 @@ public class ProjectTaskController : ApiController
             request.EstimatedTime.HandleNull().HasConversion(EstimatedTimeRequestExtensions.ToTimeSpan),
             request.DueDate.HandleNull(),
             request.StoryPoints.HandleNull(),
-            request.AssigneeId.HandleNull().HasConversion(EntityIdExtensions.ToKeyGuid<UserId>),
-            request.StoryId.HandleNull().HasConversion(EntityIdExtensions.ToKeyGuid<StoryId>)
+            request.AssigneeId.HandleNull().HasConversion(EntityIdExtensions.GuidConversion<UserId>),
+            request.StoryId.HandleNull().HasConversion(EntityIdExtensions.GuidConversion<StoryId>)
         )
         {
             TaskId = new ProjectTaskId(projectTaskId)
@@ -298,7 +307,30 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateBugfix([FromBody] CreateBugfixProjectTaskRequest request)
-        => await CreateTask<CreateBugfixProjectTaskRequest, CreateBugfixProjectTaskCommand>(request);
+    {
+        var command = new CreateBugfixProjectTaskCommand(
+            new BugfixProjectTaskCreateProperties(
+                request.Name,
+                request.Priority,
+                new ProjectTaskStatusId(request.StatusId),
+                new ProjectId(request.ProjectId),
+                request.Description,
+                request.EstimatedTime.ToTimeSpan(),
+                request.DueDate,
+                request.StoryPoints,
+                request.AssigneeId.GuidConversion<UserId>(),
+                request.StoryId.GuidConversion<StoryId>()
+            )
+        );
+
+        var response = await Mediator.Send(command);
+        if (response.IsSuccess)
+        {
+            return Ok(response.Value);
+        }
+
+        return BadRequest(response.MapToApiErrorsResponse());
+    }
 
 
     /// <summary>
@@ -349,8 +381,8 @@ public class ProjectTaskController : ApiController
             request.EstimatedTime.HandleNull().HasConversion(EstimatedTimeRequestExtensions.ToTimeSpan),
             request.DueDate.HandleNull(),
             request.StoryPoints.HandleNull(),
-            request.AssigneeId.HandleNull().HasConversion(EntityIdExtensions.ToKeyGuid<UserId>),
-            request.StoryId.HandleNull().HasConversion(EntityIdExtensions.ToKeyGuid<StoryId>)
+            request.AssigneeId.HandleNull().HasConversion(EntityIdExtensions.GuidConversion<UserId>),
+            request.StoryId.HandleNull().HasConversion(EntityIdExtensions.GuidConversion<StoryId>)
         )
         {
             TaskId = new ProjectTaskId(projectTaskId)
