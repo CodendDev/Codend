@@ -26,7 +26,6 @@ namespace Codend.Presentation.Controllers;
 /// <summary>
 /// Controller containing endpoints associated with <see cref="BaseProjectTask"/> and it's derived entities management.
 /// </summary>
-[AllowAnonymous]
 [Route("api/task")]
 public class ProjectTaskController : ApiController
 {
@@ -251,16 +250,16 @@ public class ProjectTaskController : ApiController
         (
             request.Name.HandleNull(),
             request.Priority.HandleNull(),
-            request.StatusId.HandleNull().HasConversion(guid => new ProjectTaskStatusId(guid)),
+            request.StatusId.HandleNull().Convert(guid => new ProjectTaskStatusId(guid)),
             request.Description.HandleNull(),
-            request.EstimatedTime.HandleNull().HasConversion(EstimatedTimeRequestExtensions.ToTimeSpan),
+            request.EstimatedTime.HandleNull().Convert(EstimatedTimeRequestExtensions.ToTimeSpan),
             request.DueDate.HandleNull(),
             request.StoryPoints.HandleNull(),
-            request.AssigneeId.HandleNull().HasConversion(EntityIdExtensions.GuidConversion<UserId>),
-            request.StoryId.HandleNull().HasConversion(EntityIdExtensions.GuidConversion<StoryId>)
+            request.AssigneeId.HandleNull().Convert(EntityIdExtensions.GuidConversion<UserId>),
+            request.StoryId.HandleNull().Convert(EntityIdExtensions.GuidConversion<StoryId>)
         )
         {
-            TaskId = new ProjectTaskId(projectTaskId)
+            TaskId = projectTaskId.GuidConversion<ProjectTaskId>()
         };
 
         return await UpdateTask(command);
@@ -376,16 +375,16 @@ public class ProjectTaskController : ApiController
         (
             request.Name.HandleNull(),
             request.Priority.HandleNull(),
-            request.StatusId.HandleNull().HasConversion(guid => new ProjectTaskStatusId(guid)),
+            request.StatusId.HandleNull().Convert(guid => new ProjectTaskStatusId(guid)),
             request.Description.HandleNull(),
-            request.EstimatedTime.HandleNull().HasConversion(EstimatedTimeRequestExtensions.ToTimeSpan),
+            request.EstimatedTime.HandleNull().Convert(EstimatedTimeRequestExtensions.ToTimeSpan),
             request.DueDate.HandleNull(),
             request.StoryPoints.HandleNull(),
-            request.AssigneeId.HandleNull().HasConversion(EntityIdExtensions.GuidConversion<UserId>),
-            request.StoryId.HandleNull().HasConversion(EntityIdExtensions.GuidConversion<StoryId>)
+            request.AssigneeId.HandleNull().Convert(EntityIdExtensions.GuidConversion<UserId>),
+            request.StoryId.HandleNull().Convert(EntityIdExtensions.GuidConversion<StoryId>)
         )
         {
-            TaskId = new ProjectTaskId(projectTaskId)
+            TaskId = projectTaskId.GuidConversion<ProjectTaskId>()
         };
 
         return await UpdateTask(command);

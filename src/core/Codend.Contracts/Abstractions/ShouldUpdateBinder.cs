@@ -14,10 +14,8 @@ public sealed record ShouldUpdateBinder<T>
     /// </summary>
     /// <param name="conversion">Lambda expression for conversion from current wrapped class <see cref="T"/> to <see cref="TOut"/> class.</param>
     /// <returns><see cref="ShouldUpdateBinder{T}"/> with <see cref="TOut"/> class wrapped.</returns>
-    public ShouldUpdateBinder<TOut> HasConversion<TOut>(Func<T?, TOut> conversion)
-    {
-        return new ShouldUpdateBinder<TOut>(ShouldUpdate, conversion(Value));
-    }
+    public ShouldUpdateBinder<TOut> Convert<TOut>(Func<T?, TOut> conversion)
+        => new ShouldUpdateBinder<TOut>(ShouldUpdate, conversion(Value));
 }
 
 /// <summary>
