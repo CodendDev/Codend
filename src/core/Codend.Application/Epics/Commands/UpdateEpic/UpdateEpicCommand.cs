@@ -1,5 +1,6 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Domain.Core.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -51,8 +52,8 @@ public class UpdateEpicCommandHandler : ICommandHandler<UpdateEpicCommand>
 
         var result = Result.Merge
         (
-            request.Name is null ? null : epic.EditName(request.Name).ToResult(),
-            request.Description is null ? null : epic.EditDescription(request.Description).ToResult()
+            request.Name.GetResultFromDelegate(epic.EditName, Result.Ok),
+            request.Description.GetResultFromDelegate(epic.EditDescription, Result.Ok)
         );
 
         if (result.IsFailed)

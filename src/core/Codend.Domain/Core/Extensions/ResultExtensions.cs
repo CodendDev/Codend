@@ -69,4 +69,39 @@ public static class ResultExtensions
     {
         return result.WithReasons(results.Merge().Reasons);
     }
+
+    /// <summary>
+    /// TODO come up with cool name xd
+    /// Helper method for creating <see cref="Result{T}"/>, allows to pass custom null value handler.
+    /// If <paramref name="value"/> is null method returns <paramref name="nullHandler"/> result.
+    /// Otherwise delegate <paramref name="getResult"/> is called returns its result.
+    /// </summary>
+    /// <param name="value">
+    /// Object which will be passed to a <paramref name="getResult"/> if it's not null.
+    /// </param>
+    /// <param name="getResult">
+    /// Function which will be called to get a result.
+    /// </param>
+    /// <param name="nullHandler">
+    /// Function which will be called if <paramref name="value"/> is null.
+    /// </param>
+    /// <returns>
+    /// If value is null <paramref name="nullHandler"/> result.
+    /// If value is not null <paramref name="getResult"/> result.
+    /// </returns>
+    public static Result<TOut> GetResultFromDelegate<TIn, TOut>(
+        this TIn? value,
+        Func<TIn, Result<TOut>> getResult,
+        Func<Result> nullHandler
+    )
+        where TIn : class
+    {
+        if (value is null)
+        {
+            return nullHandler();
+        }
+
+        var result = getResult(value);
+        return result;
+    }
 }
