@@ -8,6 +8,30 @@ namespace Codend.Application.Core.Abstractions.Authentication;
 public interface IAuthService
 {
     /// <summary>
+    /// Minimum password length.
+    /// </summary>
+    public const int MinPasswordLength = 8;
+
+    /// <summary>
+    /// Maximum password length.
+    /// </summary>
+    public const int MaxPasswordLength = 32;
+
+    /// <summary>
+    /// Maximum email length.
+    /// </summary>
+    public const int MaxEmailLength = 320;
+
+    /// <summary>
+    /// Maximum first name length.
+    /// </summary>
+    public static readonly int MaxFirstNameLength = 32;
+    /// <summary>
+    /// Maximum last name length.
+    /// </summary>
+    public static readonly int MaxLastNameLength = 64;
+    
+    /// <summary>
     /// Login user with given credentials.
     /// </summary>
     /// <param name="email"></param>
