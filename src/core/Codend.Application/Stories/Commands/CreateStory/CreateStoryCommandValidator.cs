@@ -1,5 +1,4 @@
-﻿using Codend.Application.Core.Errors;
-using Codend.Application.Extensions;
+﻿using Codend.Application.Extensions;
 using Codend.Domain.ValueObjects;
 using FluentValidation;
 using static Codend.Application.Core.Errors.ValidationErrors.Common;
@@ -32,5 +31,12 @@ public class CreateStoryCommandValidator : AbstractValidator<CreateStoryCommand>
         RuleFor(x => x.ProjectId)
             .NotEmpty()
             .WithError(new PropertyNullOrEmpty(nameof(CreateStoryCommand.ProjectId)));
+
+        When(x => x.EpicId is not null, () =>
+        {
+            RuleFor(x => x.EpicId.Value)
+                .NotEmpty()
+                .WithError(new PropertyNullOrEmpty(nameof(CreateStoryCommand.EpicId)));
+        });
     }
 }

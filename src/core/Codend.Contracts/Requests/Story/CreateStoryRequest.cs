@@ -9,4 +9,6 @@
 public record CreateStoryRequest(
     string Name,
     string Description,
-    Guid ProjectId);
+    Guid ProjectId,
+    Guid? EpicId
+);

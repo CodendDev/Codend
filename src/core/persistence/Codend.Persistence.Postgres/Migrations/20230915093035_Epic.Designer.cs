@@ -3,6 +3,7 @@ using System;
 using Codend.Persistence.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Codend.Persistence.Postgres.Migrations
 {
     [DbContext(typeof(PostgresCodendDbContext))]
-    partial class PostgresCodendDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230915093035_Epic")]
+    partial class Epic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,15 +267,10 @@ namespace Codend.Persistence.Postgres.Migrations
                         .HasPrecision(0)
                         .HasColumnType("timestamp(0) with time zone");
 
-                    b.Property<Guid?>("EpicId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EpicId");
 
                     b.HasIndex("ProjectId");
 
@@ -634,11 +632,6 @@ namespace Codend.Persistence.Postgres.Migrations
 
             modelBuilder.Entity("Codend.Domain.Entities.Story", b =>
                 {
-                    b.HasOne("Codend.Domain.Entities.Epic", null)
-                        .WithMany()
-                        .HasForeignKey("EpicId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("Codend.Domain.Entities.Project", null)
                         .WithMany()
                         .HasForeignKey("ProjectId")

@@ -3,6 +3,8 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.StoryErrors;
 
 namespace Codend.Application.Stories.Commands.CreateStory;
 
@@ -12,27 +14,54 @@ namespace Codend.Application.Stories.Commands.CreateStory;
 /// <param name="Name">Story name.</param>
 /// <param name="Description">Story description.</param>
 /// <param name="ProjectId">Story projectId.</param>
+/// <param name="EpicId">Story epicId.</param>
 public sealed record CreateStoryCommand
 (
     string Name,
     string Description,
-    Guid ProjectId
+    Guid ProjectId,
+    Guid? EpicId
 ) : ICommand<Guid>;
 
+/// <summary>
+/// <see cref="CreateStoryCommand"/> handler.
+/// </summary>
 public class CreateStoryCommandHandler : ICommandHandler<CreateStoryCommand, Guid>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IStoryRepository _storyRepository;
+    private readonly IProjectRepository _projectRepository;
 
-    public CreateStoryCommandHandler(IUnitOfWork unitOfWork, IStoryRepository storyRepository)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateStoryCommandHandler"/> class.
+    /// </summary>
+    public CreateStoryCommandHandler(
+        IUnitOfWork unitOfWork,
+        IStoryRepository storyRepository,
+        IProjectRepository projectRepository)
     {
         _unitOfWork = unitOfWork;
         _storyRepository = storyRepository;
+        _projectRepository = projectRepository;
     }
 
+    /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateStoryCommand request, CancellationToken cancellationToken)
     {
-        var storyResult = Story.Create(request.Name, request.Description, new ProjectId(request.ProjectId));
+        var epicId = request.EpicId is not null ? new EpicId(request.EpicId.Value) : null;
+        var projectId = new ProjectId(request.ProjectId);
+
+        if (epicId is not null && await _projectRepository.ProjectContainsEpic(projectId, epicId) is false)
+        {
+            return Result.Fail(new InvalidEpicId());
+        }
+
+        if (!await _projectRepository.Exists(projectId))
+        {
+            return Result.Fail(new ProjectNotFound());
+        }
+
+        var storyResult = Story.Create(request.Name, request.Description, projectId, epicId);
         if (storyResult.IsFailed)
         {
             return storyResult.ToResult();

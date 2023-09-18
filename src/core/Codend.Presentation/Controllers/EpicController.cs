@@ -1,11 +1,9 @@
-using Codend.Application.Stories.Commands.CreateStory;
-using Codend.Application.Stories.Commands.DeleteStory;
-using Codend.Application.Stories.Commands.UpdateStory;
+using Codend.Application.Epics.Commands.CreateEpic;
+using Codend.Application.Epics.Commands.DeleteEpic;
+using Codend.Application.Epics.Commands.UpdateEpic;
 using Codend.Contracts;
-using Codend.Contracts.Abstractions;
-using Codend.Contracts.Requests.Story;
+using Codend.Contracts.Requests.Epic;
 using Codend.Domain.Core.Errors;
-using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
 using MediatR;
@@ -15,28 +13,27 @@ using Microsoft.AspNetCore.Mvc;
 namespace Codend.Presentation.Controllers;
 
 /// <summary>
-/// Controller for <see cref="Story"/> commands. 
+/// Controller for <see cref="Epic"/> commands.
 /// </summary>
-[Route("api/story")]
-public class StoryController : ApiController
+[Route("api/epic")]
+public class EpicController : ApiController
 {
     /// <inheritdoc />
-    public StoryController(IMediator mediator) : base(mediator)
+    public EpicController(IMediator mediator) : base(mediator)
     {
     }
 
     /// <summary>
-    /// Creates story with given properties.
+    /// Creates epic with given properties.
     /// </summary>
     /// <param name="request">Request with name, description and project Id.</param>
     /// <remarks>
     /// Sample request:
-    ///
+    /// 
     ///     {
-    ///         "name": "Story name",
-    ///         "description: "Story description",
+    ///         "name": "Epic name",
+    ///         "description: "Epic description",
     ///         "projectId: "bda4a1f5-e135-493c-852c-826e6f9fbcb0",
-    ///         "epicId: "bda4a1f5-e135-493c-852c-826e6f9fbcb0"
     ///     }
     /// </remarks>
     /// <returns>
@@ -47,9 +44,9 @@ public class StoryController : ApiController
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateStoryRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateEpicRequest request)
     {
-        var command = new CreateStoryCommand(request.Name, request.Description, request.ProjectId, request.EpicId);
+        var command = new CreateEpicCommand(request.Name, request.Description, request.ProjectId);
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -60,44 +57,40 @@ public class StoryController : ApiController
     }
 
     /// <summary>
-    /// Deletes story with given <paramref name="storyId"/>.
+    /// Deletes epic with given <paramref name="epicId"/>.
     /// </summary>
-    /// <param name="storyId">Id of the story that will be deleted.</param>
+    /// <param name="epicId">Id of the epic which will be deleted.</param>
     /// <returns>
     /// HTTP response with status code:
     /// - 204 on success
     /// - 404 on failure
     /// </returns>
-    [HttpDelete("{storyId:guid}")]
+    [HttpDelete("{epicId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete([FromRoute] Guid storyId)
+    public async Task<IActionResult> Delete([FromRoute] Guid epicId)
     {
-        var command = new DeleteStoryCommand(storyId);
+        var command = new DeleteEpicCommand(epicId);
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
-            return Ok();
+            return NoContent();
         }
 
         return NotFound();
     }
 
     /// <summary>
-    /// Updates story with id <paramref name="storyId"/>.
+    /// Updates epic with id <paramref name="epicId"/>.
     /// </summary>
-    /// <param name="storyId">Id of the story that will be updated.</param>
-    /// <param name="request">Request with id, name and description.</param>
+    /// <param name="epicId">Id of the epic that will be updated.</param>
+    /// <param name="request">Request name and description.</param>
     /// <remarks>
     /// Sample request:
-    ///
+    /// 
     ///     {
-    ///         "name": "New story name",
-    ///         "description: "New story description"
-    ///         "epicId": {
-    ///             "shouldUpdate": true,
-    ///             "EpicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///         }
+    ///         "name": "New epic name",
+    ///         "description: "New epic description"
     ///     }
     /// </remarks>
     /// <returns>
@@ -106,26 +99,20 @@ public class StoryController : ApiController
     /// - 400 with errors on failure
     /// - 404 on failure
     /// </returns>
-    [HttpPut("{storyId:guid}")]
+    [HttpPut("{epicId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update([FromRoute] Guid storyId, [FromBody] UpdateStoryRequest request)
+    public async Task<IActionResult> Update([FromRoute] Guid epicId, [FromBody] UpdateEpicRequest request)
     {
-        var command = new UpdateStoryCommand(
-            storyId,
-            request.Name,
-            request.Description,
-            request.EpicId.HandleNull().Convert(EntityIdExtensions.GuidConversion<EpicId>)
-        );
-
+        var command = new UpdateEpicCommand(epicId, request.Name, request.Description);
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
             return NoContent();
         }
 
-        if (response.HasError<DomainErrors.StoryErrors.StoryNotFound>())
+        if (response.HasError<DomainErrors.General.DomainNotFound>())
         {
             return NotFound();
         }

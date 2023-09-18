@@ -15,12 +15,13 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     {
     }
 
-    private Story(ProjectId projectId, StoryName name, StoryDescription description)
+    private Story(ProjectId projectId, StoryName name, StoryDescription description, EpicId? epicId)
         : base(new StoryId(Guid.NewGuid()))
     {
         ProjectId = projectId;
         Name = name;
         Description = description;
+        EpicId = epicId;
     }
 
 
@@ -40,17 +41,22 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     /// <summary>
     /// ProjectId which story belongs to.
     /// </summary>
-    public ProjectId ProjectId { get; set; }
+    public ProjectId ProjectId { get; private set; }
 
     /// <summary>
     /// User story name.
     /// </summary>
-    public StoryName Name { get; set; }
+    public StoryName Name { get; private set; }
 
     /// <summary>
     /// User story description.
     /// </summary>
-    public StoryDescription Description { get; set; }
+    public StoryDescription Description { get; private set; }
+
+    /// <summary>
+    /// EpicId which story belongs to.
+    /// </summary>
+    public EpicId? EpicId { get; set; }
 
     #endregion
 
@@ -63,8 +69,9 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     /// <param name="name">User story name.</param>
     /// <param name="description">User story description.</param>
     /// <param name="projectId">User story project id.</param>
+    /// <param name="epicId">User story epic id.</param>
     /// <returns>Created <see cref="Story"/> or <see cref="Result"/> with errors.</returns>
-    public static Result<Story> Create(string name, string description, ProjectId projectId)
+    public static Result<Story> Create(string name, string description, ProjectId projectId, EpicId? epicId)
     {
         var resultName = StoryName.Create(name);
         var resultDescription = StoryDescription.Create(description);
@@ -75,7 +82,7 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
             return result;
         }
 
-        var story = new Story(projectId, resultName.Value, resultDescription.Value);
+        var story = new Story(projectId, resultName.Value, resultDescription.Value, epicId);
 
         return Result.Ok(story);
     }
@@ -112,6 +119,12 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
 
         Description = resultDescription.Value;
         return resultDescription;
+    }
+
+    public Result<EpicId?> EditEpicId(EpicId? epicId)
+    {
+        EpicId = epicId;
+        return Result.Ok(EpicId);
     }
 
     #endregion
