@@ -77,9 +77,12 @@ public class ExceptionHandlingMiddleware
         Exception exception) =>
         exception switch
         {
-            NotFoundValidationException notFoundValidationException => (HttpStatusCode.NotFound, notFoundValidationException.Errors),
-            ValidationException validationException => (HttpStatusCode.BadRequest, validationException.Errors),
-            _ => (HttpStatusCode.InternalServerError, new[] { new DomainErrors.General.ServerError() })
+            ValidationException validationException => 
+                (HttpStatusCode.BadRequest, validationException.Errors),
+            AuthenticationServiceException authenticationServiceException => 
+                (HttpStatusCode.InternalServerError,new[] { new DomainErrors.General.ServerError() }),
+            _ => 
+                (HttpStatusCode.InternalServerError, new[] { new DomainErrors.General.ServerError() })
         };
 }
 
