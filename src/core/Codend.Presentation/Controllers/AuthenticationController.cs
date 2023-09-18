@@ -39,7 +39,7 @@ public class AuthenticationController : ApiController
     [ProducesResponseType(typeof(TokenResponse), 200)]
     [ProducesResponseType(400)]
     [AllowAnonymous]
-    public async Task<IActionResult> Login(LoginCommand command)
+    public async Task<IActionResult> Login([FromBody] LoginCommand command)
     {
         var response = await Mediator.Send(command);
         if (response.IsFailed)
@@ -71,7 +71,7 @@ public class AuthenticationController : ApiController
     [ProducesResponseType(typeof(TokenResponse), 200)]
     [ProducesResponseType(400)]
     [AllowAnonymous]
-    public async Task<IActionResult> Register(RegisterCommand command)
+    public async Task<IActionResult> Register([FromBody] RegisterCommand command)
     {
         var response = await Mediator.Send(command);
         if (response.IsFailed)
