@@ -4,7 +4,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using ProjectTaskNotFound = Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors.ProjectTaskNotFound;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 
@@ -45,14 +45,14 @@ public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTask
         var projectTask = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId));
         if (projectTask is null)
         {
-            return Result.Fail(new ProjectTaskNotFound());
+            return DomainNotFound.Fail<BaseProjectTask>();
         }
         
         // Validate user permission.
         var userId = _identityProvider.UserId;
         if (!await _projectMemberRepository.IsProjectMember(userId, projectTask.ProjectId, cancellationToken))
         {
-            return Result.Fail(new ProjectTaskNotFound());
+            return DomainNotFound.Fail<BaseProjectTask>();
         }
 
         _taskRepository.Remove(projectTask);
