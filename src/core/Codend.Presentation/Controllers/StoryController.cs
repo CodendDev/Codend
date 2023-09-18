@@ -4,13 +4,13 @@ using Codend.Application.Stories.Commands.UpdateStory;
 using Codend.Contracts;
 using Codend.Contracts.Abstractions;
 using Codend.Contracts.Requests.Story;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Presentation.Controllers;
 
@@ -125,7 +125,7 @@ public class StoryController : ApiController
             return NoContent();
         }
 
-        if (response.HasError<DomainErrors.StoryErrors.StoryNotFound>())
+        if (response.HasError<DomainNotFound>())
         {
             return NotFound();
         }

@@ -6,6 +6,7 @@ using Codend.Domain.Core.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.StoryErrors;
 
 namespace Codend.Application.Stories.Commands.UpdateStory;
@@ -58,7 +59,7 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
 
         if (story is null)
         {
-            return Result.Fail(new StoryNotFound());
+            return DomainNotFound.Fail<Story>();
         }
 
         if (request.EpicId.ShouldUpdate &&
