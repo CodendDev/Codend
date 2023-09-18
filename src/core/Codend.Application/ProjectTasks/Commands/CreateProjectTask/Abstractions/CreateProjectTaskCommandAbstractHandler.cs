@@ -5,7 +5,7 @@ using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.General.DomainNotFound;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
@@ -61,7 +61,7 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         if (!await _projectMemberRepository
                 .IsProjectMember(userId, projectId, cancellationToken))
         {
-            return Fail<Project>();
+            return DomainNotFound.Fail<Project>();
         }
 
         // Validate status id.

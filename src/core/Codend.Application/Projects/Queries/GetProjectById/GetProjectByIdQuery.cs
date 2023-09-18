@@ -4,7 +4,7 @@ using Codend.Contracts.Responses.Project;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.General.DomainNotFound;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.Projects.Queries.GetProjectById;
 
@@ -29,7 +29,7 @@ public class GetProjectByIdQueryHandler : IQueryHandler<GetProjectByIdQuery, Pro
         var project = await _projectRepository.GetByIdAsync(new ProjectId(request.Id));
         if (project is null)
         {
-            return Fail<Project>();
+            return DomainNotFound.Fail<Project>();
         }
 
         var dto = _mapper.Map<ProjectResponse>(project);
