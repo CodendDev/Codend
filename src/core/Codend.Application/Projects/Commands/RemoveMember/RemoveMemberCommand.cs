@@ -67,7 +67,9 @@ public class RemoveMemberCommandHandler : ICommandHandler<RemoveMemberCommand>
     public async Task<Result> Handle(RemoveMemberCommand request, CancellationToken cancellationToken)
     {
         // Check if relation exists
-        var projectMember = await _projectMemberRepository.GetByUserAndProject(request.Userid, request.ProjectId);
+        var projectMember = await _projectMemberRepository
+            .GetByProjectAndMemberId(request.ProjectId, request.Userid, cancellationToken);
+
         if (projectMember is null)
         {
             return DomainNotFound.Fail<ProjectMember>();

@@ -6,10 +6,6 @@ public interface IProjectMemberRepository
 {
     void Add(ProjectMember projectMember);
 
-    Task<ProjectMember?> GetByIdAsync(ProjectMemberId projectMemberId);
-
-    Task<ProjectMember?> GetByUserAndProject(UserId userId, ProjectId projectId);
-
     void Remove(ProjectMember projectMember);
 
     void Update(ProjectMember projectMember);
