@@ -1,4 +1,7 @@
-﻿namespace Codend.Domain.Core.Errors;
+﻿using Codend.Domain.Core.Abstractions;
+using FluentResults;
+
+namespace Codend.Domain.Core.Errors;
 
 /// <summary>
 /// Contains the domain errors.
@@ -34,6 +37,16 @@ public static partial class DomainErrors
                 : base($"General.DomainNotFound.{domainName}", $"{domainName} was not found.")
             {
             }
+
+            /// <summary>
+            /// Creates a failed <see cref="Result"/> with <see cref="DomainErrors.General.DomainNotFound"/> error
+            /// with nameof(<typeparamref name="T"/>) as domain name.
+            /// </summary>
+            /// <typeparam name="T">Domain which was not found</typeparam>
+            /// <returns><see cref="Result"/> with <see cref="DomainErrors.General.DomainNotFound"/> error.</returns>
+            public static Result Fail<T>()
+                where T : IEntity
+                => Result.Fail(new DomainNotFound(typeof(T).Name));
         }
     }
 

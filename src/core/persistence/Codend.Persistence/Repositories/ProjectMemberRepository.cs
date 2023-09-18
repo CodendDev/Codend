@@ -14,7 +14,7 @@ public class ProjectMemberRepository : GenericRepository<ProjectMemberId, Guid, 
         CancellationToken cancellationToken)
     {
         return Context.Set<ProjectMember>()
-            .FirstOrDefaultAsync(projectMember =>
+            .SingleOrDefaultAsync(projectMember =>
                     Equals(projectMember.ProjectId, projectId) &&
                     Equals(projectMember.MemberId, memberId),
                 cancellationToken);
