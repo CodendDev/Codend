@@ -1,6 +1,4 @@
-﻿using Codend.Application.Core.Errors;
-using Codend.Application.Extensions;
-using Codend.Domain.Core.Errors;
+﻿using Codend.Application.Extensions;
 using Codend.Domain.ValueObjects;
 using FluentValidation;
 using static Codend.Application.Core.Errors.ValidationErrors.Common;
@@ -38,6 +36,13 @@ public class UpdateStoryCommandValidator : AbstractValidator<UpdateStoryCommand>
                 .WithError(new NullOrEmpty(nameof(UpdateStoryCommand.Description)))
                 .MaximumLength(StoryDescription.MaxLength)
                 .WithError(new StringPropertyTooLong(nameof(UpdateStoryCommand.Description), StoryDescription.MaxLength));
+        });
+
+        When(x => x.EpicId.ShouldUpdate, () =>
+        {
+            RuleFor(x => x.EpicId.Value)
+                .NotEmpty()
+                .WithError(new PropertyNullOrEmpty(nameof(UpdateStoryCommand.EpicId)));
         });
     }
 }
