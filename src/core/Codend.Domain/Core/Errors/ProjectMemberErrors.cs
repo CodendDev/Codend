@@ -7,11 +7,11 @@ public static partial class DomainErrors
     /// </summary>
     public static class ProjectMember
     {
-        public class IsFavouriteNotChanged : DomainError
+        public class FavouriteDidntChange : DomainError
         {
-            public IsFavouriteNotChanged()
-                : base("ProjectMember.IsFavouriteNotChanged",
-                    "New IsFavourite value is the same as current IsFavourite.")
+            public FavouriteDidntChange()
+                : base("ProjectMember.FavouriteDidntChange",
+                    "Favourite did not change.")
             {
             }
         }

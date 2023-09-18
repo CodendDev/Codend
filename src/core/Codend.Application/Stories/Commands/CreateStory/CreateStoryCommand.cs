@@ -3,7 +3,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.ProjectErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.StoryErrors;
 
 namespace Codend.Application.Stories.Commands.CreateStory;
@@ -58,7 +58,7 @@ public class CreateStoryCommandHandler : ICommandHandler<CreateStoryCommand, Gui
 
         if (!await _projectRepository.Exists(projectId))
         {
-            return Result.Fail(new ProjectNotFound());
+            return DomainNotFound.Fail<Project>();
         }
 
         var storyResult = Story.Create(request.Name, request.Description, projectId, epicId);

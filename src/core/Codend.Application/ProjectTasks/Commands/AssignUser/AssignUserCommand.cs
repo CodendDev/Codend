@@ -4,6 +4,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 
 namespace Codend.Application.ProjectTasks.Commands.AssignUser;
@@ -48,16 +49,16 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
         var task = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId));
         if (task is null)
         {
-            return Result.Fail(new ProjectTaskNotFound());
+            return DomainNotFound.Fail<BaseProjectTask>();
         }
-        
+
         // Validate user permission.
         var userId = _identityProvider.UserId;
         if (!await _projectMemberRepository.IsProjectMember(userId, task.ProjectId, cancellationToken))
         {
-            return Result.Fail(new ProjectTaskNotFound());
+            return DomainNotFound.Fail<BaseProjectTask>();
         }
-        
+
         // Validate assignee id.
         var assigneeId = new UserId(request.AssigneeId);
         if (!await _projectMemberRepository.IsProjectMember(assigneeId, task.ProjectId, cancellationToken))

@@ -1,6 +1,6 @@
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using FluentResults;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectMember;
 
 namespace Codend.Domain.Entities;
 
@@ -33,7 +33,7 @@ public class ProjectMember : Entity<ProjectMemberId>
     {
         if (IsFavourite == isFavourite)
         {
-            return Result.Fail(new DomainErrors.ProjectMember.IsFavouriteNotChanged());
+            return Result.Fail(new FavouriteDidntChange());
         }
 
         IsFavourite = isFavourite;

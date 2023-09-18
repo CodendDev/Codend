@@ -29,6 +29,6 @@ public sealed class SprintGoal : NullableStringValueObject, INullableStringValue
     {
         return Result
             .Ok(new SprintGoal(value))
-            .Ensure(() => value is null || value.Length < MaxLength, new TooLong(nameof(SprintGoal), MaxLength));
+            .Ensure(() => value is null || value.Length < MaxLength, new TooLong<SprintGoal>());
     }
 }

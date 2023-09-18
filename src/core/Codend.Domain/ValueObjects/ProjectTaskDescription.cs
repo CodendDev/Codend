@@ -33,6 +33,6 @@ public sealed class ProjectTaskDescription : NullableStringValueObject,
         return Result
             .Ok(new ProjectTaskDescription(value))
             .Ensure(() => value is null || value.Length < MaxLength,
-                new TooLong(nameof(ProjectTaskDescription), MaxLength));
+                new TooLong<ProjectTaskDescription>());
     }
 }

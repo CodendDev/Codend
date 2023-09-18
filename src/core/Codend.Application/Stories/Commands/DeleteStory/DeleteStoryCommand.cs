@@ -3,7 +3,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.StoryErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.Stories.Commands.DeleteStory;
 
@@ -50,7 +50,7 @@ public class DeleteStoryCommandHandler : ICommandHandler<DeleteStoryCommand>
 
         if (story is null)
         {
-            return Result.Fail(new StoryNotFound());
+            return DomainNotFound.Fail<Story>();
         }
 
         var storyTasks = _taskRepository.GetStoryTasks(story.Id).ToList();

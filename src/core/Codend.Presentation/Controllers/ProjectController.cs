@@ -14,6 +14,7 @@ using Codend.Presentation.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Presentation.Controllers;
 
@@ -111,7 +112,7 @@ public class ProjectController : ApiController
             return NoContent();
         }
 
-        if (response.HasError<DomainErrors.ProjectErrors.ProjectNotFound>())
+        if (response.HasError<DomainNotFound>())
         {
             return NotFound();
         }

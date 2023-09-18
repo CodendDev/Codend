@@ -17,9 +17,9 @@ using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Codend.Presentation.Infrastructure;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Presentation.Controllers;
 
@@ -47,7 +47,7 @@ public class ProjectTaskController : ApiController
             return NoContent();
         }
 
-        if (response.HasError<DomainErrors.ProjectTaskErrors.ProjectTaskNotFound>())
+        if (response.HasError<DomainNotFound>())
         {
             return NotFound();
         }

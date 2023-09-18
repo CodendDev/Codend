@@ -5,7 +5,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.ProjectErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
@@ -68,14 +68,14 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         // Validate task id.
         if (await _taskRepository.GetByIdAsync(request.TaskId) is not TProjectTask task)
         {
-            return Result.Fail(new ProjectTaskNotFound());
+            return DomainNotFound.Fail<BaseProjectTask>();
         }
 
         // Validate current user permissions.
         var userId = _identityProvider.UserId;
         if (!await _memberRepository.IsProjectMember(userId, task.ProjectId, cancellationToken))
         {
-            return Result.Fail(new ProjectTaskNotFound());
+            return DomainNotFound.Fail<BaseProjectTask>();
         }
 
         // Validate status.
@@ -98,7 +98,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
                 return Result.Fail(new InvalidAssigneeId());
             }
         }
-        
+
         // Validate story.
         if (request.StoryId.ShouldUpdate)
         {
@@ -108,7 +108,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
                 return Result.Fail(new InvalidStoryId());
             }
         }
-        
+
         var result = HandleUpdate(task, request);
         if (result.IsFailed)
         {

@@ -31,6 +31,6 @@ public sealed class ProjectDescription : NullableStringValueObject, INullableStr
         return Result
             .Ok(new ProjectDescription(value))
             .Ensure(() => value is null || value.Length < MaxLength,
-                new TooLong(nameof(ProjectDescription), MaxLength));
+                new TooLong<ProjectDescription>());
     }
 }

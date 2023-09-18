@@ -16,14 +16,6 @@ public static partial class DomainErrors
 
     public static class ProjectTaskErrors
     {
-        public class ProjectTaskNotFound : DomainError
-        {
-            public ProjectTaskNotFound()
-                : base("ProjectTaskErrors.ProjectTaskNotFound", "ProjectTask not found in database.")
-            {
-            }
-        }
-
         public class InvalidStatusId : DomainError
         {
             public InvalidStatusId()

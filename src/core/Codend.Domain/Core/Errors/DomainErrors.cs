@@ -1,4 +1,5 @@
 ﻿using Codend.Domain.Core.Abstractions;
+using Codend.Domain.ValueObjects.Abstractions;
 using FluentResults;
 
 namespace Codend.Domain.Core.Errors;
@@ -55,18 +56,20 @@ public static partial class DomainErrors
     /// </summary>
     public static class StringValueObject
     {
-        public class NullOrEmpty : DomainError
+        public class NullOrEmpty<T> : DomainError
+            where T : ValueObjects.Primitives.StringValueObject
         {
-            public NullOrEmpty(string fieldName) : base($"StringValueObject.NullOrEmpty.{fieldName}",
-                $"Field {fieldName} cannot be null nor empty.")
+            public NullOrEmpty() : base($"StringValueObject.NullOrEmpty.{typeof(T).Name}",
+                $"Field {typeof(T).Name} cannot be null nor empty.")
             {
             }
         }
 
-        public class TooLong : DomainError
+        public class TooLong<T> : DomainError
+            where T : IStringMaxLengthValueObject
         {
-            public TooLong(string fieldName, int maxLength) : base($"StringValueObject.TooLong.{fieldName}",
-                $"Field {fieldName} is longer than allowed {maxLength}.")
+            public TooLong() : base($"StringValueObject.TooLong.{typeof(T).Name}",
+                $"Field {typeof(T).Name} is longer than allowed {T.MaxLength}.")
             {
             }
         }

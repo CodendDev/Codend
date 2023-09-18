@@ -16,8 +16,8 @@ public class StoryName : StringValueObject, IStringValueObject<StoryName>
     {
         return Result
             .Ok(new StoryName(value))
-            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty(nameof(StoryName)))
-            .Ensure(() => value.Length < MaxLength, new TooLong(nameof(StoryName), MaxLength));
+            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty<StoryName>())
+            .Ensure(() => value.Length < MaxLength, new TooLong<StoryName>());
     }
 
     public static int MaxLength => 100;

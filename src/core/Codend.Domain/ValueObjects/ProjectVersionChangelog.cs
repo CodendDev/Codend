@@ -32,6 +32,6 @@ public sealed class ProjectVersionChangelog : NullableStringValueObject,
         return Result
             .Ok(new ProjectVersionChangelog(value))
             .Ensure(() => value is null || value.Length < MaxLength,
-                new TooLong(nameof(ProjectVersionChangelog), MaxLength));
+                new TooLong<ProjectVersionChangelog>());
     }
 }

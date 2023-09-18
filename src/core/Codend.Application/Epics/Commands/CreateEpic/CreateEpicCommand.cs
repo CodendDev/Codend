@@ -3,7 +3,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.ProjectErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.Epics.Commands.CreateEpic;
 
@@ -48,7 +48,7 @@ public class CreateEpicCommandHandler : ICommandHandler<CreateEpicCommand, Guid>
         var projectId = new ProjectId(request.ProjectId);
         if (!await _projectRepository.Exists(projectId))
         {
-            return Result.Fail(new ProjectNotFound());
+            return DomainNotFound.Fail<Project>();
         }
 
         var epicResult = Epic.Create(request.Name, request.Description, projectId);
