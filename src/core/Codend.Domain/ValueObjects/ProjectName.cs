@@ -30,7 +30,7 @@ public sealed class ProjectName : StringValueObject, IStringValueObject<ProjectN
     {
         return Result
             .Ok(new ProjectName(value))
-            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty(nameof(ProjectName)))
+            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty<ProjectName>())
             .Ensure(() => value.Length < MaxLength, new TooLong<ProjectName>());
     }
 }

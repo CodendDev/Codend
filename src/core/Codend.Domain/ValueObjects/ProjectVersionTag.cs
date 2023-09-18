@@ -30,7 +30,7 @@ public sealed class ProjectVersionTag : StringValueObject, IStringValueObject<Pr
     {
         return Result
             .Ok(new ProjectVersionTag(value))
-            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty(nameof(ProjectVersionTag)))
+            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty<ProjectVersionTag>())
             .Ensure(() => value.Length < MaxLength, new TooLong<ProjectVersionTag>());
     }
 }

@@ -56,10 +56,11 @@ public static partial class DomainErrors
     /// </summary>
     public static class StringValueObject
     {
-        public class NullOrEmpty : DomainError
+        public class NullOrEmpty<T> : DomainError
+            where T : ValueObjects.Primitives.StringValueObject
         {
-            public NullOrEmpty(string fieldName) : base($"StringValueObject.NullOrEmpty.{fieldName}",
-                $"Field {fieldName} cannot be null nor empty.")
+            public NullOrEmpty() : base($"StringValueObject.NullOrEmpty.{typeof(T).Name}",
+                $"Field {typeof(T).Name} cannot be null nor empty.")
             {
             }
         }

@@ -16,7 +16,7 @@ public class StoryDescription : StringValueObject, IStringValueObject<StoryDescr
     {
         return Result
             .Ok(new StoryDescription(value))
-            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty(nameof(StoryDescription)))
+            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty<StoryDescription>())
             .Ensure(() => value.Length < MaxLength, new TooLong<StoryDescription>());
     }
 

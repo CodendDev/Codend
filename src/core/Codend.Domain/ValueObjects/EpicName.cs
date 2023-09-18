@@ -16,7 +16,7 @@ public class EpicName : StringValueObject, IStringValueObject<EpicName>
     {
         return Result
             .Ok(new EpicName(value))
-            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty(nameof(EpicName)))
+            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty<EpicName>())
             .Ensure(() => value.Length < MaxLength, new TooLong<EpicName>());
     }
 
