@@ -1,4 +1,5 @@
 ﻿using Codend.Domain.Core.Abstractions;
+using Codend.Domain.ValueObjects.Abstractions;
 using FluentResults;
 
 namespace Codend.Domain.Core.Errors;
@@ -63,10 +64,11 @@ public static partial class DomainErrors
             }
         }
 
-        public class TooLong : DomainError
+        public class TooLong<T> : DomainError
+            where T : IStringMaxLengthValueObject
         {
-            public TooLong(string fieldName, int maxLength) : base($"StringValueObject.TooLong.{fieldName}",
-                $"Field {fieldName} is longer than allowed {maxLength}.")
+            public TooLong() : base($"StringValueObject.TooLong.{typeof(T).Name}",
+                $"Field {typeof(T).Name} is longer than allowed {T.MaxLength}.")
             {
             }
         }

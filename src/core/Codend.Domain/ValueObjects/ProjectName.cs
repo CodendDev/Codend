@@ -31,6 +31,6 @@ public sealed class ProjectName : StringValueObject, IStringValueObject<ProjectN
         return Result
             .Ok(new ProjectName(value))
             .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty(nameof(ProjectName)))
-            .Ensure(() => value.Length < MaxLength, new TooLong(nameof(ProjectName), MaxLength));
+            .Ensure(() => value.Length < MaxLength, new TooLong<ProjectName>());
     }
 }

@@ -31,6 +31,6 @@ public sealed class ProjectVersionName : NullableStringValueObject, INullableStr
         return Result
             .Ok(new ProjectVersionName(value))
             .Ensure(() => value is null || value.Length < MaxLength,
-                new TooLong(nameof(ProjectVersionName), MaxLength));
+                new TooLong<ProjectVersionName>());
     }
 }

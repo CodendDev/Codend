@@ -17,7 +17,7 @@ public class EpicDescription : StringValueObject, IStringValueObject<EpicDescrip
         return Result
             .Ok(new EpicDescription(value))
             .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty(nameof(EpicDescription)))
-            .Ensure(() => value.Length < MaxLength, new TooLong(nameof(EpicDescription), MaxLength));
+            .Ensure(() => value.Length < MaxLength, new TooLong<EpicDescription>());
     }
 
     public static int MaxLength => 3000;

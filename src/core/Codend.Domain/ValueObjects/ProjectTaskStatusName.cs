@@ -32,6 +32,6 @@ public sealed class ProjectTaskStatusName : StringValueObject, IStringValueObjec
         return Result
             .Ok(new ProjectTaskStatusName(value))
             .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty(nameof(ProjectTaskStatusName)))
-            .Ensure(() => value.Length < MaxLength, new TooLong(nameof(ProjectTaskStatusName), MaxLength));
+            .Ensure(() => value.Length < MaxLength, new TooLong<ProjectTaskStatusName>());
     }
 }
