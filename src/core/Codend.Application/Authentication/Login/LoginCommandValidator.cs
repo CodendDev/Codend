@@ -1,7 +1,6 @@
 ﻿using Codend.Application.Extensions;
-using Codend.Domain.Core.Errors;
 using FluentValidation;
-using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
+using static Codend.Application.Core.Errors.ValidationErrors.Common;
 
 namespace Codend.Application.Authentication.Login;
 
@@ -17,10 +16,10 @@ public class LoginCommandValidator : AbstractValidator<LoginCommand>
     {
         RuleFor(x => x.Email)
             .NotEmpty()
-            .WithError(new NullOrEmpty(nameof(LoginCommand.Email)));
+            .WithError(new PropertyNullOrEmpty(nameof(LoginCommand.Email)));
         
         RuleFor(x => x.Password)
             .NotEmpty()
-            .WithError(new NullOrEmpty(nameof(LoginCommand.Password)));
+            .WithError(new PropertyNullOrEmpty(nameof(LoginCommand.Password)));
     }
 }
