@@ -4,7 +4,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using ProjectNotFound = Codend.Domain.Core.Errors.DomainErrors.ProjectErrors.ProjectNotFound;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.Projects.Commands.UpdateProject;
 
@@ -49,12 +49,12 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
         var project = await _projectRepository.GetByIdAsync(new ProjectId(request.ProjectId));
         if (project is null)
         {
-            return Result.Fail(new ProjectNotFound());
+            return DomainNotFound.Fail<Project>();
         }
 
         if (!await _projectMemberRepository.IsProjectMember(userId, project.Id, cancellationToken))
         {
-            return Result.Fail(new ProjectNotFound());
+            return DomainNotFound.Fail<Project>();
         }
         
         var result = project.Edit(request.Name, request.Description);
