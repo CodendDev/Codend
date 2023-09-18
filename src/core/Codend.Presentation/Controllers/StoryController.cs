@@ -2,8 +2,10 @@ using Codend.Application.Stories.Commands.CreateStory;
 using Codend.Application.Stories.Commands.DeleteStory;
 using Codend.Application.Stories.Commands.UpdateStory;
 using Codend.Contracts;
+using Codend.Contracts.Abstractions;
 using Codend.Contracts.Requests.Story;
 using Codend.Domain.Core.Errors;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
 using MediatR;
@@ -94,9 +96,7 @@ public class StoryController : ApiController
     ///         "description: "New story description"
     ///         "epicId": {
     ///             "shouldUpdate": true,
-    ///             "value": {
-    ///                 "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///             }
+    ///             "EpicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///         }
     ///     }
     /// </remarks>
@@ -112,7 +112,13 @@ public class StoryController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromRoute] Guid storyId, [FromBody] UpdateStoryRequest request)
     {
-        var command = new UpdateStoryCommand(storyId, request.Name, request.Description, request.EpicId);
+        var command = new UpdateStoryCommand(
+            storyId,
+            request.Name,
+            request.Description,
+            request.EpicId.HandleNull().Convert(EntityIdExtensions.GuidConversion<EpicId>)
+        );
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {

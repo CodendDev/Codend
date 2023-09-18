@@ -70,8 +70,8 @@ public static class ResultExtensions
         return result.WithReasons(results.Merge().Reasons);
     }
 
+    // TODO come up with cool name xd
     /// <summary>
-    /// TODO come up with cool name xd
     /// Helper method for creating <see cref="Result{T}"/>, allows to pass custom null value handler.
     /// If <paramref name="value"/> is null method returns <paramref name="nullHandler"/> result.
     /// Otherwise delegate <paramref name="getResult"/> is called returns its result.

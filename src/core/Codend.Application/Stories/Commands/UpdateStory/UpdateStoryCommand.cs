@@ -2,6 +2,7 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Contracts.Abstractions;
+using Codend.Domain.Core.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -67,8 +68,8 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
         }
 
         var result = Result.Merge(
-            request.Name is null ? null : story.EditName(request.Name).ToResult(),
-            request.Description is null ? null : story.EditDescription(request.Description).ToResult(),
+            request.Name.GetResultFromDelegate(story.EditName, Result.Ok),
+            request.Description.GetResultFromDelegate(story.EditDescription, Result.Ok),
             request.EpicId.HandleUpdate(story.EditEpicId)
         );
 

@@ -1,5 +1,4 @@
 ﻿using Codend.Contracts.Abstractions;
-using Codend.Domain.Entities;
 
 namespace Codend.Contracts.Requests.Story;
 
@@ -11,5 +10,5 @@ namespace Codend.Contracts.Requests.Story;
 public record UpdateStoryRequest(
     string Name,
     string Description,
-    ShouldUpdateBinder<EpicId?> EpicId
+    ShouldUpdateBinder<Guid?>? EpicId
 );
