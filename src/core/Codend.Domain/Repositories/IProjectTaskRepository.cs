@@ -13,8 +13,21 @@ public interface IProjectTaskRepository
     void Update(BaseProjectTask task);
 
     /// <summary>
+    /// Updates range.
+    /// </summary>
+    /// <param name="tasks">Tasks to update.</param>
+    void UpdateRange(IEnumerable<BaseProjectTask> tasks);
+
+    /// <summary>
     /// Checks whether project exists and checks whether status is contained by given project.
     /// </summary>
     /// <returns>true id status is valid for this project, otherwise false</returns>
-    bool ProjectTaskIsValid(ProjectId projectId, ProjectTaskStatusId statusId);
+    bool ProjectTaskStatusIsValid(ProjectId projectId, ProjectTaskStatusId statusId);
+
+    /// <summary>
+    /// Collects tasks which belongs to a given story.
+    /// </summary>
+    /// <param name="storyId">StoryId.</param>
+    /// <returns>List of tasks which belongs to the <see cref="Story"/>.</returns>
+    IEnumerable<BaseProjectTask> GetStoryTasks(StoryId storyId);
 }

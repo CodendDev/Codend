@@ -8,9 +8,10 @@ public record BaseProjectTaskCreateProperties
     string Priority,
     ProjectTaskStatusId StatusId,
     ProjectId ProjectId,
-    string? Description = null,
-    TimeSpan? EstimatedTime = null,
-    DateTime? DueDate = null,
-    uint? StoryPoints = null,
-    UserId? AssigneeId = null
+    string? Description,
+    TimeSpan? EstimatedTime,
+    DateTime? DueDate,
+    uint? StoryPoints,
+    UserId? AssigneeId,
+    StoryId? StoryId
 ) : IProjectTaskCreateProperties;

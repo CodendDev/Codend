@@ -39,4 +39,15 @@ public abstract class GenericRepository<TKey, TKeyPrimitive, TEntity>
     {
         Context.Set<TEntity>().Update(entity);
     }
+
+    public void UpdateRange(IEnumerable<TEntity> entities)
+    {
+        Context.Set<TEntity>().UpdateRange(entities);
+    }
+
+    public Task<bool> Exists(TKey key)
+    {
+        return Context.Set<TEntity>()
+            .AnyAsync(e => Equals(e.Id, key));
+    }
 }

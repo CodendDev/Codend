@@ -2,6 +2,7 @@ namespace Codend.Contracts.Responses.ProjectTask;
 
 public record BugfixProjectTaskResponse
 (
+    string TaskType,
     string Name,
     string Priority,
     string? Description,
@@ -9,8 +10,9 @@ public record BugfixProjectTaskResponse
     uint? StoryPoints,
     Guid? AssigneeId,
     EstimatedTimeResponse? EstimatedTime
-) : AbstractProjectTaskResponse
+) : BaseProjectTaskResponse
 (
+    TaskType,
     Name,
     Priority,
     Description,

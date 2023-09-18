@@ -7,13 +7,13 @@ public class BugfixProjectTask :
     BaseProjectTask,
     IProjectTaskCreator<BugfixProjectTask, BugfixProjectTaskCreateProperties>
 {
-    private BugfixProjectTask(ProjectTaskId id) : base(id)
+    private BugfixProjectTask()
     {
     }
 
     public static Result<BugfixProjectTask> Create(BugfixProjectTaskCreateProperties properties, UserId ownerId)
     {
-        var task = new BugfixProjectTask(new ProjectTaskId(Guid.NewGuid()));
+        var task = new BugfixProjectTask();
         var result = task.PopulateBaseProperties(properties, ownerId);
 
         if (result.IsFailed)

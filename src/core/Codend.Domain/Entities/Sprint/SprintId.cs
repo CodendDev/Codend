@@ -1,5 +1,14 @@
-using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Primitives;
 
 namespace Codend.Domain.Entities;
 
-public record struct SprintId(Guid Value) : IEntityId<Guid>;
+public sealed record SprintId : EntityId<Guid>
+{
+    public SprintId()
+    {
+    }
+
+    public SprintId(Guid value) : base(value)
+    {
+    }
+}

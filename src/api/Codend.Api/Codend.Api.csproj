@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="FluentValidation" Version="11.7.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
@@ -30,6 +31,8 @@
         <ProjectReference Include="..\..\core\Codend.Infrastructure\Codend.Infrastructure.csproj"/>
         <ProjectReference Include="..\..\core\Codend.Presentation\Codend.Presentation.csproj"/>
     </ItemGroup>
+
+
 
 
 

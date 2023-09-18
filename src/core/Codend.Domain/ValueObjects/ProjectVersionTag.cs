@@ -3,8 +3,7 @@ using Codend.Domain.Core.Extensions;
 using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
-using NullOrEmpty = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionTag.NullOrEmpty;
-using TagTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionTag.TagTooLong;
+using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
 
 namespace Codend.Domain.ValueObjects;
 
@@ -31,7 +30,7 @@ public sealed class ProjectVersionTag : StringValueObject, IStringValueObject<Pr
     {
         return Result
             .Ok(new ProjectVersionTag(value))
-            .Ensure<ProjectVersionTag, NullOrEmpty>(() => !string.IsNullOrEmpty(value))
-            .Ensure<ProjectVersionTag, TagTooLong>(() => value.Length < MaxLength);
+            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty(nameof(ProjectVersionTag)))
+            .Ensure(() => value.Length < MaxLength, new TooLong(nameof(ProjectVersionTag), MaxLength));
     }
 }

@@ -3,7 +3,7 @@ using Codend.Domain.Core.Extensions;
 using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
-using NameTooLong = Codend.Domain.Core.Errors.DomainErrors.ProjectVersionName.NameTooLong;
+using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
 
 namespace Codend.Domain.ValueObjects;
 
@@ -30,6 +30,7 @@ public sealed class ProjectVersionName : NullableStringValueObject, INullableStr
     {
         return Result
             .Ok(new ProjectVersionName(value))
-            .Ensure<ProjectVersionName, NameTooLong>(() => value is null || value.Length < MaxLength);
+            .Ensure(() => value is null || value.Length < MaxLength,
+                new TooLong(nameof(ProjectVersionName), MaxLength));
     }
 }

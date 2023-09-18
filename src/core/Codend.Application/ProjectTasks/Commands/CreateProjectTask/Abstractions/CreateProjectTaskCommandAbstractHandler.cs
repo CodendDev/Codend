@@ -1,16 +1,18 @@
 using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Domain.Repositories;
 using FluentResults;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 
 /// <summary>
-/// Creates ProjectTask using <see cref="IProjectTaskCreator{TProjectTask,TProps}.Create"/> and persists it.
+/// Abstract handler for commands implementing <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/> interface.
+/// Creates <see cref="TProjectTask"/> using <see cref="IProjectTaskCreator{TProjectTask,TProps}.Create"/> and persists it.
 /// </summary>
 /// <typeparam name="TCommand">
 /// Must implement <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/> interface.
@@ -28,29 +30,64 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     where TProjectTaskProperties : IProjectTaskCreateProperties
 {
     private readonly IProjectTaskRepository _projectTaskRepository;
+    private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserIdentityProvider _identityProvider;
+    private readonly IStoryRepository _storyRepository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateProjectTaskCommandAbstractHandler{TCommand,TProjectTask,TProjectTaskProperties}"/> class.
+    /// </summary>
     protected CreateProjectTaskCommandAbstractHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider)
+        IUserIdentityProvider identityProvider,
+        IProjectMemberRepository projectMemberRepository,
+        IStoryRepository storyRepository)
     {
         _projectTaskRepository = projectTaskRepository;
         _unitOfWork = unitOfWork;
         _identityProvider = identityProvider;
+        _projectMemberRepository = projectMemberRepository;
+        _storyRepository = storyRepository;
     }
 
+    /// <inheritdoc />
     public async Task<Result<Guid>> Handle(TCommand request, CancellationToken cancellationToken)
     {
-        var projectStatusIsValid =
-            _projectTaskRepository.ProjectTaskIsValid(
-                request.TaskProperties.ProjectId,
-                request.TaskProperties.StatusId);
-        var resultProjectTaskStatus =
-            projectStatusIsValid ? Result.Ok() : Result.Fail(new DomainErrors.ProjectTaskErrors.InvalidStatusId());
+        // Validate current user and it's permissions.
+        var userId = _identityProvider.UserId;
+        var projectId = request.TaskProperties.ProjectId;
+        if (!await _projectMemberRepository
+                .IsProjectMember(userId, projectId, cancellationToken))
+        {
+            return Result.Fail(new ProjectNotFound());
+        }
 
-        var resultTask = TProjectTask.Create(request.TaskProperties, _identityProvider.UserId);
+        // Validate status id.
+        var statusId = request.TaskProperties.StatusId;
+        var projectStatusIsValid = _projectTaskRepository.ProjectTaskStatusIsValid(projectId, statusId);
+        var resultProjectTaskStatus =
+            projectStatusIsValid ? Result.Ok() : Result.Fail(new InvalidStatusId());
+
+        // Validate assignee id.
+        var assigneeId = request.TaskProperties.AssigneeId;
+        if (assigneeId is not null &&
+            !await _projectMemberRepository.IsProjectMember(assigneeId, projectId, cancellationToken))
+        {
+            return Result.Fail(new InvalidAssigneeId());
+        }
+
+        // Validate story id.
+        var storyId = request.TaskProperties.StoryId;
+        if (storyId is not null)
+        {
+            var story = await _storyRepository.GetByIdAsync(storyId);
+            if (story is null || story.ProjectId != projectId)
+                return Result.Fail(new InvalidStoryId());
+        }
+
+        var resultTask = TProjectTask.Create(request.TaskProperties, userId);
         var result = Result.Merge(resultProjectTaskStatus, resultTask);
         if (result.IsFailed)
         {

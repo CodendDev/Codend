@@ -10,12 +10,22 @@ public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, Base
     }
 
     /// <inheritdoc/>
-    public bool ProjectTaskIsValid(ProjectId projectId, ProjectTaskStatusId statusId)
+    public bool ProjectTaskStatusIsValid(ProjectId projectId, ProjectTaskStatusId statusId)
     {
         var valid =
             Context.Set<ProjectTaskStatus>()
-            .Any(status => status.ProjectId == projectId && status.Id == statusId);
+                .Any(status => status.ProjectId == projectId && status.Id == statusId);
 
         return valid;
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<BaseProjectTask> GetStoryTasks(StoryId storyId)
+    {
+        var tasks =
+            Context.Set<BaseProjectTask>()
+                .Where(task => task.StoryId == storyId);
+
+        return tasks;
     }
 }

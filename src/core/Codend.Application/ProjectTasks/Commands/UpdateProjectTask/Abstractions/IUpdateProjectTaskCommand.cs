@@ -3,6 +3,9 @@ using Codend.Domain.Entities;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
+/// <summary>
+/// Interface used for updating <see cref="BaseProjectTask"/> properties.
+/// </summary>
 public interface IUpdateProjectTaskCommand
 {
     /// <summary>
@@ -10,12 +13,48 @@ public interface IUpdateProjectTaskCommand
     /// </summary>
     ProjectTaskId TaskId { get; }
 
-    IShouldUpdate<string> Name { get; }
-    IShouldUpdate<string> Priority { get; }
-    IShouldUpdate<ProjectTaskStatusId> StatusId { get; }
-    IShouldUpdate<string?> Description { get; }
-    IShouldUpdate<TimeSpan?> EstimatedTime { get; }
-    IShouldUpdate<DateTime?> DueDate { get; }
-    IShouldUpdate<uint?> StoryPoints { get; }
-    IShouldUpdate<UserId?> AssigneeId { get; }
+    /// <summary>
+    /// Name of the task.
+    /// </summary>
+    ShouldUpdateBinder<string> Name { get; }
+
+    /// <summary>
+    /// Priority of the task.
+    /// </summary>
+    ShouldUpdateBinder<string> Priority { get; }
+
+    /// <summary>
+    /// StatusId of the task. Status and task must belong to the same project.
+    /// </summary>
+    ShouldUpdateBinder<ProjectTaskStatusId> StatusId { get; }
+
+    /// <summary>
+    /// Description of the task.
+    /// </summary>
+    ShouldUpdateBinder<string?> Description { get; }
+
+    /// <summary>
+    /// Estimated time of the task completion.
+    /// </summary>
+    ShouldUpdateBinder<TimeSpan?> EstimatedTime { get; }
+
+    /// <summary>
+    /// Due date by which task has to be done.
+    /// </summary>
+    ShouldUpdateBinder<DateTime?> DueDate { get; }
+
+    /// <summary>
+    /// Story points of the task.
+    /// </summary>
+    ShouldUpdateBinder<uint?> StoryPoints { get; }
+
+    /// <summary>
+    /// UserId of the Assignee.
+    /// </summary>
+    ShouldUpdateBinder<UserId?> AssigneeId { get; }
+
+    /// <summary>
+    /// StoryId to which task will be assigned.
+    /// </summary>
+    ShouldUpdateBinder<StoryId?> StoryId { get; }
 }

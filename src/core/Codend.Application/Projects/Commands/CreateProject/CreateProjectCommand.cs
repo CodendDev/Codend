@@ -8,33 +8,49 @@ using FluentResults;
 
 namespace Codend.Application.Projects.Commands.CreateProject;
 
+/// <summary>
+/// Command to create project with given properties.
+/// </summary>
+/// <param name="Name">Project Name.</param>
+/// <param name="Description">Project Description.</param>
 public sealed record CreateProjectCommand(
         string Name,
         string? Description)
     : ICommand<Guid>;
 
+/// <summary>
+/// <see cref="CreateProjectCommand"/> handler.
+/// </summary>
 public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand, Guid>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectTaskStatusRepository _statusRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserIdentityProvider _identityProvider;
+    private readonly IProjectMemberRepository _projectMemberRepository;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateProjectCommandHandler"/> class.
+    /// </summary>
     public CreateProjectCommandHandler(
         IProjectRepository projectRepository,
         IUnitOfWork unitOfWork,
         IUserIdentityProvider identityProvider,
-        IProjectTaskStatusRepository statusRepository)
+        IProjectTaskStatusRepository statusRepository,
+        IProjectMemberRepository projectMemberRepository)
     {
         _projectRepository = projectRepository;
         _unitOfWork = unitOfWork;
         _identityProvider = identityProvider;
         _statusRepository = statusRepository;
+        _projectMemberRepository = projectMemberRepository;
     }
 
+    /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
-        var resultProject = Project.Create(_identityProvider.UserId, request.Name, request.Description);
+        var userId = _identityProvider.UserId;
+        var resultProject = Project.Create(userId, request.Name, request.Description);
         if (resultProject.IsFailed)
         {
             return resultProject.ToResult();
@@ -51,10 +67,17 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
             return result.ToResult();
         }
 
+        var resultProjectMember = ProjectMember.Create(project.Id, userId);
+        if (resultProjectMember.IsFailed)
+        {
+            return resultProjectMember.ToResult();
+        }
+
         var statuses = resultStatuses.Select(r => r.Value);
 
         await _statusRepository.AddRangeAsync(statuses);
         _projectRepository.Add(project);
+        _projectMemberRepository.Add(resultProjectMember.Value);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return project.Id.Value;

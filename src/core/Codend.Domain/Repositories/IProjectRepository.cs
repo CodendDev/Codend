@@ -11,4 +11,8 @@ public interface IProjectRepository
     void Remove(Project project);
 
     void Update(Project project);
+
+    Task<bool> Exists(ProjectId projectId);
+
+    Task<bool> ProjectContainsEpic(ProjectId projectId, EpicId epicId);
 }

@@ -68,6 +68,9 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<Guid>("StatusId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("StoryId")
+                        .HasColumnType("uuid");
+
                     b.Property<long?>("StoryPoints")
                         .HasColumnType("bigint");
 
@@ -77,11 +80,41 @@ namespace Codend.Persistence.Postgres.Migrations
 
                     b.HasIndex("StatusId");
 
+                    b.HasIndex("StoryId");
+
                     b.ToTable("ProjectTask", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("BaseProjectTask");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Codend.Domain.Entities.Epic", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("DeletedOnUtc")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Epic");
                 });
 
             modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
@@ -108,6 +141,31 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Project");
+                });
+
+            modelBuilder.Entity("Codend.Domain.Entities.ProjectMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
+                    b.Property<bool>("IsFavourite")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("MemberId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectMember");
                 });
 
             modelBuilder.Entity("Codend.Domain.Entities.ProjectTaskStatus", b =>
@@ -188,6 +246,39 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.ToTable("Sprint");
                 });
 
+            modelBuilder.Entity("Codend.Domain.Entities.Story", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("DeletedOnUtc")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
+                    b.Property<Guid?>("EpicId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EpicId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Story");
+                });
+
             modelBuilder.Entity("SprintProjectTask", b =>
                 {
                     b.Property<Guid>("BaseProjectTaskId")
@@ -224,6 +315,11 @@ namespace Codend.Persistence.Postgres.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Codend.Domain.Entities.Story", null)
+                        .WithMany()
+                        .HasForeignKey("StoryId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.OwnsOne("Codend.Domain.ValueObjects.ProjectTaskDescription", "Description", b1 =>
                         {
                             b1.Property<Guid>("BaseProjectTaskId")
@@ -259,6 +355,59 @@ namespace Codend.Persistence.Postgres.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseProjectTaskId");
+                        });
+
+                    b.Navigation("Description")
+                        .IsRequired();
+
+                    b.Navigation("Name")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Codend.Domain.Entities.Epic", b =>
+                {
+                    b.HasOne("Codend.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.OwnsOne("Codend.Domain.ValueObjects.EpicDescription", "Description", b1 =>
+                        {
+                            b1.Property<Guid>("EpicId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(3000)
+                                .HasColumnType("character varying(3000)")
+                                .HasColumnName("Description");
+
+                            b1.HasKey("EpicId");
+
+                            b1.ToTable("Epic");
+
+                            b1.WithOwner()
+                                .HasForeignKey("EpicId");
+                        });
+
+                    b.OwnsOne("Codend.Domain.ValueObjects.EpicName", "Name", b1 =>
+                        {
+                            b1.Property<Guid>("EpicId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("Name");
+
+                            b1.HasKey("EpicId");
+
+                            b1.ToTable("Epic");
+
+                            b1.WithOwner()
+                                .HasForeignKey("EpicId");
                         });
 
                     b.Navigation("Description")
@@ -311,6 +460,15 @@ namespace Codend.Persistence.Postgres.Migrations
                         .IsRequired();
 
                     b.Navigation("Name")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Codend.Domain.Entities.ProjectMember", b =>
+                {
+                    b.HasOne("Codend.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -471,6 +629,64 @@ namespace Codend.Persistence.Postgres.Migrations
                         .IsRequired();
 
                     b.Navigation("Period")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Codend.Domain.Entities.Story", b =>
+                {
+                    b.HasOne("Codend.Domain.Entities.Epic", null)
+                        .WithMany()
+                        .HasForeignKey("EpicId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Codend.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.OwnsOne("Codend.Domain.ValueObjects.StoryDescription", "Description", b1 =>
+                        {
+                            b1.Property<Guid>("StoryId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(3000)
+                                .HasColumnType("character varying(3000)")
+                                .HasColumnName("Description");
+
+                            b1.HasKey("StoryId");
+
+                            b1.ToTable("Story");
+
+                            b1.WithOwner()
+                                .HasForeignKey("StoryId");
+                        });
+
+                    b.OwnsOne("Codend.Domain.ValueObjects.StoryName", "Name", b1 =>
+                        {
+                            b1.Property<Guid>("StoryId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("Name");
+
+                            b1.HasKey("StoryId");
+
+                            b1.ToTable("Story");
+
+                            b1.WithOwner()
+                                .HasForeignKey("StoryId");
+                        });
+
+                    b.Navigation("Description")
+                        .IsRequired();
+
+                    b.Navigation("Name")
                         .IsRequired();
                 });
 

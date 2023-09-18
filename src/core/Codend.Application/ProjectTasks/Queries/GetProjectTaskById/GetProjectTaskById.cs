@@ -10,17 +10,31 @@ using FluentResults;
 
 namespace Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 
-public sealed record GetProjectTaskByIdQuery(
-        Guid ProjectTaskId)
-    : IQuery<AbstractProjectTaskResponse>;
+/// <summary>
+/// Command for getting <see cref="BaseProjectTask"/> by its id. 
+/// </summary>
+/// <param name="ProjectTaskId">Task id.</param>
+public sealed record GetProjectTaskByIdQuery
+(
+    Guid ProjectTaskId
+) : IQuery<BaseProjectTaskResponse>;
 
-public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, AbstractProjectTaskResponse>
+/// <summary>
+/// <see cref="GetProjectTaskByIdQuery"/> handler.
+/// </summary>
+public class GetProjectTaskByIdQueryHandler : IQueryHandler<GetProjectTaskByIdQuery, BaseProjectTaskResponse>
 {
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IProjectTaskStatusRepository _statusRepository;
     private readonly IMapper _mapper;
 
-    public GetProjectTaskById(
+    /// <summary>
+    /// Constructs <see cref="GetProjectTaskByIdQueryHandler"/>.
+    /// </summary>
+    /// <param name="taskRepository"><see cref="BaseProjectTask"/> repository.</param>
+    /// <param name="statusRepository"><see cref="ProjectTaskStatus"/> repository.</param>
+    /// <param name="mapper"><see cref="IMapper"/> instance.</param>
+    public GetProjectTaskByIdQueryHandler(
         IProjectTaskRepository taskRepository,
         IProjectTaskStatusRepository statusRepository,
         IMapper mapper)
@@ -30,22 +44,20 @@ public class GetProjectTaskById : IQueryHandler<GetProjectTaskByIdQuery, Abstrac
         _statusRepository = statusRepository;
     }
 
-    private AbstractProjectTaskResponse Map(BaseProjectTask task)
+    private BaseProjectTaskResponse Map(BaseProjectTask task)
     {
-        AbstractProjectTaskResponse dto;
-        if (task is BugfixProjectTask)
+        var dto = task switch
         {
-            dto = _mapper.Map<BugfixProjectTaskResponse>(task);
-        }
-        else
-        {
-            throw new InvalidOperationException("Can't cast ProjectTask");
-        }
+            BugfixProjectTask => _mapper.Map<BugfixProjectTaskResponse>(task),
+            _ => _mapper.Map<BaseProjectTaskResponse>(task)
+        };
 
         return dto;
     }
 
-    public async Task<Result<AbstractProjectTaskResponse>> Handle(
+    /// <inheritdoc />
+    /// <exception cref="NoNullAllowedException">Throws when task status doesn't exist in database.</exception>
+    public async Task<Result<BaseProjectTaskResponse>> Handle(
         GetProjectTaskByIdQuery request,
         CancellationToken cancellationToken)
     {
