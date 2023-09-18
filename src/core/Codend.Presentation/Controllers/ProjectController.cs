@@ -1,6 +1,7 @@
 using Codend.Application.Projects.Commands.AddMember;
 using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
+using Codend.Application.Projects.Commands.RemoveMember;
 using Codend.Application.Projects.Commands.UpdateProject;
 using Codend.Application.Projects.Queries.GetProjectById;
 using Codend.Contracts;
@@ -11,7 +12,6 @@ using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +21,6 @@ namespace Codend.Presentation.Controllers;
 /// Controller containing endpoints associated with <see cref="Project"/> entity management.
 /// </summary>
 [Route("api/project")]
-[AllowAnonymous]
 public class ProjectController : ApiController
 {
     /// <summary>
@@ -146,7 +145,7 @@ public class ProjectController : ApiController
     /// Adds member with given <paramref name="userId"/> to project with given <paramref name="projectId"/>.
     /// </summary>
     /// <param name="projectId">The id of the project to which user will be added as member.</param>
-    /// <param name="userId">THe id of the user which will be added as member.</param>
+    /// <param name="userId">The id of the user which will be added as member.</param>
     /// <remarks>
     /// Sample request:
     ///
@@ -166,6 +165,39 @@ public class ProjectController : ApiController
     public async Task<IActionResult> AddMember(Guid projectId, Guid userId)
     {
         var command = new AddMemberCommand(projectId.GuidConversion<ProjectId>(), userId.GuidConversion<UserId>());
+        var response = await Mediator.Send(command);
+        if (response.IsFailed)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Removes member with given <paramref name="userId"/> from project with given <paramref name="projectId"/>.
+    /// </summary>
+    /// <param name="projectId">The id of the project from which user will be removed.</param>
+    /// <param name="userId">The id of the user which will be removed.</param>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     {
+    ///         "projectId": "1f0c1930-50f4-4f17-8470-211b3a5cc873",
+    ///         "userId: "e405f337-4da0-4cce-818b-9231642c93fe"
+    ///     }
+    /// </remarks>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 204 - on success
+    /// 404 - when user or project was not found
+    /// </returns>
+    [HttpDelete("{projectId:guid}/member/{userId:guid}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> RemoveMember(Guid projectId, Guid userId)
+    {
+        var command = new RemoveMemberCommand(projectId.GuidConversion<ProjectId>(), userId.GuidConversion<UserId>());
         var response = await Mediator.Send(command);
         if (response.IsFailed)
         {
