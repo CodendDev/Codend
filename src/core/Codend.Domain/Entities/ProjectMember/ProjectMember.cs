@@ -33,7 +33,7 @@ public class ProjectMember : Entity<ProjectMemberId>
     {
         if (IsFavourite == isFavourite)
         {
-            return Result.Fail(new DomainErrors.ProjectMemberIsFavourite.IsFavouriteNotChanged());
+            return Result.Fail(new DomainErrors.ProjectMember.IsFavouriteNotChanged());
         }
 
         IsFavourite = isFavourite;

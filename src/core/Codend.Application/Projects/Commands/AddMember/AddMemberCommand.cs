@@ -7,6 +7,7 @@ using FluentResults;
 using FluentValidation;
 using static Codend.Application.Core.Errors.ValidationErrors.Common;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectMember;
 
 namespace Codend.Application.Projects.Commands.AddMember;
 
@@ -70,6 +71,11 @@ public class AddMemberCommandHandler : ICommandHandler<AddMemberCommand>
         if (project is null)
         {
             return DomainNotFound.Fail<Project>();
+        }
+
+        if (await _projectMemberRepository.IsProjectMember(request.Userid, request.ProjectId, cancellationToken))
+        {
+            return Result.Fail(new UserIsProjectMemberAlready());
         }
 
         project.AddUserToProject(request.Userid);

@@ -54,7 +54,7 @@ public class ProjectController : ApiController
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
-            return CreatedAtAction(nameof(Get), new { id = response.Value }, response.Value);
+            return Ok(response.Value);
         }
 
         return BadRequest(response.MapToApiErrorsResponse());
@@ -157,21 +157,28 @@ public class ProjectController : ApiController
     /// <returns>
     /// HTTP response with status code:
     /// 204 - on success
+    /// 400 - on failure
     /// 404 - when user or project was not found
     /// </returns>
     [HttpPost("{projectId:guid}/member/{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AddMember(Guid projectId, Guid userId)
     {
         var command = new AddMemberCommand(projectId.GuidConversion<ProjectId>(), userId.GuidConversion<UserId>());
         var response = await Mediator.Send(command);
-        if (response.IsFailed)
+        if (response.IsSuccess)
         {
-            return NotFound();
+            return NoContent();
         }
 
-        return NoContent();
+        if (response.HasError<DomainErrors.ProjectMember.UserIsProjectMemberAlready>())
+        {
+            return BadRequest(response.MapToApiErrorsResponse());
+        }
+
+        return NotFound();
     }
 
     /// <summary>
