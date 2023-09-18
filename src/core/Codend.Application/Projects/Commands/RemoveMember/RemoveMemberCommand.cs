@@ -1,11 +1,8 @@
 ﻿using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Application.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using FluentValidation;
-using static Codend.Application.Core.Errors.ValidationErrors.Common;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.Projects.Commands.RemoveMember;
@@ -20,26 +17,6 @@ public sealed record RemoveMemberCommand
     ProjectId ProjectId,
     UserId Userid
 ) : ICommand;
-
-/// <summary>
-/// <see cref="RemoveMemberCommand"/> validator.
-/// </summary>
-public class RemoveMemberCommandValidator : AbstractValidator<RemoveMemberCommand>
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RemoveMemberCommandValidator"/> class.
-    /// </summary>
-    public RemoveMemberCommandValidator()
-    {
-        RuleFor(x => x.ProjectId)
-            .NotEmpty()
-            .WithError(new PropertyNullOrEmpty(nameof(RemoveMemberCommand.ProjectId)));
-
-        RuleFor(x => x.Userid)
-            .NotEmpty()
-            .WithError(new PropertyNullOrEmpty(nameof(RemoveMemberCommand.Userid)));
-    }
-}
 
 /// <summary>
 /// <see cref="RemoveMemberCommand"/> handler.

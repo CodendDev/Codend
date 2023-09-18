@@ -1,11 +1,8 @@
 ﻿using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Application.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using FluentValidation;
-using static Codend.Application.Core.Errors.ValidationErrors.Common;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectMember;
 
@@ -21,26 +18,6 @@ public sealed record AddMemberCommand
     ProjectId ProjectId,
     UserId Userid
 ) : ICommand;
-
-/// <summary>
-/// <see cref="AddMemberCommand"/> validator.
-/// </summary>
-public class AddMemberCommandValidator : AbstractValidator<AddMemberCommand>
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AddMemberCommandValidator"/> class.
-    /// </summary>
-    public AddMemberCommandValidator()
-    {
-        RuleFor(x => x.ProjectId)
-            .NotEmpty()
-            .WithError(new PropertyNullOrEmpty(nameof(AddMemberCommand.ProjectId)));
-
-        RuleFor(x => x.Userid)
-            .NotEmpty()
-            .WithError(new PropertyNullOrEmpty(nameof(AddMemberCommand.Userid)));
-    }
-}
 
 /// <summary>
 /// <see cref="AddMemberCommand"/> handler.
