@@ -1,10 +1,7 @@
-﻿using Codend.Application.Core.Errors;
-using Codend.Application.Extensions;
-using Codend.Domain.Core.Errors;
+﻿using Codend.Application.Extensions;
 using Codend.Domain.ValueObjects;
 using FluentValidation;
 using static Codend.Application.Core.Errors.ValidationErrors.Common;
-using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
 
 namespace Codend.Application.Stories.Commands.UpdateStory;
 
@@ -20,13 +17,13 @@ public class UpdateStoryCommandValidator : AbstractValidator<UpdateStoryCommand>
     {
         RuleFor(x => x.StoryId)
             .NotEmpty()
-            .WithError(new NullOrEmpty(nameof(UpdateStoryCommand.StoryId)));
+            .WithError(new PropertyNullOrEmpty(nameof(UpdateStoryCommand.StoryId)));
 
         When(x => x.Name is not null, () =>
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .WithError(new NullOrEmpty(nameof(UpdateStoryCommand.Name)))
+                .WithError(new PropertyNullOrEmpty(nameof(UpdateStoryCommand.Name)))
                 .MaximumLength(StoryName.MaxLength)
                 .WithError(new StringPropertyTooLong(nameof(UpdateStoryCommand.Name), StoryName.MaxLength));
         });
@@ -35,7 +32,7 @@ public class UpdateStoryCommandValidator : AbstractValidator<UpdateStoryCommand>
         {
             RuleFor(x => x.Description)
                 .NotEmpty()
-                .WithError(new NullOrEmpty(nameof(UpdateStoryCommand.Description)))
+                .WithError(new PropertyNullOrEmpty(nameof(UpdateStoryCommand.Description)))
                 .MaximumLength(StoryDescription.MaxLength)
                 .WithError(new StringPropertyTooLong(nameof(UpdateStoryCommand.Description), StoryDescription.MaxLength));
         });

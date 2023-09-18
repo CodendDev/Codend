@@ -1,9 +1,7 @@
-﻿using Codend.Application.Core.Errors;
-using Codend.Application.Extensions;
+﻿using Codend.Application.Extensions;
 using Codend.Domain.ValueObjects;
 using FluentValidation;
 using static Codend.Application.Core.Errors.ValidationErrors.Common;
-using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
 
 namespace Codend.Application.Stories.Commands.CreateStory;
 
@@ -19,13 +17,13 @@ public class CreateStoryCommandValidator : AbstractValidator<CreateStoryCommand>
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithError(new NullOrEmpty(nameof(CreateStoryCommand.Name)))
+            .WithError(new PropertyNullOrEmpty(nameof(CreateStoryCommand.Name)))
             .MaximumLength(StoryName.MaxLength)
             .WithError(new StringPropertyTooLong(nameof(CreateStoryCommand.Name), StoryName.MaxLength));
 
         RuleFor(x => x.Description)
             .NotEmpty()
-            .WithError(new NullOrEmpty(nameof(CreateStoryCommand.Description)))
+            .WithError(new PropertyNullOrEmpty(nameof(CreateStoryCommand.Description)))
             .MaximumLength(StoryDescription.MaxLength)
             .WithError(new StringPropertyTooLong(nameof(CreateStoryCommand.Description), StoryDescription.MaxLength));
 
