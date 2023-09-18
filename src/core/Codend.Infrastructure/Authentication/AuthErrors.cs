@@ -59,5 +59,12 @@ public static class AuthErrors
             {
             }
         }
+        
+        public class PasswordNotValid : AuthError
+        {
+            public PasswordNotValid() : base("Register.PasswordNotValid", "Provided password is not valid.")
+            {
+            }
+        }
     }
 }

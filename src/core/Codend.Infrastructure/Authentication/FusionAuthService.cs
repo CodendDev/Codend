@@ -89,6 +89,12 @@ public sealed class FusionAuthService : IAuthService
             return Result.Fail(new AuthErrors.Register.EmailAlreadyExists());
         }
         
+        // Same thing as above but for password field. 
+        if (response.errorResponse.fieldErrors.Any(err => err.Value.Any(e => e.code.Contains("password"))))
+        {
+            return Result.Fail(new AuthErrors.Register.PasswordNotValid());
+        }
+        
         return Result.Fail(new AuthErrors.General.UnspecifiedAuthError());
     }
 }

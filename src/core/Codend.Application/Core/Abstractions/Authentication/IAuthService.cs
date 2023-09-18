@@ -42,7 +42,7 @@ public interface IAuthService
     /// <summary>
     /// Create new user with provided data.
     /// </summary>
-    /// <param name="email">Application uniqe user email.</param>
+    /// <param name="email">Application unique user email.</param>
     /// <param name="password">User password.</param>
     /// <param name="firstName">User first name</param>
     /// <param name="lastName">User last name.</param>
