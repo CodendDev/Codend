@@ -7,12 +7,12 @@ namespace Codend.Application.Core.Errors;
 /// <summary>
 /// Validation error static class.
 /// </summary>
-public static partial class ValidationErrors
+internal static class ValidationErrors
 {
     /// <summary>
     /// Validation error base class.
     /// </summary>
-    public class ValidationError : ApiError
+    internal abstract class ValidationError : ApiError
     {
         /// <inheritdoc />
         protected ValidationError(string errorCode, string message) : base(errorCode, message)
@@ -23,10 +23,10 @@ public static partial class ValidationErrors
     /// <summary>
     /// Common, frequently used validation errors.
     /// </summary>
-    public static class Common
+    internal static class Common
     {
         /// <inheritdoc />
-        public class PropertyNullOrEmpty : ValidationError
+        internal class PropertyNullOrEmpty : ValidationError
         {
             /// <inheritdoc />
             public PropertyNullOrEmpty(string stringName) : base("Validation.Common.StringPropertyNullOrEmpty",
@@ -36,7 +36,7 @@ public static partial class ValidationErrors
         }
 
         /// <inheritdoc />
-        public class StringPropertyTooLong : ValidationError
+        internal class StringPropertyTooLong : ValidationError
         {
             /// <inheritdoc />
             public StringPropertyTooLong(string stringName, int maxLength) : base(
@@ -47,7 +47,7 @@ public static partial class ValidationErrors
         }
 
         /// <inheritdoc />
-        public class DateIsInThePast : ValidationError
+        internal class DateIsInThePast : ValidationError
         {
             /// <inheritdoc />
             public DateIsInThePast(string fieldName) : base("Validation.Common.DateIsInThePast",
@@ -63,7 +63,7 @@ public static partial class ValidationErrors
     public static class ProjectTask
     {
         /// <inheritdoc />
-        public class PriorityNotDefined : ValidationError
+        internal class PriorityNotDefined : ValidationError
         {
             /// <inheritdoc />
             public PriorityNotDefined() : base("Validation.ProjectTask.PriorityNotDefined",
@@ -79,7 +79,7 @@ public static partial class ValidationErrors
     public static class EmailAddress
     {
         /// <inheritdoc />
-        public class NotValid : ValidationError
+        internal class NotValid : ValidationError
         {
             /// <inheritdoc />
             public NotValid() : base("Validation.EmailAddress.NotValid",
@@ -89,7 +89,7 @@ public static partial class ValidationErrors
         }
 
         /// <inheritdoc />
-        public class TooLong : ValidationError
+        internal class TooLong : ValidationError
         {
             /// <inheritdoc />
             public TooLong() : base("Validation.EmailAddress.TooLong",
@@ -105,7 +105,7 @@ public static partial class ValidationErrors
     public static class Password
     {
         /// <inheritdoc />
-        public class TooLong : ValidationError
+        internal class TooLong : ValidationError
         {
             /// <inheritdoc />
             public TooLong() : base("Validation.Password.TooLong",
@@ -115,7 +115,7 @@ public static partial class ValidationErrors
         }
 
         /// <inheritdoc />
-        public class TooShort : ValidationError
+        internal class TooShort : ValidationError
         {
             /// <inheritdoc />
             public TooShort() : base("Validation.Password.TooShort",
@@ -123,9 +123,9 @@ public static partial class ValidationErrors
             {
             }
         }
-        
+
         /// <inheritdoc />
-        public class NotContainLowercaseLetter : ValidationError
+        internal class NotContainLowercaseLetter : ValidationError
         {
             /// <inheritdoc />
             public NotContainLowercaseLetter() : base("Validation.Password.NotContainLowercaseLetter",
@@ -133,9 +133,9 @@ public static partial class ValidationErrors
             {
             }
         }
-        
+
         /// <inheritdoc />
-        public class NotContainUppercaseLetter : ValidationError
+        internal class NotContainUppercaseLetter : ValidationError
         {
             /// <inheritdoc />
             public NotContainUppercaseLetter() : base("Validation.Password.NotContainUppercaseLetter",
@@ -143,9 +143,9 @@ public static partial class ValidationErrors
             {
             }
         }
-        
+
         /// <inheritdoc />
-        public class NotContainDigit : ValidationError
+        internal class NotContainDigit : ValidationError
         {
             /// <inheritdoc />
             public NotContainDigit() : base("Validation.Password.NotContainDigit",
@@ -153,9 +153,9 @@ public static partial class ValidationErrors
             {
             }
         }
-        
+
         /// <inheritdoc />
-        public class NotContainCustomChar : ValidationError
+        internal class NotContainCustomChar : ValidationError
         {
             /// <inheritdoc />
             public NotContainCustomChar() : base("Validation.Password.NotContainCustomChar",

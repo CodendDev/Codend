@@ -1,12 +1,12 @@
-﻿using Codend.Domain.Core.Errors;
-using FluentValidation;
+﻿using FluentValidation;
+using static Codend.Application.Core.Errors.ValidationErrors;
 
 namespace Codend.Application.Extensions;
 
 /// <summary>
 /// Contains extension methods for fluent validations.
 /// </summary>
-public static class FluentValidationExtensions
+internal static class FluentValidationExtensions
 {
     /// <summary>
     /// Specifies a custom error to use if validation fails.
@@ -16,8 +16,8 @@ public static class FluentValidationExtensions
     /// <param name="rule">The current rule.</param>
     /// <param name="error">The error to use.</param>
     /// <returns>The same rule builder.</returns>
-    public static IRuleBuilderOptions<T, TProperty> WithError<T, TProperty>(
-        this IRuleBuilderOptions<T, TProperty> rule, ApiError error)
+    internal static IRuleBuilderOptions<T, TProperty> WithError<T, TProperty>(
+        this IRuleBuilderOptions<T, TProperty> rule, ValidationError error)
     {
         if (error is null)
         {
