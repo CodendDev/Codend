@@ -1,5 +1,4 @@
-﻿using Codend.Application.Exceptions;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using ValidationException = Codend.Application.Exceptions.ValidationException;
 
@@ -14,6 +13,9 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ValidationBehavior{TRequest, TResponse}"/> class.
+    /// </summary>
     public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators) => _validators = validators;
 
     /// <inheritdoc />
@@ -27,27 +29,18 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
 
         var context = new ValidationContext<TRequest>(request);
 
-        var validationFailures = _validators
-            .Select(x => x.ValidateAsync(context, cancellationToken))
+        var validationResults = _validators.Select(x => x.ValidateAsync(context, cancellationToken));
+
+        var validationFailures = validationResults
             .SelectMany(x => x.Result.Errors)
-            .Where(x => x != null)
+            .Where(x => x is not null)
             .ToList();
 
-        // NotFound validation errors are marked as Warning
-        var notFoundFailures = validationFailures
-            .Where(x => x.Severity == Severity.Warning)
-            .ToList();
-        
-        // If there are any notFound errors, notFoundValidationException is thrown.
-        if (notFoundFailures.Any())
-        {
-            throw new NotFoundValidationException(notFoundFailures);
-        }
         if (validationFailures.Any())
         {
             throw new ValidationException(validationFailures);
         }
-        
+
         return await next();
     }
 }
