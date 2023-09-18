@@ -1,3 +1,4 @@
+using Codend.Application.Projects.Commands.AddMember;
 using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
 using Codend.Application.Projects.Commands.UpdateProject;
@@ -6,9 +7,11 @@ using Codend.Contracts;
 using Codend.Contracts.Requests.Project;
 using Codend.Contracts.Responses.Project;
 using Codend.Domain.Core.Errors;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +21,7 @@ namespace Codend.Presentation.Controllers;
 /// Controller containing endpoints associated with <see cref="Project"/> entity management.
 /// </summary>
 [Route("api/project")]
+[AllowAnonymous]
 public class ProjectController : ApiController
 {
     /// <summary>
@@ -97,7 +101,7 @@ public class ProjectController : ApiController
     /// </returns>
     [HttpPut("{projectId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ApiErrorsResponse),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromRoute] Guid projectId, [FromBody] UpdateProjectRequest request)
     {
@@ -136,5 +140,38 @@ public class ProjectController : ApiController
         }
 
         return Ok(response.Value);
+    }
+
+    /// <summary>
+    /// Adds member with given <paramref name="userId"/> to project with given <paramref name="projectId"/>.
+    /// </summary>
+    /// <param name="projectId">The id of the project to which user will be added as member.</param>
+    /// <param name="userId">THe id of the user which will be added as member.</param>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     {
+    ///         "projectId": "1f0c1930-50f4-4f17-8470-211b3a5cc873",
+    ///         "userId: "e405f337-4da0-4cce-818b-9231642c93fe"
+    ///     }
+    /// </remarks>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 204 - on success
+    /// 404 - when user or project was not found
+    /// </returns>
+    [HttpPost("{projectId:guid}/member/{userId:guid}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> AddMember(Guid projectId, Guid userId)
+    {
+        var command = new AddMemberCommand(projectId.GuidConversion<ProjectId>(), userId.GuidConversion<UserId>());
+        var response = await Mediator.Send(command);
+        if (response.IsFailed)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 }

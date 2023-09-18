@@ -95,7 +95,7 @@ public class ProjectTaskController : ApiController
     /// - 404 on failure
     /// </returns>
     [Route("{projectTaskId:guid}/assign/{userId:guid}")]
-    [HttpPut]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
