@@ -29,9 +29,10 @@ public class EpicController : ApiController
     /// <param name="request">Request with name, description and project Id.</param>
     /// <remarks>
     /// Sample request:
+    /// 
     ///     {
-    ///         "name": "Story name",
-    ///         "description: "Story description",
+    ///         "name": "Epic name",
+    ///         "description: "Epic description",
     ///         "projectId: "bda4a1f5-e135-493c-852c-826e6f9fbcb0",
     ///     }
     /// </remarks>
@@ -86,6 +87,7 @@ public class EpicController : ApiController
     /// <param name="request">Request name and description.</param>
     /// <remarks>
     /// Sample request:
+    /// 
     ///     {
     ///         "name": "New epic name",
     ///         "description: "New epic description"
