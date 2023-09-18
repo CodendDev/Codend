@@ -1,5 +1,14 @@
-using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Primitives;
 
 namespace Codend.Domain.Entities;
 
-public record struct ProjectTaskId(Guid Value) : IEntityId<Guid>;
+public sealed record ProjectTaskId : EntityId<Guid>
+{
+    public ProjectTaskId()
+    {
+    }
+
+    public ProjectTaskId(Guid value) : base(value)
+    {
+    }
+}

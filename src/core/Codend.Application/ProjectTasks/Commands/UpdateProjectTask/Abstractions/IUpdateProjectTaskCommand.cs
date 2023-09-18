@@ -16,45 +16,45 @@ public interface IUpdateProjectTaskCommand
     /// <summary>
     /// Name of the task.
     /// </summary>
-    IShouldUpdate<string> Name { get; }
+    ShouldUpdateBinder<string> Name { get; }
 
     /// <summary>
     /// Priority of the task.
     /// </summary>
-    IShouldUpdate<string> Priority { get; }
+    ShouldUpdateBinder<string> Priority { get; }
 
     /// <summary>
     /// StatusId of the task. Status and task must belong to the same project.
     /// </summary>
-    IShouldUpdate<ProjectTaskStatusId> StatusId { get; }
+    ShouldUpdateBinder<ProjectTaskStatusId> StatusId { get; }
 
     /// <summary>
     /// Description of the task.
     /// </summary>
-    IShouldUpdate<string?> Description { get; }
+    ShouldUpdateBinder<string?> Description { get; }
 
     /// <summary>
     /// Estimated time of the task completion.
     /// </summary>
-    IShouldUpdate<TimeSpan?> EstimatedTime { get; }
+    ShouldUpdateBinder<TimeSpan?> EstimatedTime { get; }
 
     /// <summary>
     /// Due date by which task has to be done.
     /// </summary>
-    IShouldUpdate<DateTime?> DueDate { get; }
+    ShouldUpdateBinder<DateTime?> DueDate { get; }
 
     /// <summary>
     /// Story points of the task.
     /// </summary>
-    IShouldUpdate<uint?> StoryPoints { get; }
+    ShouldUpdateBinder<uint?> StoryPoints { get; }
 
     /// <summary>
     /// UserId of the Assignee.
     /// </summary>
-    IShouldUpdate<UserId?> AssigneeId { get; }
+    ShouldUpdateBinder<UserId?> AssigneeId { get; }
 
     /// <summary>
     /// StoryId to which task will be assigned.
     /// </summary>
-    IShouldUpdate<StoryId?> StoryId { get; }
+    ShouldUpdateBinder<StoryId?> StoryId { get; }
 }
