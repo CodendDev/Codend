@@ -1,6 +1,5 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Common;
-using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Services;
 using Codend.Infrastructure.Authentication;
 using Codend.Infrastructure.Common;
