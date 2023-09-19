@@ -21,7 +21,7 @@ namespace Codend.Presentation.Controllers;
 /// <summary>
 /// Controller containing endpoints associated with <see cref="Project"/> entity management.
 /// </summary>
-[Route("api/project")]
+[Route("api/projects")]
 public class ProjectController : ApiController
 {
     /// <summary>
@@ -40,7 +40,7 @@ public class ProjectController : ApiController
     /// 
     ///     {
     ///         "name": "New project name",
-    ///         "description: "Not so long description"
+    ///         "description": "Not so long description"
     ///     }
     /// </remarks>
     /// <returns>
@@ -93,7 +93,7 @@ public class ProjectController : ApiController
     ///
     ///     {
     ///         "name": "Updated project name",
-    ///         "description: "Updated project description"
+    ///         "description": "Updated project description"
     ///     }
     /// </remarks>
     /// <returns>
@@ -152,7 +152,7 @@ public class ProjectController : ApiController
     ///
     ///     {
     ///         "projectId": "1f0c1930-50f4-4f17-8470-211b3a5cc873",
-    ///         "userId: "e405f337-4da0-4cce-818b-9231642c93fe"
+    ///         "userId": "e405f337-4da0-4cce-818b-9231642c93fe"
     ///     }
     /// </remarks>
     /// <returns>
@@ -192,7 +192,7 @@ public class ProjectController : ApiController
     ///
     ///     {
     ///         "projectId": "1f0c1930-50f4-4f17-8470-211b3a5cc873",
-    ///         "userId: "e405f337-4da0-4cce-818b-9231642c93fe"
+    ///         "userId": "e405f337-4da0-4cce-818b-9231642c93fe"
     ///     }
     /// </remarks>
     /// <returns>
