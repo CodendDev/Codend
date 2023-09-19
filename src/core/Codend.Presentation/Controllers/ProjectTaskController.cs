@@ -230,48 +230,48 @@ public class ProjectTaskController : ApiController
     /// 
     /// Sample request():
     /// 
-    ///    {
-    ///        "name": {
-    ///            "shouldUpdate": true,
-    ///            "value": "New base project task name."
-    ///        },
-    ///        "priority": {
-    ///            "shouldUpdate": true,
-    ///            "value": "High"
-    ///        },
-    ///        "description": {
-    ///            "shouldUpdate": true,
-    ///            "value": "New description"
-    ///        },
-    ///        "dueDate": {
-    ///            "shouldUpdate": true,
-    ///            "value": "2023-12-19T09:31:47.712Z"
-    ///        },
-    ///        "storyPoints": {
-    ///            "shouldUpdate": true,
-    ///            "value": 10
-    ///        },
-    ///        "statusId": {
-    ///            "shouldUpdate": false,
-    ///            "value": ""
-    ///        },
-    ///        "estimatedTime": {
-    ///            "shouldUpdate": true,
-    ///            "value": {
-    ///                "minutes": 15,
-    ///                "hours": 3,
-    ///                "days": 0
-    ///            }
-    ///        },
-    ///        "assigneeId": {
-    ///            "shouldUpdate": false,
-    ///            "value": ""
-    ///        },
-    ///        "storyId": {
-    ///            "shouldUpdate": false,
-    ///            "value": ""
-    ///        }
-    ///    }
+    ///     {
+    ///         "name": {
+    ///             "shouldUpdate": true,
+    ///             "value": "New base project task name."
+    ///         },
+    ///         "priority": {
+    ///             "shouldUpdate": true,
+    ///             "value": "High"
+    ///         },
+    ///         "description": {
+    ///             "shouldUpdate": true,
+    ///             "value": "New description"
+    ///         },
+    ///         "dueDate": {
+    ///             "shouldUpdate": true,
+    ///             "value": "2023-12-19T09:31:47.712Z"
+    ///         },
+    ///         "storyPoints": {
+    ///             "shouldUpdate": true,
+    ///             "value": 10
+    ///         },
+    ///         "statusId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
+    ///         },
+    ///         "estimatedTime": {
+    ///             "shouldUpdate": true,
+    ///             "value": {
+    ///                 "minutes": 15,
+    ///                 "hours": 3,
+    ///                 "days": 0
+    ///             }
+    ///         },
+    ///         "assigneeId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
+    ///         },
+    ///         "storyId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
+    ///         }
+    ///     }
     /// </remarks>
     /// <returns>
     /// HTTP response with status code:
@@ -388,48 +388,48 @@ public class ProjectTaskController : ApiController
     /// 
     /// Sample request():
     /// 
-    ///    {
-    ///        "name": {
-    ///            "shouldUpdate": true,
-    ///            "value": "New bugfix project task name."
-    ///        },
-    ///        "priority": {
-    ///            "shouldUpdate": true,
-    ///            "value": "High"
-    ///        },
-    ///        "description": {
-    ///            "shouldUpdate": true,
-    ///            "value": "New description"
-    ///        },
-    ///        "dueDate": {
-    ///            "shouldUpdate": true,
-    ///            "value": "2023-12-19T09:31:47.712Z"
-    ///        },
-    ///        "storyPoints": {
-    ///            "shouldUpdate": true,
-    ///            "value": 10
-    ///        },
-    ///        "statusId": {
-    ///            "shouldUpdate": false,
-    ///            "value": ""
-    ///        },
-    ///        "estimatedTime": {
-    ///            "shouldUpdate": true,
-    ///            "value": {
-    ///                "minutes": 15,
-    ///                "hours": 3,
-    ///                "days": 0
-    ///            }
-    ///        },
-    ///        "assigneeId": {
-    ///            "shouldUpdate": false,
-    ///            "value": ""
-    ///        },
-    ///        "storyId": {
-    ///            "shouldUpdate": false,
-    ///            "value": ""
-    ///        }
-    ///    }
+    ///     {
+    ///         "name": {
+    ///             "shouldUpdate": true,
+    ///             "value": "New bugfix project task name."
+    ///         },
+    ///         "priority": {
+    ///             "shouldUpdate": true,
+    ///             "value": "High"
+    ///         },
+    ///         "description": {
+    ///             "shouldUpdate": true,
+    ///             "value": "New description"
+    ///         },
+    ///         "dueDate": {
+    ///             "shouldUpdate": true,
+    ///             "value": "2023-12-19T09:31:47.712Z"
+    ///         },
+    ///         "storyPoints": {
+    ///             "shouldUpdate": true,
+    ///             "value": 10
+    ///         },
+    ///         "statusId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
+    ///         },
+    ///         "estimatedTime": {
+    ///             "shouldUpdate": true,
+    ///             "value": {
+    ///                 "minutes": 15,
+    ///                 "hours": 3,
+    ///                 "days": 0
+    ///             }
+    ///         },
+    ///         "assigneeId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
+    ///         },
+    ///         "storyId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
+    ///         }
+    ///     }
     /// </remarks>
     /// <returns>
     /// HTTP response with status code:
