@@ -1,17 +1,16 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
-using Codend.Infrastructure.Authorization.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 
-namespace Codend.Infrastructure.Authorization;
+namespace Codend.Presentation.Infrastructure.Authorization;
 
 /// <summary>
 /// Handles authorization logic for project operations.
 /// </summary>
 internal sealed class ProjectOperationsAuthorizationHandler :
-    AuthorizationHandler<OperationAuthorizationRequirement, ProjectId>, IProjectOperationsAuthorizationHandler
+    AuthorizationHandler<OperationAuthorizationRequirement, ProjectId>
 {
     private readonly IUserIdentityProvider _identityProvider;
     private readonly IProjectRepository _projectRepository;
@@ -42,7 +41,7 @@ internal sealed class ProjectOperationsAuthorizationHandler :
         switch (requirement.Name)
         {
             // User must be project member.
-            case nameof(ProjectOperations.Edit):
+            case nameof(ProjectOperations.Member):
                 if (await IsUserProjectMember(userId, projectId))
                 {
                     context.Succeed(requirement);
@@ -52,7 +51,7 @@ internal sealed class ProjectOperationsAuthorizationHandler :
                 break;
 
             // User must be project owner.
-            case nameof(ProjectOperations.Delete):
+            case nameof(ProjectOperations.Owner):
                 if (await IsUserProjectOwner(userId, projectId))
                 {
                     context.Succeed(requirement);

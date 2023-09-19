@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
 
-namespace Codend.Infrastructure.Authorization;
+namespace Codend.Presentation.Infrastructure.Authorization;
 
 /// <summary>
 /// This class defines authorization requirements for various operations on the project itself and
@@ -12,11 +12,11 @@ public static class ProjectOperations
     /// Represents the "edit" operation authorization requirement,
     /// which allows to manage project properties and entities.
     /// </summary>
-    public static readonly OperationAuthorizationRequirement Edit = new() { Name = nameof(Edit) };
+    public static readonly OperationAuthorizationRequirement Owner = new() { Name = nameof(Owner) };
     
     /// <summary>
     /// Represents the "delete" operation authorization requirement,
     /// which allows to delete project.
     /// </summary>
-    public static readonly OperationAuthorizationRequirement Delete = new() { Name = nameof(Delete) };
+    public static readonly OperationAuthorizationRequirement Member = new() { Name = nameof(Member) };
 }
