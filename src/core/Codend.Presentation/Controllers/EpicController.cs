@@ -15,7 +15,7 @@ namespace Codend.Presentation.Controllers;
 /// <summary>
 /// Controller for <see cref="Epic"/> commands.
 /// </summary>
-[Route("api/epic")]
+[Route("api/projects/{projectId:guid}/epics")]
 public class EpicController : ApiController
 {
     /// <inheritdoc />
@@ -26,14 +26,14 @@ public class EpicController : ApiController
     /// <summary>
     /// Creates epic with given properties.
     /// </summary>
+    /// <param name="projectId">Id of the project where the epic will be created.</param>
     /// <param name="request">Request with name, description and project Id.</param>
     /// <remarks>
     /// Sample request:
     /// 
     ///     {
     ///         "name": "Epic name",
-    ///         "description: "Epic description",
-    ///         "projectId: "bda4a1f5-e135-493c-852c-826e6f9fbcb0",
+    ///         "description: "Epic description"
     ///     }
     /// </remarks>
     /// <returns>
@@ -44,9 +44,11 @@ public class EpicController : ApiController
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateEpicRequest request)
+    public async Task<IActionResult> Create(
+        [FromRoute] Guid projectId,
+        [FromBody] CreateEpicRequest request)
     {
-        var command = new CreateEpicCommand(request.Name, request.Description, request.ProjectId);
+        var command = new CreateEpicCommand(request.Name, request.Description, projectId);
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -59,6 +61,7 @@ public class EpicController : ApiController
     /// <summary>
     /// Deletes epic with given <paramref name="epicId"/>.
     /// </summary>
+    /// <param name="projectId">Id of the project to which the epic belongs.</param>
     /// <param name="epicId">Id of the epic which will be deleted.</param>
     /// <returns>
     /// HTTP response with status code:
@@ -68,7 +71,9 @@ public class EpicController : ApiController
     [HttpDelete("{epicId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete([FromRoute] Guid epicId)
+    public async Task<IActionResult> Delete(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid epicId)
     {
         var command = new DeleteEpicCommand(epicId);
         var response = await Mediator.Send(command);
@@ -83,6 +88,7 @@ public class EpicController : ApiController
     /// <summary>
     /// Updates epic with id <paramref name="epicId"/>.
     /// </summary>
+    /// <param name="projectId">Id of the project to which the epic belongs.</param>
     /// <param name="epicId">Id of the epic that will be updated.</param>
     /// <param name="request">Request name and description.</param>
     /// <remarks>
@@ -103,7 +109,10 @@ public class EpicController : ApiController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update([FromRoute] Guid epicId, [FromBody] UpdateEpicRequest request)
+    public async Task<IActionResult> Update(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid epicId,
+        [FromBody] UpdateEpicRequest request)
     {
         var command = new UpdateEpicCommand(epicId, request.Name, request.Description);
         var response = await Mediator.Send(command);
