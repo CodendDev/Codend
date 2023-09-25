@@ -17,7 +17,9 @@ public class BaseProjectTask :
     ISoftDeletableEntity,
     IProjectTaskCreator<BaseProjectTask, BaseProjectTaskCreateProperties>
 {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected BaseProjectTask() : base(new ProjectTaskId(Guid.NewGuid()))
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
     }
 

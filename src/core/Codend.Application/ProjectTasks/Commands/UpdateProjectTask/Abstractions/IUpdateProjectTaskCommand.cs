@@ -1,4 +1,4 @@
-﻿using Codend.Contracts.Abstractions;
+﻿using Codend.Contracts.Requests;
 using Codend.Domain.Entities;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;

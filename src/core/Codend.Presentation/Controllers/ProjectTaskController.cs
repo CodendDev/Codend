@@ -6,7 +6,6 @@ using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 using Codend.Contracts;
-using Codend.Contracts.Abstractions;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.ProjectTasks.Create;
 using Codend.Contracts.Requests.ProjectTasks.Update;
@@ -446,7 +445,7 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectTaskId,
         [FromBody] UpdateBugfixProjectTaskRequest request)
     {
-        var command = new UpdateBaseProjectTaskCommand
+        var command = new UpdateBugfixProjectTaskCommand
         (
             request.Name.HandleNull(),
             request.Priority.HandleNull(),

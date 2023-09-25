@@ -12,7 +12,7 @@ namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstraction
 
 /// <summary>
 /// Abstract handler for commands implementing <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/> interface.
-/// Creates <see cref="TProjectTask"/> using <see cref="IProjectTaskCreator{TProjectTask,TProps}.Create"/> and persists it.
+/// Creates <typeparamref name="TProjectTask"/> using <see cref="IProjectTaskCreator{TProjectTask,TProps}.Create"/> and persists it.
 /// </summary>
 /// <typeparam name="TCommand">
 /// Must implement <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/> interface.

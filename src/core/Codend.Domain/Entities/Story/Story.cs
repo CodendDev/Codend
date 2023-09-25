@@ -11,7 +11,9 @@ namespace Codend.Domain.Entities;
 public class Story : Entity<StoryId>, ISoftDeletableEntity
 {
     [Obsolete("Public for 1 unit test 👍🤑🤓", true)]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public Story() : base(new StoryId(Guid.NewGuid()))
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
     }
 

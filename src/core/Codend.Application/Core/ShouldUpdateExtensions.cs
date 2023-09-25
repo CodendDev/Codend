@@ -1,4 +1,4 @@
-﻿using Codend.Contracts.Abstractions;
+﻿using Codend.Contracts.Requests;
 using FluentResults;
 
 namespace Codend.Application.Core;

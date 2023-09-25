@@ -5,6 +5,9 @@ using FluentValidation;
 
 namespace Codend.Application
 {
+    /// <summary>
+    /// DependencyInjection application. 
+    /// </summary>
     public static class DependencyInjection
     {
         /// <summary>

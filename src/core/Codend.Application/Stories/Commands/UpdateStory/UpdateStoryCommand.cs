@@ -1,7 +1,7 @@
 ﻿using Codend.Application.Core;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Contracts.Abstractions;
+using Codend.Contracts.Requests;
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
@@ -17,6 +17,7 @@ namespace Codend.Application.Stories.Commands.UpdateStory;
 /// <param name="StoryId">Id of story which will be updated.</param>
 /// <param name="Name">New name of the story.</param>
 /// <param name="Description">New description of the story.</param>
+/// <param name="EpicId">New epicId of the story.</param>
 public sealed record UpdateStoryCommand
 (
     Guid StoryId,

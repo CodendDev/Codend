@@ -33,7 +33,7 @@ public class CreateStoryCommandValidator : AbstractValidator<CreateStoryCommand>
 
         When(x => x.EpicId is not null, () =>
         {
-            RuleFor(x => x.EpicId.Value)
+            RuleFor(x => x.EpicId!.Value)
                 .NotEmpty()
                 .WithError(new PropertyNullOrEmpty(nameof(CreateStoryCommand.EpicId)));
         });

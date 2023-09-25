@@ -1,4 +1,4 @@
-﻿namespace Codend.Contracts.Abstractions;
+﻿namespace Codend.Contracts.Requests;
 
 /// <summary>
 /// Class used for defining if properties should be updated in requests and commands.
@@ -12,8 +12,8 @@ public sealed record ShouldUpdateBinder<T>
     /// <summary>
     /// Converts class wrapped with <see cref="ShouldUpdateBinder{T}"/> to another class.
     /// </summary>
-    /// <param name="conversion">Lambda expression for conversion from current wrapped class <see cref="T"/> to <see cref="TOut"/> class.</param>
-    /// <returns><see cref="ShouldUpdateBinder{T}"/> with <see cref="TOut"/> class wrapped.</returns>
+    /// <param name="conversion">Lambda expression for conversion from current wrapped class <typeparamref name="T"/> to <typeparamref name="TOut"/> class.</param>
+    /// <returns><see cref="ShouldUpdateBinder{T}"/> with <typeparamref name="TOut"/> class wrapped.</returns>
     public ShouldUpdateBinder<TOut> Convert<TOut>(Func<T?, TOut> conversion)
         => new ShouldUpdateBinder<TOut>(ShouldUpdate, conversion(Value));
 }
