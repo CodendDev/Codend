@@ -36,4 +36,15 @@ public class ProjectTaskStatusRepository
 
         return defaultStatus;
     }
+
+    public Task<bool> ExistsAsync(string name, ProjectId projectId, CancellationToken cancellationToken)
+    {
+        var exists =
+            Context.Set<ProjectTaskStatus>()
+                .AnyAsync(status => status.Name.Value == name &&
+                                    status.ProjectId == projectId,
+                    cancellationToken);
+
+        return exists;
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
@@ -48,6 +49,11 @@ public class CreateProjectTaskStatusCommandHandler : ICommandHandler<CreateProje
         if (!await _projectRepository.Exists(projectId))
         {
             return DomainNotFound.Fail<Project>();
+        }
+
+        if (await _statusRepository.ExistsAsync(request.Name, projectId, cancellationToken))
+        {
+            return Result.Fail(new DomainErrors.ProjectTaskStatus.ProjectTaskStatusAlreadyExists());
         }
 
         var status = ProjectTaskStatus.Create(projectId, request.Name);
