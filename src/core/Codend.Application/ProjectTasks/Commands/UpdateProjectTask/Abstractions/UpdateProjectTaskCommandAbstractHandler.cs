@@ -32,7 +32,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
 
     /// <summary>
     /// Constructs implementation of <see cref="UpdateProjectTaskCommandAbstractHandler{TCommand,TProjectTask}"/> with
-    /// <see cref="TCommand"/> and <see cref="TProjectTask"/> classes.
+    /// <typeparamref name="TCommand"/> and <typeparamref name="TProjectTask"/> classes.
     /// </summary>
     /// <param name="taskRepository">Repository used for <see cref="BaseProjectTask"/>s.</param>
     /// <param name="unitOfWork">Unit of work.</param>
