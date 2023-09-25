@@ -4,7 +4,9 @@ using Codend.Application.Projects.Commands.DeleteProject;
 using Codend.Application.Projects.Commands.RemoveMember;
 using Codend.Application.Projects.Commands.UpdateProject;
 using Codend.Application.Projects.Queries.GetProjectById;
+using Codend.Application.Projects.Queries.GetProjects;
 using Codend.Contracts;
+using Codend.Contracts.Common;
 using Codend.Contracts.Requests.Project;
 using Codend.Contracts.Responses.Project;
 using Codend.Domain.Core.Errors;
@@ -140,6 +142,30 @@ public class ProjectController : ApiController
         {
             return NotFound();
         }
+
+        return Ok(response.Value);
+    }
+
+    /// <summary>
+    /// Retrieves all matching projects with their common information.
+    /// </summary>
+    /// <param name="request">The get projects request which includes page size, page index, search text, sort column and sort order.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 200 - on success with PagedList containing matching entities.
+    /// </returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(PagedList<ProjectResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllForUser([FromQuery] GetProjectsRequest request)
+    {
+        var query = new GetProjectsQuery(
+            request.PageIndex,
+            request.PageSize,
+            request.SortColumn,
+            request.SortOrder,
+            request.Search);
+
+        var response = await Mediator.Send(query);
 
         return Ok(response.Value);
     }
