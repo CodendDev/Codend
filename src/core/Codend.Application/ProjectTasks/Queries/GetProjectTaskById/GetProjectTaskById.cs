@@ -67,7 +67,7 @@ public class GetProjectTaskByIdQueryHandler : IQueryHandler<GetProjectTaskByIdQu
             return DomainNotFound.Fail<BaseProjectTask>();
         }
 
-        var status = await _statusRepository.GetByIdAsync(task.StatusId);
+        var status = await _statusRepository.GetByIdAsync(task.StatusId, cancellationToken);
         if (status is null)
         {
             throw new NoNullAllowedException("ProjectStatus can't be null.");
