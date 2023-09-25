@@ -25,12 +25,12 @@ public static class QueryableExtensions
     /// Sorting extension method.
     /// </summary>
     /// <param name="query">Query.</param>
-    /// <param name="sortableQuery">Sorting critiera.</param>
+    /// <param name="sortableQuery">Sorting criteria.</param>
     /// <param name="sortColumnSelector">Sorting column selector expression.</param>
     /// <typeparam name="T">Entity type.</typeparam>
     /// <returns></returns>
     public static IQueryable<T> Sort<T>(this IQueryable<T> query, ISortableQuery sortableQuery, Expression<Func<T, object>> sortColumnSelector)
     {
-        return query = sortableQuery.SortOrder?.ToLower() == "desc" ? query.OrderByDescending(sortColumnSelector) : query.OrderBy(sortColumnSelector);
+        return sortableQuery.SortOrder?.ToLower() == "desc" ? query.OrderByDescending(sortColumnSelector) : query.OrderBy(sortColumnSelector);
     }
 }

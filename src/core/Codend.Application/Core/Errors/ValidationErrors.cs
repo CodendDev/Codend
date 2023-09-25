@@ -1,4 +1,5 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
+using Codend.Application.Core.Abstractions.Querying;
 using Codend.Domain.Core.Enums;
 using Codend.Domain.Core.Errors;
 
@@ -160,6 +161,53 @@ internal static class ValidationErrors
             /// <inheritdoc />
             public NotContainCustomChar() : base("Validation.Password.NotContainCustomChar",
                 "Password must contain at least 1 of this custom chars: @$#!%*?&.")
+            {
+            }
+        }
+    }
+
+    /// <summary>
+    /// Query validation error static class.
+    /// </summary>
+    public static class Querying
+    {
+        /// <inheritdoc />
+        internal class InvalidPageSize : ValidationError
+        {
+            /// <inheritdoc />
+            public InvalidPageSize() : base("Validation.Querying.InvalidPageSize",
+                $"Page size must be in range {IPageableQuery.MinPageSize}-{IPageableQuery.MaxPageSize}.")
+            {
+            }
+        }
+
+        /// <inheritdoc />
+        internal class InvalidPageIndex : ValidationError
+        {
+            /// <inheritdoc />
+            public InvalidPageIndex() : base("Validation.Querying.InvalidPageIndex",
+                $"Page index must be greater than {IPageableQuery.MinPageIndex}.")
+            {
+            }
+        }
+
+        /// <inheritdoc />
+        internal class InvalidSortOrder : ValidationError
+        {
+            /// <inheritdoc />
+            public InvalidSortOrder() : base("Validation.Querying.InvalidSortOrder",
+                "Sort order must be either 'asc' for ascending or 'desc' for descending.")
+            {
+            }
+        }
+
+        /// <inheritdoc />
+        internal class NotSupportedOrderColumnSelector : ValidationError
+        {
+            /// <inheritdoc />
+            public NotSupportedOrderColumnSelector(IEnumerable<string> supportedSelectors) :
+                base("Validation.Querying.NotSupportedOrderColumnSelector",
+                    $"Sort column must be one of supported: '{string.Join(", ", supportedSelectors)}'.")
             {
             }
         }
