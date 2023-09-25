@@ -10,6 +10,8 @@ public interface IProjectTaskStatusRepository
 
     void Remove(ProjectTaskStatus status);
 
+    void Update(ProjectTaskStatus status);
+
     Task AddRangeAsync(IEnumerable<ProjectTaskStatus> statuses);
 
     Task<int> GetStatusesCountByProjectAsync(ProjectId projectId, CancellationToken cancellationToken);
