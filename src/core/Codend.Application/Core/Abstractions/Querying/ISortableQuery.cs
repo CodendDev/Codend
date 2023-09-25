@@ -8,10 +8,10 @@ public interface ISortableQuery
     /// <summary>
     /// Column to sort by.
     /// </summary>
-    string? SortColumn { get; set; }
+    string? SortColumn { get; init; }
     
     /// <summary>
     /// Sorting order - 'desc' or 'asc'.
     /// </summary>
-    string? SortOrder { get; set; }
+    string? SortOrder { get; init; }
 }

@@ -1,12 +1,12 @@
 ﻿namespace Codend.Application.Core.Abstractions.Querying;
 
 /// <summary>
-/// Searching critera.
+/// Searching criteria.
 /// </summary>
 public interface ITextSearchQuery
 {
     /// <summary>
     /// Text to search for.
     /// </summary>
-    string? Search { get; set; }
+    string? Search { get; init; }
 }

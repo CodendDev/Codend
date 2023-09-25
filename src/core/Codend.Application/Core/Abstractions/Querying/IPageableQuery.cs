@@ -8,10 +8,10 @@ public interface IPageableQuery
     /// <summary>
     /// Page size.
     /// </summary>
-    int PageSize { get; set; }
+    int PageSize { get; init; }
 
     /// <summary>
     /// Page index.
     /// </summary>
-    int PageIndex { get; set; }
+    int PageIndex { get; init; }
 }
