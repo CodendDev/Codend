@@ -14,15 +14,22 @@ namespace Codend.Application.Authentication.Register;
 /// <param name="LastName">User last name.</param>
 public sealed record RegisterCommand(string Email, string Password, string FirstName, string LastName) : ICommand<TokenResponse>;
 
+/// <summary>
+/// <see cref="RegisterCommand"/> handler.
+/// </summary>
 public class RegisterCommandHandler : ICommandHandler<RegisterCommand, TokenResponse>
 {
     private readonly IAuthService _authService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RegisterCommandHandler"/> class.
+    /// </summary>
     public RegisterCommandHandler(IAuthService authService)
     {
         _authService = authService;
     }
 
+    /// <inheritdoc />
     public async Task<Result<TokenResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var result = await _authService.RegisterAsync(request.Email, request.Password, request.FirstName, request.LastName);
