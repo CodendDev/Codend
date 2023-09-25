@@ -5,12 +5,12 @@ using Codend.Domain.Entities;
 namespace Codend.Contracts.Automapper.Entities.ProjectTask;
 
 /// <summary>
-/// Automapper profile for <see cref="BaseProjectTaskResponse"/>.
+/// <see cref="BaseProjectTask"/> automapper profile.
 /// </summary>
 public sealed class BaseProjectTaskResponseProfile : Profile
 {
     /// <summary>
-    /// Implements all <see cref="BaseProjectTaskResponse"/> maps.
+    /// Initializes maps for <see cref="BaseProjectTaskResponse"/> class.
     /// </summary>
     public BaseProjectTaskResponseProfile()
     {
