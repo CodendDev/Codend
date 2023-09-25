@@ -5,7 +5,7 @@ using Codend.Domain.Entities;
 namespace Codend.Application.Projects.Queries;
 
 /// <inheritdoc/>
-public class ProjectSortColumnSelector : ISortColumnSelector<Project>
+internal abstract class ProjectSortColumnSelector : ISortColumnSelector<Project>
 {
     /// <inheritdoc />
     public static Expression<Func<Project, object>> SortColumnSelector(string? columnName)=>
