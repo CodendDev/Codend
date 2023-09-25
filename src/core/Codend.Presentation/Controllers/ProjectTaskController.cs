@@ -445,7 +445,7 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectTaskId,
         [FromBody] UpdateBugfixProjectTaskRequest request)
     {
-        var command = new UpdateBaseProjectTaskCommand
+        var command = new UpdateBugfixProjectTaskCommand
         (
             request.Name.HandleNull(),
             request.Priority.HandleNull(),

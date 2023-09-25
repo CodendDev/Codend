@@ -27,7 +27,7 @@ public sealed record UpdateBaseProjectTaskCommand
     /// <summary>
     /// Id of the project task that will be updated.
     /// </summary>
-    public ProjectTaskId TaskId { get; init; }
+    public required ProjectTaskId TaskId { get; init; }
 }
 
 /// <summary>
