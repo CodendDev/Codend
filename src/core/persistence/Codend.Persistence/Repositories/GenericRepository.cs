@@ -21,6 +21,15 @@ public abstract class GenericRepository<TKey, TKeyPrimitive, TEntity>
         Context.Add(entity);
     }
 
+    public Task<TEntity?> GetByIdAsync(TKey entityId, CancellationToken cancellationToken)
+    {
+        var entity = Context
+            .Set<TEntity>()
+            .SingleOrDefaultAsync(entity => Equals(entity.Id, entityId), cancellationToken: cancellationToken);
+
+        return entity;
+    }
+
     public Task<TEntity?> GetByIdAsync(TKey entityId)
     {
         var entity = Context
