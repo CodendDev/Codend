@@ -27,7 +27,6 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectMemberRepository _memberRepository;
-    private readonly IProjectTaskStatusRepository _projectTaskStatusRepository;
     private readonly IStoryRepository _storyRepository;
     private readonly IUserIdentityProvider _identityProvider;
 
@@ -38,21 +37,18 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     /// <param name="taskRepository">Repository used for <see cref="BaseProjectTask"/>s.</param>
     /// <param name="unitOfWork">Unit of work.</param>
     /// <param name="memberRepository">Repository for <see cref="ProjectMember"/>.</param>
-    /// <param name="projectTaskStatusRepository">Repository for <see cref="ProjectTaskStatus"/></param>
     /// <param name="storyRepository">Repository for <see cref="Story"/></param>
     /// <param name="identityProvider">Identity provider.</param>
     protected UpdateProjectTaskCommandAbstractHandler(
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
-        IProjectTaskStatusRepository projectTaskStatusRepository,
         IStoryRepository storyRepository,
         IUserIdentityProvider identityProvider)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
         _memberRepository = memberRepository;
-        _projectTaskStatusRepository = projectTaskStatusRepository;
         _storyRepository = storyRepository;
         _identityProvider = identityProvider;
     }
@@ -81,7 +77,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         // Validate status.
         if (request.StatusId.ShouldUpdate)
         {
-            var statusExists = _taskRepository.ProjectTaskStatusIsValid(task.ProjectId, request.StatusId.Value);
+            var statusExists = _taskRepository.ProjectTaskStatusIsValid(task.ProjectId, request.StatusId.Value!);
             if (!statusExists)
             {
                 return Result.Fail(new InvalidStatusId());

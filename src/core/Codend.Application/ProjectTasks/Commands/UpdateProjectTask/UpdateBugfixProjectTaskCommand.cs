@@ -43,13 +43,11 @@ public class UpdateBugfixProjectTaskCommandHandler :
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
-        IProjectTaskStatusRepository projectTaskStatusRepository,
         IStoryRepository storyRepository,
         IUserIdentityProvider identityProvider)
         : base(taskRepository,
             unitOfWork,
             memberRepository,
-            projectTaskStatusRepository,
             storyRepository,
             identityProvider)
     {

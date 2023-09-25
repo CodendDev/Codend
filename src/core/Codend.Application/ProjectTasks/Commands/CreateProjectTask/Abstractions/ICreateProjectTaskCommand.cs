@@ -2,12 +2,15 @@ using Codend.Domain.Entities.ProjectTask.Abstractions;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 
+/// <summary>
+/// Create ProjectTask command interface
+/// </summary>
 public interface ICreateProjectTaskCommand
 {
 }
 
 /// <summary>
-/// Create ProjectTask Command.
+/// <inheritdoc/>
 /// </summary>
 /// <typeparam name="TProjectTaskProperties">
 /// Properties interface needed for task creation.
@@ -16,5 +19,8 @@ public interface ICreateProjectTaskCommand
 public interface ICreateProjectTaskCommand<out TProjectTaskProperties> : ICreateProjectTaskCommand
     where TProjectTaskProperties : IProjectTaskCreateProperties
 {
+    /// <summary>
+    /// Properties used for creating ProjectTask.
+    /// </summary>
     TProjectTaskProperties TaskProperties { get; }
 }
