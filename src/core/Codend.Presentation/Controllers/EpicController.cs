@@ -38,7 +38,7 @@ public class EpicController : ApiController
     /// </remarks>
     /// <returns>
     /// HTTP response with status code:
-    /// - 204 on success
+    /// - 200 with created EpicId on success
     /// - 400 with errors on failure
     /// </returns>
     [HttpPost]

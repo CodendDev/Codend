@@ -41,7 +41,7 @@ public class StoryController : ApiController
     /// </remarks>
     /// <returns>
     /// HTTP response with status code:
-    /// - 204 on success
+    /// - 200 with created StoryId on success
     /// - 400 with errors on failure
     /// </returns>
     [HttpPost]
@@ -82,7 +82,7 @@ public class StoryController : ApiController
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
-            return Ok();
+            return NoContent();
         }
 
         return NotFound();

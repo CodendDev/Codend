@@ -37,7 +37,7 @@ public class ProjectTaskStatusController : ApiController
     /// </remarks>
     /// <returns>
     /// HTTP response with status code:
-    /// - 200 on success
+    /// - 200 with created ProjectTaskStatusId on success
     /// - 400 with errors on failure
     /// </returns>
     [HttpPost]
