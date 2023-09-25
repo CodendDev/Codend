@@ -6,6 +6,9 @@
 /// <typeparam name="T">The type of list.</typeparam>
 public sealed class PagedList<T>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PagedList{T}"/> class.
+    /// </summary>
     public PagedList(IEnumerable<T> items, int page, int pageSize, int totalCount)
     {
         Page = page;
