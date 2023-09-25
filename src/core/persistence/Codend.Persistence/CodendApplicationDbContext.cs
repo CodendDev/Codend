@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Codend.Persistence;
 
-public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigratable, IDbContextSets
+public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigratable, IQueryableSets
 {
     private readonly IDateTime _dateTime;
     private readonly IMediator _mediator;
@@ -132,5 +132,7 @@ public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigr
         return await base.SaveChangesAsync(cancellationToken);
     }
 
-    public new DbSet<T> Set<T>() where T : class, IEntity => base.Set<T>();
+    public IQueryable<T> Queryable<T>()
+        where T : class, IEntity
+        => base.Set<T>().AsNoTracking();
 }

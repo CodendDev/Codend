@@ -39,7 +39,7 @@ public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList
 {
     private readonly IMapper _mapper;
     private readonly IUserIdentityProvider _identityProvider;
-    private readonly IDbContextSets _context;
+    private readonly IQueryableSets _queryableSets;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetProjectsQueryHandler"/> class.
@@ -47,11 +47,11 @@ public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList
     public GetProjectsQueryHandler(
         IMapper mapper,
         IUserIdentityProvider identityProvider,
-        IDbContextSets context)
+        IQueryableSets queryableSets)
     {
         _mapper = mapper;
         _identityProvider = identityProvider;
-        _context = context;
+        _queryableSets = queryableSets;
     }
 
     /// <inheritdoc />
@@ -59,17 +59,17 @@ public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList
         CancellationToken cancellationToken)
     {
         var userId = _identityProvider.UserId;
-        var userProjects = _context.Set<ProjectMember>().AsNoTracking().GetUserProjectsIds(userId);
-        var projectsQuery = _context.Set<Project>().AsNoTracking().GetProjectsWithIds(userProjects);
-        
+        var userProjects = _queryableSets.Queryable<ProjectMember>().GetUserProjectsIds(userId);
+        var projectsQuery = _queryableSets.Queryable<Project>().GetProjectsWithIds(userProjects);
+
         var projects = await projectsQuery
             .Search(query.Search)
             .Sort(query, ProjectSortColumnSelector.SortColumnSelector(query.SortColumn))
             .Paginate(query)
             .ProjectTo<ProjectResponse>(_mapper.ConfigurationProvider)
-            .ToListAsync(cancellationToken: cancellationToken);
-        
-        var totalCount = await projectsQuery.CountAsync(cancellationToken: cancellationToken);
+            .ToListAsync(cancellationToken);
+
+        var totalCount = await projectsQuery.CountAsync(cancellationToken);
 
         var result = new PagedList<ProjectResponse>(projects, query.PageIndex, query.PageSize, totalCount);
         return Result.Ok(result);
