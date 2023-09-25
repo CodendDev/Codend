@@ -2,7 +2,7 @@ using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
-using Codend.Contracts.Abstractions;
+using Codend.Contracts.Requests;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 

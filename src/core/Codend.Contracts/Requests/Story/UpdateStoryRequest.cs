@@ -1,6 +1,4 @@
-﻿using Codend.Contracts.Abstractions;
-
-namespace Codend.Contracts.Requests.Story;
+﻿namespace Codend.Contracts.Requests.Story;
 
 /// <summary>
 /// Represents update story request.

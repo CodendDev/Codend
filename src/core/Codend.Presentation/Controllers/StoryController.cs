@@ -2,7 +2,7 @@ using Codend.Application.Stories.Commands.CreateStory;
 using Codend.Application.Stories.Commands.DeleteStory;
 using Codend.Application.Stories.Commands.UpdateStory;
 using Codend.Contracts;
-using Codend.Contracts.Abstractions;
+using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.Story;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;

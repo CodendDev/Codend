@@ -1,7 +1,7 @@
 ﻿using Codend.Application.Core;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Contracts.Abstractions;
+using Codend.Contracts.Requests;
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;

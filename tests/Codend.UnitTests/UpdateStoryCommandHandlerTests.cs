@@ -1,7 +1,7 @@
 ﻿using Codend.Application.Core;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Stories.Commands.UpdateStory;
-using Codend.Contracts.Abstractions;
+using Codend.Contracts.Requests;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentAssertions;
