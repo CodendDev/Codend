@@ -8,7 +8,7 @@ namespace Codend.Application.Projects.Queries.GetProjects;
 /// <summary>
 /// Validator for GetProjectQuery.
 /// </summary>
-public class GetProjectsQueryValidator : AbstractQueryValidator<GetProjectsQuery, PagedList<ProjectResponse>,
-    ProjectSortColumnSelector, Project>
+public class GetProjectsQueryValidator
+    : AbstractQueryValidator<GetProjectsQuery, PagedList<ProjectResponse>, ProjectSortColumnSelector, Project>
 {
 }
