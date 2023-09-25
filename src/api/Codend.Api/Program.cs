@@ -43,8 +43,7 @@ builder.Services
     .AddContracts()
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
-    .AddDatabase(builder.Configuration)
-    .AddPresentation();
+    .AddDatabase(builder.Configuration);
 
 var app = builder.Build();
 
