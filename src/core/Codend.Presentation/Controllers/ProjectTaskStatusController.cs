@@ -1,4 +1,5 @@
 ﻿using Codend.Application.ProjectTaskStatuses.Commands.CreateProjectTaskStatus;
+using Codend.Application.ProjectTaskStatuses.Commands.DeleteProjectTaskStatus;
 using Codend.Contracts;
 using Codend.Contracts.Requests.ProjectTaskStatuses;
 using Codend.Domain.Entities;
@@ -52,5 +53,32 @@ public class ProjectTaskStatusController : ApiController
         }
 
         return BadRequest(response.MapToApiErrorsResponse());
+    }
+
+    /// <summary>
+    /// Deletes project task status with given <paramref name="statusId"/>.
+    /// </summary>
+    /// <param name="projectId">Id of the project to which the task status belongs.</param>
+    /// <param name="statusId">Id of the task status which will be deleted.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 204 on success
+    /// - 404 on failure
+    /// </returns>
+    [HttpDelete("{statusId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid statusId)
+    {
+        var command = new DeleteProjectTaskStatusCommand(statusId);
+        var response = await Mediator.Send(command);
+        if (response.IsSuccess)
+        {
+            return NoContent();
+        }
+
+        return NotFound();
     }
 }
