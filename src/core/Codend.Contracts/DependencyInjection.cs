@@ -2,6 +2,9 @@
 
 namespace Codend.Contracts
 {
+    /// <summary>
+    /// DependencyInjection contracts. 
+    /// </summary>
     public static class DependencyInjection
     {
         /// <summary>
