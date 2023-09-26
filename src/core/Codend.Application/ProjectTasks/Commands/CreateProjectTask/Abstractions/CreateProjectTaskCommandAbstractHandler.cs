@@ -5,14 +5,14 @@ using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.ProjectErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 
 /// <summary>
 /// Abstract handler for commands implementing <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/> interface.
-/// Creates <see cref="TProjectTask"/> using <see cref="IProjectTaskCreator{TProjectTask,TProps}.Create"/> and persists it.
+/// Creates <typeparamref name="TProjectTask"/> using <see cref="IProjectTaskCreator{TProjectTask,TProps}.Create"/> and persists it.
 /// </summary>
 /// <typeparam name="TCommand">
 /// Must implement <see cref="ICreateProjectTaskCommand{TProjectTaskProperties}"/> interface.
@@ -61,7 +61,7 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         if (!await _projectMemberRepository
                 .IsProjectMember(userId, projectId, cancellationToken))
         {
-            return Result.Fail(new ProjectNotFound());
+            return DomainNotFound.Fail<Project>();
         }
 
         // Validate status id.

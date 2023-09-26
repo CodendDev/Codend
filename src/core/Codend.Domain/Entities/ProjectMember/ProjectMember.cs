@@ -1,6 +1,6 @@
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using FluentResults;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectMember;
 
 namespace Codend.Domain.Entities;
 
@@ -9,14 +9,16 @@ namespace Codend.Domain.Entities;
 /// </summary>
 public class ProjectMember : Entity<ProjectMemberId>
 {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private ProjectMember() : base(new ProjectMemberId(Guid.NewGuid()))
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
     }
 
     public ProjectId ProjectId { get; private set; }
     public UserId MemberId { get; private set; }
     public bool IsFavourite { get; private set; }
-    
+
     public static Result<ProjectMember> Create(ProjectId projectId, UserId memberId)
     {
         var projectMember = new ProjectMember()
@@ -33,7 +35,7 @@ public class ProjectMember : Entity<ProjectMemberId>
     {
         if (IsFavourite == isFavourite)
         {
-            return Result.Fail(new DomainErrors.ProjectMemberIsFavourite.IsFavouriteNotChanged());
+            return Result.Fail(new FavouriteDidntChange());
         }
 
         IsFavourite = isFavourite;

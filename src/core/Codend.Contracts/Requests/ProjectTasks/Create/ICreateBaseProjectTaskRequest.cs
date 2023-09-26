@@ -21,11 +21,6 @@ public interface ICreateBaseProjectTaskRequest
     Guid StatusId { get; }
 
     /// <summary>
-    /// ProjectId to which task will be assigned.
-    /// </summary>
-    Guid ProjectId { get; }
-
-    /// <summary>
     /// Description of the task.
     /// </summary>
     string? Description { get; }

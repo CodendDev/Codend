@@ -5,7 +5,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.ProjectErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
@@ -27,32 +27,28 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectMemberRepository _memberRepository;
-    private readonly IProjectTaskStatusRepository _projectTaskStatusRepository;
     private readonly IStoryRepository _storyRepository;
     private readonly IUserIdentityProvider _identityProvider;
 
     /// <summary>
     /// Constructs implementation of <see cref="UpdateProjectTaskCommandAbstractHandler{TCommand,TProjectTask}"/> with
-    /// <see cref="TCommand"/> and <see cref="TProjectTask"/> classes.
+    /// <typeparamref name="TCommand"/> and <typeparamref name="TProjectTask"/> classes.
     /// </summary>
     /// <param name="taskRepository">Repository used for <see cref="BaseProjectTask"/>s.</param>
     /// <param name="unitOfWork">Unit of work.</param>
     /// <param name="memberRepository">Repository for <see cref="ProjectMember"/>.</param>
-    /// <param name="projectTaskStatusRepository">Repository for <see cref="ProjectTaskStatus"/></param>
     /// <param name="storyRepository">Repository for <see cref="Story"/></param>
     /// <param name="identityProvider">Identity provider.</param>
     protected UpdateProjectTaskCommandAbstractHandler(
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
-        IProjectTaskStatusRepository projectTaskStatusRepository,
         IStoryRepository storyRepository,
         IUserIdentityProvider identityProvider)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
         _memberRepository = memberRepository;
-        _projectTaskStatusRepository = projectTaskStatusRepository;
         _storyRepository = storyRepository;
         _identityProvider = identityProvider;
     }
@@ -68,20 +64,20 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         // Validate task id.
         if (await _taskRepository.GetByIdAsync(request.TaskId) is not TProjectTask task)
         {
-            return Result.Fail(new ProjectTaskNotFound());
+            return DomainNotFound.Fail<BaseProjectTask>();
         }
 
         // Validate current user permissions.
         var userId = _identityProvider.UserId;
         if (!await _memberRepository.IsProjectMember(userId, task.ProjectId, cancellationToken))
         {
-            return Result.Fail(new ProjectTaskNotFound());
+            return DomainNotFound.Fail<BaseProjectTask>();
         }
 
         // Validate status.
         if (request.StatusId.ShouldUpdate)
         {
-            var statusExists = _taskRepository.ProjectTaskStatusIsValid(task.ProjectId, request.StatusId.Value);
+            var statusExists = _taskRepository.ProjectTaskStatusIsValid(task.ProjectId, request.StatusId.Value!);
             if (!statusExists)
             {
                 return Result.Fail(new InvalidStatusId());
@@ -98,7 +94,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
                 return Result.Fail(new InvalidAssigneeId());
             }
         }
-        
+
         // Validate story.
         if (request.StoryId.ShouldUpdate)
         {
@@ -108,7 +104,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
                 return Result.Fail(new InvalidStoryId());
             }
         }
-        
+
         var result = HandleUpdate(task, request);
         if (result.IsFailed)
         {

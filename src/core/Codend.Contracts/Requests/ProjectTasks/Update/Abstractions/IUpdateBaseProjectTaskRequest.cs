@@ -1,6 +1,4 @@
-﻿using Codend.Contracts.Abstractions;
-
-namespace Codend.Contracts.Requests.ProjectTasks.Update.Abstractions;
+﻿namespace Codend.Contracts.Requests.ProjectTasks.Update.Abstractions;
 
 /// <summary>
 /// Request used for updating BaseProjectTask

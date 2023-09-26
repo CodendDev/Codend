@@ -1,11 +1,12 @@
 ﻿using Codend.Application.Core;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Contracts.Abstractions;
+using Codend.Contracts.Requests;
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.StoryErrors;
 
 namespace Codend.Application.Stories.Commands.UpdateStory;
@@ -16,6 +17,7 @@ namespace Codend.Application.Stories.Commands.UpdateStory;
 /// <param name="StoryId">Id of story which will be updated.</param>
 /// <param name="Name">New name of the story.</param>
 /// <param name="Description">New description of the story.</param>
+/// <param name="EpicId">New epicId of the story.</param>
 public sealed record UpdateStoryCommand
 (
     Guid StoryId,
@@ -58,7 +60,7 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
 
         if (story is null)
         {
-            return Result.Fail(new StoryNotFound());
+            return DomainNotFound.Fail<Story>();
         }
 
         if (request.EpicId.ShouldUpdate &&

@@ -4,7 +4,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using ProjectNotFound = Codend.Domain.Core.Errors.DomainErrors.ProjectErrors.ProjectNotFound;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.Projects.Commands.DeleteProject;
 
@@ -43,12 +43,12 @@ public class DeleteProjectCommandHandler : ICommandHandler<DeleteProjectCommand>
         var project = await _projectRepository.GetByIdAsync(new ProjectId(request.ProjectId));
         if (project is null)
         {
-            return Result.Fail(new ProjectNotFound());
+            return DomainNotFound.Fail<Project>();
         }
 
         if (project.OwnerId != userId)
         {
-            return Result.Fail(new ProjectNotFound());
+            return DomainNotFound.Fail<Project>();
         }
 
         _projectRepository.Remove(project);

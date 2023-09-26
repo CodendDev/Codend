@@ -30,4 +30,6 @@ public interface IProjectTaskRepository
     /// <param name="storyId">StoryId.</param>
     /// <returns>List of tasks which belongs to the <see cref="Story"/>.</returns>
     IEnumerable<BaseProjectTask> GetStoryTasks(StoryId storyId);
+
+    IEnumerable<BaseProjectTask> GetTasksByTaskStatusId(ProjectTaskStatusId statusId);
 }

@@ -6,12 +6,25 @@
 public interface IPageableQuery
 {
     /// <summary>
+    /// Minimum page size.
+    /// </summary>
+    public const int MinPageSize = 1;
+    /// <summary>
+    /// Maximum page size.
+    /// </summary>
+    public const int MaxPageSize = 100;
+    /// <summary>
+    /// Minimum page index.
+    /// </summary>
+    public const int MinPageIndex = 1;
+    
+    /// <summary>
     /// Page size.
     /// </summary>
-    int PageSize { get; set; }
+    int PageSize { get; init; }
 
     /// <summary>
     /// Page index.
     /// </summary>
-    int PageIndex { get; set; }
+    int PageIndex { get; init; }
 }

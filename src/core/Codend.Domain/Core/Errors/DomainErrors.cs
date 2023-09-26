@@ -1,4 +1,8 @@
-﻿namespace Codend.Domain.Core.Errors;
+﻿using Codend.Domain.Core.Abstractions;
+using Codend.Domain.ValueObjects.Abstractions;
+using FluentResults;
+
+namespace Codend.Domain.Core.Errors;
 
 /// <summary>
 /// Contains the domain errors.
@@ -34,6 +38,16 @@ public static partial class DomainErrors
                 : base($"General.DomainNotFound.{domainName}", $"{domainName} was not found.")
             {
             }
+
+            /// <summary>
+            /// Creates a failed <see cref="Result"/> with <see cref="DomainErrors.General.DomainNotFound"/> error
+            /// with nameof(<typeparamref name="T"/>) as domain name.
+            /// </summary>
+            /// <typeparam name="T">Domain which was not found</typeparam>
+            /// <returns><see cref="Result"/> with <see cref="DomainErrors.General.DomainNotFound"/> error.</returns>
+            public static Result Fail<T>()
+                where T : IEntity
+                => Result.Fail(new DomainNotFound(typeof(T).Name));
         }
     }
 
@@ -42,18 +56,20 @@ public static partial class DomainErrors
     /// </summary>
     public static class StringValueObject
     {
-        public class NullOrEmpty : DomainError
+        public class NullOrEmpty<T> : DomainError
+            where T : ValueObjects.Primitives.StringValueObject
         {
-            public NullOrEmpty(string fieldName) : base($"StringValueObject.NullOrEmpty.{fieldName}",
-                $"Field {fieldName} cannot be null nor empty.")
+            public NullOrEmpty() : base($"StringValueObject.NullOrEmpty.{typeof(T).Name}",
+                $"Field {typeof(T).Name} cannot be null nor empty.")
             {
             }
         }
 
-        public class TooLong : DomainError
+        public class TooLong<T> : DomainError
+            where T : IStringMaxLengthValueObject
         {
-            public TooLong(string fieldName, int maxLength) : base($"StringValueObject.TooLong.{fieldName}",
-                $"Field {fieldName} is longer than allowed {maxLength}.")
+            public TooLong() : base($"StringValueObject.TooLong.{typeof(T).Name}",
+                $"Field {typeof(T).Name} is longer than allowed {T.MaxLength}.")
             {
             }
         }

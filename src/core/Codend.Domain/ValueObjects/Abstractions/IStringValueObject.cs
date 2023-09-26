@@ -2,9 +2,8 @@ using FluentResults;
 
 namespace Codend.Domain.ValueObjects.Abstractions;
 
-public interface IStringValueObject
+public interface IStringValueObject : IStringMaxLengthValueObject
 {
-    static abstract int MaxLength { get; }
     public string Value { get; }
 }
 

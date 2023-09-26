@@ -1,5 +1,6 @@
 ﻿using Codend.Application.Authentication.Login;
 using Codend.Application.Authentication.Register;
+using Codend.Contracts;
 using Codend.Contracts.Authentication;
 using Codend.Presentation.Infrastructure;
 using MediatR;
@@ -29,7 +30,7 @@ public class AuthenticationController : ApiController
     ///
     ///     {
     ///         "email": "test@test.com",
-    ///         "password: "password"
+    ///         "password": "password"
     ///     }
     /// </remarks>
     /// <returns>
@@ -37,9 +38,9 @@ public class AuthenticationController : ApiController
     /// </returns>
     [HttpPost("login")]
     [ProducesResponseType(typeof(TokenResponse), 200)]
-    [ProducesResponseType(400)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), 400)]
     [AllowAnonymous]
-    public async Task<IActionResult> Login(LoginCommand command)
+    public async Task<IActionResult> Login([FromBody] LoginCommand command)
     {
         var response = await Mediator.Send(command);
         if (response.IsFailed)
@@ -59,9 +60,9 @@ public class AuthenticationController : ApiController
     ///
     ///     {
     ///         "email": "test@test.com",
-    ///         "password: "password",
+    ///         "password": "password",
     ///         "firstName": "Jan",
-    ///         "lastName: "Kowalski"
+    ///         "lastName": "Kowalski"
     ///     }
     /// </remarks>
     /// <returns>
@@ -69,9 +70,9 @@ public class AuthenticationController : ApiController
     /// </returns>
     [HttpPost("register")]
     [ProducesResponseType(typeof(TokenResponse), 200)]
-    [ProducesResponseType(400)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), 400)]
     [AllowAnonymous]
-    public async Task<IActionResult> Register(RegisterCommand command)
+    public async Task<IActionResult> Register([FromBody] RegisterCommand command)
     {
         var response = await Mediator.Send(command);
         if (response.IsFailed)

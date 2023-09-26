@@ -1,15 +1,13 @@
-namespace Codend.Domain.Core.Errors;
+﻿namespace Codend.Domain.Core.Errors;
 
 public static partial class DomainErrors
 {
-    /// <summary>
-    /// General Project errors.
-    /// </summary>
-    public static class ProjectErrors
+    public class Project
     {
-        public class ProjectNotFound : DomainError
+        public class ProjectHasToHaveProjectTaskStatus : DomainError
         {
-            public ProjectNotFound() : base("ProjectErrors.ProjectNotFound", "Project not found in database.")
+            public ProjectHasToHaveProjectTaskStatus()
+                : base("Project.ProjectHasToHaveProjectTaskStatus", "Project has to have at least one task status")
             {
             }
         }

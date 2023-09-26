@@ -6,7 +6,6 @@ using Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 using Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 using Codend.Contracts;
-using Codend.Contracts.Abstractions;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.ProjectTasks.Create;
 using Codend.Contracts.Requests.ProjectTasks.Update;
@@ -17,16 +16,16 @@ using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Codend.Presentation.Infrastructure;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Presentation.Controllers;
 
 /// <summary>
 /// Controller containing endpoints associated with <see cref="BaseProjectTask"/> and it's derived entities management.
 /// </summary>
-[Route("api/task")]
+[Route("api/projects/{projectId:guid}/task")]
 public class ProjectTaskController : ApiController
 {
     /// <summary>
@@ -47,7 +46,7 @@ public class ProjectTaskController : ApiController
             return NoContent();
         }
 
-        if (response.HasError<DomainErrors.ProjectTaskErrors.ProjectTaskNotFound>())
+        if (response.HasError<DomainNotFound>())
         {
             return NotFound();
         }
@@ -62,6 +61,7 @@ public class ProjectTaskController : ApiController
     /// <summary>
     /// Deletes project task with given <paramref name="projectTaskId"/>.
     /// </summary>
+    /// <param name="projectId">Id of the project to which the task belongs.</param>
     /// <param name="projectTaskId">Id of the project task that will be deleted.</param>
     /// <returns>
     /// HTTP response with status code:
@@ -71,7 +71,9 @@ public class ProjectTaskController : ApiController
     [HttpDelete("{projectTaskId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete([FromRoute] Guid projectTaskId)
+    public async Task<IActionResult> Delete(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid projectTaskId)
     {
         var command = new DeleteProjectTaskCommand(projectTaskId);
         var response = await Mediator.Send(command);
@@ -86,6 +88,7 @@ public class ProjectTaskController : ApiController
     /// <summary>
     /// Assigns project member with id <paramref name="userId"/> to task with id <paramref name="projectTaskId"/>.
     /// </summary>
+    /// <param name="projectId">Id of the project to which the task belongs.</param>
     /// <param name="projectTaskId">Id of the project task to which the user will be assigned.</param>
     /// <param name="userId">Id of the user that will be assigned.</param>
     /// <returns>
@@ -95,11 +98,14 @@ public class ProjectTaskController : ApiController
     /// - 404 on failure
     /// </returns>
     [Route("{projectTaskId:guid}/assign/{userId:guid}")]
-    [HttpPut]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AssignUser([FromRoute] Guid projectTaskId, [FromRoute] Guid userId)
+    public async Task<IActionResult> AssignUser(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid projectTaskId,
+        [FromRoute] Guid userId)
     {
         var command = new AssignUserCommand(projectTaskId, userId);
         var response = await Mediator.Send(command);
@@ -119,6 +125,7 @@ public class ProjectTaskController : ApiController
     /// <summary>
     /// Retrieves common data of project task with <paramref name="projectTaskId"/>.
     /// </summary>
+    /// <param name="projectId">Id of the project to which the task belongs.</param>
     /// <param name="projectTaskId">Id of the project task which data will be retrieved.</param>
     /// <returns>
     /// HTTP response with status code:
@@ -128,7 +135,9 @@ public class ProjectTaskController : ApiController
     [HttpGet("{projectTaskId:guid}")]
     [ProducesResponseType(typeof(BaseProjectTaskResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById([FromRoute] Guid projectTaskId)
+    public async Task<IActionResult> GetById(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid projectTaskId)
     {
         var query = new GetProjectTaskByIdQuery(projectTaskId);
         var response = await Mediator.Send(query);
@@ -147,6 +156,7 @@ public class ProjectTaskController : ApiController
     /// <summary>
     /// Creates new BaseProjectTask entity.
     /// </summary>
+    /// <param name="projectId">Id of the project where the task will be created.</param>
     /// <param name="request">The create base project task request which body
     /// includes required fields (name, priority, statusId) and
     /// optional fields (description, estimatedTime, dueDate, storyPoints, assigneeId, storyId).
@@ -180,14 +190,16 @@ public class ProjectTaskController : ApiController
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateBaseTask([FromBody] CreateBaseProjectTaskRequest request)
+    public async Task<IActionResult> CreateBaseTask(
+        [FromRoute] Guid projectId,
+        [FromBody] CreateBaseProjectTaskRequest request)
     {
         var command = new CreateBaseProjectTaskCommand(
             new BaseProjectTaskCreateProperties(
                 request.Name,
                 request.Priority,
                 new ProjectTaskStatusId(request.StatusId),
-                new ProjectId(request.ProjectId),
+                new ProjectId(projectId),
                 request.Description,
                 request.EstimatedTime.ToTimeSpan(),
                 request.DueDate,
@@ -209,27 +221,55 @@ public class ProjectTaskController : ApiController
     /// <summary>
     /// Updates BaseProjectTask entity with given <paramref name="projectTaskId"/>.
     /// </summary>
+    /// <param name="projectId">Id of the project to which the task belongs.</param>
     /// <param name="projectTaskId">Id of the base project task that will be updated.</param>
     /// <param name="request">The update base project task request.</param>
     /// <remarks>
     /// Valid priorities: [VeryHigh, High, Normal, Low, VeryLow]
-    /// TODO:replace with correct sample request
+    /// 
     /// Sample request():
     /// 
     ///     {
-    ///         "name": "New project task name",
-    ///         "priority": "Normal",
-    ///         "statusId": "1f0c1930-50f4-4f17-8470-211b3a5cc873",
-    ///         "description": "Not so long description",
-    ///         "estimatedTime":{
-    ///             "minutes": 45,
-    ///             "hours": 3,
-    ///             "days": 1,
+    ///         "name": {
+    ///             "shouldUpdate": true,
+    ///             "value": "New base project task name."
+    ///         },
+    ///         "priority": {
+    ///             "shouldUpdate": true,
+    ///             "value": "High"
+    ///         },
+    ///         "description": {
+    ///             "shouldUpdate": true,
+    ///             "value": "New description"
+    ///         },
+    ///         "dueDate": {
+    ///             "shouldUpdate": true,
+    ///             "value": "2023-12-19T09:31:47.712Z"
+    ///         },
+    ///         "storyPoints": {
+    ///             "shouldUpdate": true,
+    ///             "value": 10
+    ///         },
+    ///         "statusId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
+    ///         },
+    ///         "estimatedTime": {
+    ///             "shouldUpdate": true,
+    ///             "value": {
+    ///                 "minutes": 15,
+    ///                 "hours": 3,
+    ///                 "days": 0
+    ///             }
+    ///         },
+    ///         "assigneeId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
+    ///         },
+    ///         "storyId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
     ///         }
-    ///         "dueDate": "2023-12-30T15:30:56.123Z",
-    ///         "storyPoints": 35,
-    ///         "assigneeId": "e405f337-4da0-4cce-818b-9231642c93fe",
-    ///         "storyId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42"
     ///     }
     /// </remarks>
     /// <returns>
@@ -243,6 +283,7 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateBaseTask(
+        [FromRoute] Guid projectId,
         [FromRoute] Guid projectTaskId,
         [FromBody] UpdateBaseProjectTaskRequest request)
     {
@@ -272,6 +313,7 @@ public class ProjectTaskController : ApiController
     /// <summary>
     /// Creates new BugfixProjectTask entity.
     /// </summary>
+    /// <param name="projectId">Id of the project where the task will be created.</param>
     /// <param name="request">The create bugfix project task request which body
     /// includes required fields (name, priority, statusId) and
     /// optional fields (description, estimatedTime, dueDate, storyPoints, assigneeId, storyId).
@@ -305,14 +347,16 @@ public class ProjectTaskController : ApiController
     [HttpPost("bugfix")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateBugfix([FromBody] CreateBugfixProjectTaskRequest request)
+    public async Task<IActionResult> CreateBugfix(
+        [FromRoute] Guid projectId,
+        [FromBody] CreateBugfixProjectTaskRequest request)
     {
         var command = new CreateBugfixProjectTaskCommand(
             new BugfixProjectTaskCreateProperties(
                 request.Name,
                 request.Priority,
                 new ProjectTaskStatusId(request.StatusId),
-                new ProjectId(request.ProjectId),
+                new ProjectId(projectId),
                 request.Description,
                 request.EstimatedTime.ToTimeSpan(),
                 request.DueDate,
@@ -335,27 +379,55 @@ public class ProjectTaskController : ApiController
     /// <summary>
     /// Updates BugfixProjectTask entity with given <paramref name="projectTaskId"/>.
     /// </summary>
+    /// <param name="projectId">Id of the project to which the task belongs.</param>
     /// <param name="projectTaskId">Id of the bugfix project task that will be updated.</param>
     /// <param name="request">The update bugfix project task request.</param>
     /// <remarks>
     /// Valid priorities: [VeryHigh, High, Normal, Low, VeryLow]
-    /// TODO:replace with correct sample request
+    /// 
     /// Sample request():
     /// 
     ///     {
-    ///         "name": "New project task name",
-    ///         "priority": "Normal",
-    ///         "statusId": "1f0c1930-50f4-4f17-8470-211b3a5cc873",
-    ///         "description": "Not so long description",
-    ///         "estimatedTime":{
-    ///             "minutes": 45,
-    ///             "hours": 3,
-    ///             "days": 1,
+    ///         "name": {
+    ///             "shouldUpdate": true,
+    ///             "value": "New bugfix project task name."
+    ///         },
+    ///         "priority": {
+    ///             "shouldUpdate": true,
+    ///             "value": "High"
+    ///         },
+    ///         "description": {
+    ///             "shouldUpdate": true,
+    ///             "value": "New description"
+    ///         },
+    ///         "dueDate": {
+    ///             "shouldUpdate": true,
+    ///             "value": "2023-12-19T09:31:47.712Z"
+    ///         },
+    ///         "storyPoints": {
+    ///             "shouldUpdate": true,
+    ///             "value": 10
+    ///         },
+    ///         "statusId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
+    ///         },
+    ///         "estimatedTime": {
+    ///             "shouldUpdate": true,
+    ///             "value": {
+    ///                 "minutes": 15,
+    ///                 "hours": 3,
+    ///                 "days": 0
+    ///             }
+    ///         },
+    ///         "assigneeId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
+    ///         },
+    ///         "storyId": {
+    ///             "shouldUpdate": false,
+    ///             "value": ""
     ///         }
-    ///         "dueDate": "2023-12-30T15:30:56.123Z",
-    ///         "storyPoints": 35,
-    ///         "assigneeId": "e405f337-4da0-4cce-818b-9231642c93fe",
-    ///         "storyId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42"
     ///     }
     /// </remarks>
     /// <returns>
@@ -368,10 +440,12 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateBugfixTask([FromRoute] Guid projectTaskId,
+    public async Task<IActionResult> UpdateBugfixTask(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid projectTaskId,
         [FromBody] UpdateBugfixProjectTaskRequest request)
     {
-        var command = new UpdateBaseProjectTaskCommand
+        var command = new UpdateBugfixProjectTaskCommand
         (
             request.Name.HandleNull(),
             request.Priority.HandleNull(),

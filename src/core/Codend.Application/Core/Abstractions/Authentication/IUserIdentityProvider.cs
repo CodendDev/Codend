@@ -7,6 +7,9 @@ namespace Codend.Application.Core.Abstractions.Authentication;
 /// </summary>
 public interface IUserIdentityProvider
 {
+    /// <summary>
+    /// Logged in user id.
+    /// </summary>
     UserId UserId { get; }
 
     /// <summary>

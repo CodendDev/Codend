@@ -10,7 +10,7 @@ using static Codend.Application.Core.Errors.ValidationErrors.Common;
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
 /// <summary>
-/// Abstract validator for <see cref="TUpdateProjectTaskCommand"/>.
+/// Abstract validator for <typeparamref name="TUpdateProjectTaskCommand"/>.
 /// </summary>
 public abstract class UpdateProjectTaskCommandAbstractValidator<TUpdateProjectTaskCommand>
     : AbstractValidator<TUpdateProjectTaskCommand>

@@ -3,8 +3,14 @@ using Codend.Domain.ValueObjects.Primitives;
 
 namespace Codend.Contracts.Automapper.ValueObjects;
 
-public class StringValueObjectProfile : Profile
+/// <summary>
+/// <see cref="StringValueObject"/> automapper profile.
+/// </summary>
+public sealed class StringValueObjectProfile : Profile
 {
+    /// <summary>
+    /// Initializes maps for <see cref="StringValueObject"/> class.
+    /// </summary>
     public StringValueObjectProfile()
     {
         CreateMap<StringValueObject, string>().ConvertUsing(valueObject => valueObject.Value);

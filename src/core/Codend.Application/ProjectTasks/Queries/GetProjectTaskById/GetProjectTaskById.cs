@@ -2,11 +2,11 @@ using System.Data;
 using AutoMapper;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
 using Codend.Contracts.Responses.ProjectTask;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Codend.Domain.Repositories;
 using FluentResults;
+using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 
@@ -64,10 +64,10 @@ public class GetProjectTaskByIdQueryHandler : IQueryHandler<GetProjectTaskByIdQu
         var task = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId));
         if (task is null)
         {
-            return Result.Fail(new DomainErrors.ProjectTaskErrors.ProjectTaskNotFound());
+            return DomainNotFound.Fail<BaseProjectTask>();
         }
 
-        var status = await _statusRepository.GetByIdAsync(task.StatusId);
+        var status = await _statusRepository.GetByIdAsync(task.StatusId, cancellationToken);
         if (status is null)
         {
             throw new NoNullAllowedException("ProjectStatus can't be null.");

@@ -1,4 +1,3 @@
-using Codend.Contracts.Abstractions;
 using Codend.Contracts.Requests.ProjectTasks.Update.Abstractions;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
 

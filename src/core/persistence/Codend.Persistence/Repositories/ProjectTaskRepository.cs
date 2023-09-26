@@ -28,4 +28,13 @@ public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, Base
 
         return tasks;
     }
+
+    public IEnumerable<BaseProjectTask> GetTasksByTaskStatusId(ProjectTaskStatusId statusId)
+    {
+        var tasks =
+            Context.Set<BaseProjectTask>()
+                .Where(task => task.StatusId == statusId);
+
+        return tasks;
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
+using Codend.Application.Exceptions;
 using FluentResults;
 using io.fusionauth;
 using io.fusionauth.domain;
@@ -44,9 +45,9 @@ public sealed class FusionAuthService : IAuthService
 
         return response.statusCode switch
         {
-            401 => Result.Fail(new AuthErrors.General.InternalAuthError()),
+            401 => throw new AuthenticationServiceException(response.ToString()),
             404 => Result.Fail(new AuthErrors.Login.InvalidEmailOrPassword()),
-            _ => Result.Fail(new AuthErrors.General.UnspecifiedAuthError())
+            _ => throw new AuthenticationServiceException(response.ToString())
         };
     }
 
@@ -80,7 +81,7 @@ public sealed class FusionAuthService : IAuthService
             return Result.Ok(response.successResponse.token);
         }
 
-        if (response.statusCode != 400) return Result.Fail(new AuthErrors.General.UnspecifiedAuthError());
+        if (response.statusCode != 400) throw new AuthenticationServiceException(response.ToString());
 
         // Checking if error response from fusionauth contains email field error, which means that email is already in use
         // or is not a valid email, but it should be covered by validation.
@@ -89,6 +90,12 @@ public sealed class FusionAuthService : IAuthService
             return Result.Fail(new AuthErrors.Register.EmailAlreadyExists());
         }
         
-        return Result.Fail(new AuthErrors.General.UnspecifiedAuthError());
+        // Same thing as above but for password field. 
+        if (response.errorResponse.fieldErrors.Any(err => err.Value.Any(e => e.code.Contains("password"))))
+        {
+            return Result.Fail(new AuthErrors.Register.PasswordNotValid());
+        }
+
+        throw new AuthenticationServiceException(response.ToString());
     }
 }

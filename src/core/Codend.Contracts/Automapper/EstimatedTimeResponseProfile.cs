@@ -3,8 +3,14 @@ using Codend.Contracts.Responses.ProjectTask;
 
 namespace Codend.Contracts.Automapper;
 
-public class EstimatedTimeResponseProfile : Profile
+/// <summary>
+/// <see cref="EstimatedTimeResponse"/> automapper profile.
+/// </summary>
+public sealed class EstimatedTimeResponseProfile : Profile
 {
+    /// <summary>
+    /// Initializes maps for <see cref="EstimatedTimeResponse"/> class.
+    /// </summary>
     public EstimatedTimeResponseProfile()
     {
         CreateMap<TimeSpan, EstimatedTimeResponse>()
