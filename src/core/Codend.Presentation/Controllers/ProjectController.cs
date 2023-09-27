@@ -3,6 +3,7 @@ using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
 using Codend.Application.Projects.Commands.RemoveMember;
 using Codend.Application.Projects.Commands.UpdateProject;
+using Codend.Application.Projects.Queries.GetMembers;
 using Codend.Application.Projects.Queries.GetProjectById;
 using Codend.Application.Projects.Queries.GetProjects;
 using Codend.Contracts;
@@ -181,7 +182,7 @@ public class ProjectController : ApiController
     /// 400 - on failure
     /// 404 - when user or project was not found
     /// </returns>
-    [HttpPost("{projectId:guid}/member/{userId:guid}")]
+    [HttpPost("{projectId:guid}/members/{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -214,7 +215,7 @@ public class ProjectController : ApiController
     /// 204 - on success
     /// 404 - when user or project was not found
     /// </returns>
-    [HttpDelete("{projectId:guid}/member/{userId:guid}")]
+    [HttpDelete("{projectId:guid}/members/{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RemoveMember(
@@ -229,5 +230,33 @@ public class ProjectController : ApiController
         }
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Retrieves all project members who match given criteria.
+    /// </summary>
+    /// <param name="projectId">The id of the project whose members will be returned.</param>
+    /// <param name="request">Get members request including search text.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 200 - on success with users list.
+    /// 404 - when project was not found.
+    /// </returns>
+    [HttpPost("{projectId:guid}/members")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetMembers(
+        [FromRoute] Guid projectId,
+        [FromQuery] GetMembersRequest request)
+    {
+        var query = new GetMembersQuery(projectId.GuidConversion<ProjectId>(), request.Search);
+        var response = await Mediator.Send(query);
+
+        if (response.HasError<DomainNotFound>())
+        {
+            return NotFound();
+        }
+
+        return Ok(response.Value);
     }
 }
