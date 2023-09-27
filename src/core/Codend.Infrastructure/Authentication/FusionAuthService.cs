@@ -1,11 +1,13 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Exceptions;
+using Codend.Domain.Entities;
 using FluentResults;
 using io.fusionauth;
 using io.fusionauth.domain;
 using io.fusionauth.domain.api;
 using io.fusionauth.domain.api.user;
 using Microsoft.Extensions.Options;
+using UserResponse = Codend.Contracts.Responses.UserResponse;
 
 namespace Codend.Infrastructure.Authentication;
 
@@ -89,7 +91,7 @@ public sealed class FusionAuthService : IAuthService
         {
             return Result.Fail(new AuthErrors.Register.EmailAlreadyExists());
         }
-        
+
         // Same thing as above but for password field. 
         if (response.errorResponse.fieldErrors.Any(err => err.Value.Any(e => e.code.Contains("password"))))
         {
@@ -97,5 +99,23 @@ public sealed class FusionAuthService : IAuthService
         }
 
         throw new AuthenticationServiceException(response.ToString());
+    }
+
+    /// <inheritdoc />
+    public async Task<List<UserResponse>> GetUsersByIds(IEnumerable<UserId> usersIds)
+    {
+        var response = await _fusionAuthClient
+            .SearchUsersByIdsAsync(usersIds.Select(x => x.Value.ToString()).ToList());
+
+        if (!response.WasSuccessful())
+        {
+            throw new AuthenticationServiceException(response.errorResponse.ToString());
+        }
+
+        var usersResponse = response.successResponse.users
+            .Select(user => new UserResponse(user.firstName, user.lastName, user.email, user.imageUrl))
+            .ToList();
+
+        return usersResponse;
     }
 }

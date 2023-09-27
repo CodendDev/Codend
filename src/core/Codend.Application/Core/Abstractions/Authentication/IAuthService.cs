@@ -1,4 +1,6 @@
-﻿using FluentResults;
+﻿using Codend.Contracts.Responses;
+using Codend.Domain.Entities;
+using FluentResults;
 
 namespace Codend.Application.Core.Abstractions.Authentication;
 
@@ -48,4 +50,11 @@ public interface IAuthService
     /// <param name="lastName">User last name.</param>
     /// <returns>JWT access token string or an error.</returns>
     public Task<Result<string>> RegisterAsync(string email, string password, string firstName, string lastName);
+
+    /// <summary>
+    /// Retrieves users info with given ids.
+    /// </summary>
+    /// <param name="usersIds">Ids of the users whose info will be retrieved.</param>
+    /// <returns>List of users info.</returns>
+    public Task<List<UserResponse>> GetUsersByIds(IEnumerable<UserId> usersIds);
 }
