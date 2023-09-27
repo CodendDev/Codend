@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Codend.Application.Projects.Queries.GetProjects;
 
 /// <summary>
-/// Command for retrieving all matching projects, for which user has permissions.
+/// Query for retrieving all matching projects, for which user has permissions.
 /// </summary>
 /// <param name="PageSize">Number of entries on page.</param>
 /// <param name="PageIndex">Index of the page.</param>
