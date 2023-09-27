@@ -1,8 +1,10 @@
 ﻿using Codend.Application.ProjectTaskStatuses.Commands.CreateProjectTaskStatus;
 using Codend.Application.ProjectTaskStatuses.Commands.DeleteProjectTaskStatus;
 using Codend.Application.ProjectTaskStatuses.Commands.UpdateProjectTaskStatus;
+using Codend.Application.ProjectTaskStatuses.Queries.GetProjectTaskStatuses;
 using Codend.Contracts;
 using Codend.Contracts.Requests.ProjectTaskStatuses;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
 using MediatR;
@@ -15,7 +17,7 @@ namespace Codend.Presentation.Controllers;
 /// <summary>
 /// Controller for <see cref="ProjectTaskStatus"/> commands.
 /// </summary>
-[Route("api/projects/{projectId:guid}/taskStatuses")]
+[Route("api/projects/{projectId:guid}/task-statuses")]
 public class ProjectTaskStatusController : ApiController
 {
     /// <inheritdoc />
@@ -126,5 +128,30 @@ public class ProjectTaskStatusController : ApiController
         }
 
         return BadRequest(response.MapToApiErrorsResponse());
+    }
+
+    /// <summary>
+    /// Retrieves all task statuses of the project with id <paramref name="projectId"/>.
+    /// </summary>
+    /// <param name="projectId">Id of the project to which the task status belongs.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 200 on success with list of statuses
+    /// </returns>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetMany(
+        [FromRoute] Guid projectId)
+    {
+        var query = new GetProjectTaskStatusesQuery(projectId.GuidConversion<ProjectId>());
+
+        var response = await Mediator.Send(query);
+        if (response.HasError<DomainNotFound>())
+        {
+            return NotFound();
+        }
+
+        return Ok(response.Value);
     }
 }
