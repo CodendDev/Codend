@@ -25,13 +25,13 @@ public abstract class AbstractQueryValidator<TQuery, TResponse, TSortColumnSelec
     protected AbstractQueryValidator()
     {
         RuleFor(query => query.PageSize)
-            .NotEmpty()
+            .NotNull()
             .WithError(new PropertyNullOrEmpty(nameof(IPageableQuery.PageSize)))
             .InclusiveBetween(IPageableQuery.MinPageSize, IPageableQuery.MaxPageSize)
             .WithError(new InvalidPageSize());
         
         RuleFor(query => query.PageIndex)
-            .NotEmpty()
+            .NotNull()
             .WithError(new PropertyNullOrEmpty(nameof(IPageableQuery.PageIndex)))
             .GreaterThanOrEqualTo(IPageableQuery.MinPageIndex)
             .WithError(new InvalidPageIndex());
