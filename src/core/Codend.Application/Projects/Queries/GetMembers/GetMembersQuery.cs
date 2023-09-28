@@ -2,6 +2,7 @@ using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
 using Codend.Application.Core.Abstractions.Querying;
+using Codend.Application.Core.Abstractions.Services;
 using Codend.Application.Extensions;
 using Codend.Contracts.Responses;
 using Codend.Domain.Entities;
@@ -31,7 +32,7 @@ public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, List<UserRe
 {
     private readonly IUserIdentityProvider _identityProvider;
     private readonly IQueryableSets _queryableSets;
-    private readonly IAuthService _authService;
+    private readonly IUserService _userService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetMembersQueryHandler"/> class.
@@ -39,11 +40,11 @@ public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, List<UserRe
     public GetMembersQueryHandler(
         IUserIdentityProvider identityProvider,
         IQueryableSets queryableSets,
-        IAuthService authService)
+        IUserService userService)
     {
         _identityProvider = identityProvider;
         _queryableSets = queryableSets;
-        _authService = authService;
+        _userService = userService;
     }
 
     /// <inheritdoc />
@@ -61,7 +62,7 @@ public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, List<UserRe
             .Select(x => x.MemberId)
             .ToListAsync(cancellationToken);
 
-        var usersResponse = await _authService.GetUsersByIds(usersIds);
+        var usersResponse = await _userService.GetUsersByIds(usersIds);
 
         if (query.Search != null)
         {

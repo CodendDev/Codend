@@ -1,4 +1,6 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
+using Codend.Application.Core.Abstractions.Data;
+using Codend.Application.Core.Abstractions.Services;
 using Codend.Application.Exceptions;
 using Codend.Domain.Entities;
 using FluentResults;
@@ -14,7 +16,7 @@ namespace Codend.Infrastructure.Authentication;
 /// <summary>
 /// Fusionauth implementation of <see cref="IAuthService"/>.
 /// </summary>
-public sealed class FusionAuthService : IAuthService
+public sealed class FusionAuthService : IAuthService, IUserService
 {
     private readonly IFusionAuthAsyncClient _fusionAuthClient;
     private readonly Guid _appId;
