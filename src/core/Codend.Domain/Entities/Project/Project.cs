@@ -29,13 +29,14 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
     public ProjectName Name { get; private set; }
     public ProjectDescription Description { get; private set; }
     public UserId OwnerId { get; private set; }
+    public ProjectTaskStatusId DefaultStatusId { get; private set; }
 
     #endregion
 
 
     #region Domain methods
 
-    public static Result<Project> Create(UserId ownerId, string name, string? description = null)
+    public static Result<Project> Create(UserId ownerId, string name, ProjectTaskStatusId defaultStatusId, string? description = null)
     {
         var project = new Project();
 
@@ -52,6 +53,7 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
         project.OwnerId = ownerId;
         project.Name = resultName.Value;
         project.Description = resultDescription.Value;
+        project.DefaultStatusId = defaultStatusId;
 
         return result;
     }
@@ -197,6 +199,18 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
         }
 
         return result;
+    }
+    
+    /// <summary>
+    /// Changes project default status id to one of Project defined or default statuses.
+    /// </summary>
+    /// <param name="defaultStatusId">New default status id.</param>
+    /// <returns>Ok result with ProjectTaskStatusId object.</returns>
+    public Result<ProjectTaskStatusId> EditDefaultStatus(ProjectTaskStatusId defaultStatusId)
+    {
+        DefaultStatusId = defaultStatusId;
+
+        return Result.Ok(defaultStatusId);
     }
 
     #endregion
