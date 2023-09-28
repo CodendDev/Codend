@@ -25,6 +25,7 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
 
     #region Project properties
 
+    public const int MaxMembersCount = 25;
     public ProjectName Name { get; private set; }
     public ProjectDescription Description { get; private set; }
     public UserId OwnerId { get; private set; }
