@@ -7,15 +7,14 @@
 /// <param name="LastName">User last name.</param>
 /// <param name="Email">User email.</param>
 /// <param name="ImageUrl">The URL that points to an image file that is user's profile image.</param>
-public record UserResponse(
+public record UserResponse
+(
     string FirstName,
     string LastName,
     string Email,
-    string ImageUrl)
+    string ImageUrl
+)
 {
     /// <inheritdoc />
-    public override string ToString()
-    {
-        return $"{FirstName} {LastName} {Email}";
-    }
+    public override string ToString() => $"{FirstName} {LastName} {Email}";
 }

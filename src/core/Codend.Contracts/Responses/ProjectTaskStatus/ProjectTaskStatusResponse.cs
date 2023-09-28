@@ -4,5 +4,7 @@
 /// Represents default project task status response.
 /// </summary>
 /// <param name="Name">Name of the status.</param>
-public sealed record ProjectTaskStatusResponse(
-    string Name);
+public sealed record ProjectTaskStatusResponse
+(
+    string Name
+);
