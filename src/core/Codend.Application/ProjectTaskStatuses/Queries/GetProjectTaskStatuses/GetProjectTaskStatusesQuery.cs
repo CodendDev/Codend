@@ -16,13 +16,14 @@ namespace Codend.Application.ProjectTaskStatuses.Queries.GetProjectTaskStatuses;
 /// Query used for retrieving all project task statuses.
 /// </summary>
 /// <param name="ProjectId">Id of the project which statuses will be returned.</param>
-public sealed record GetProjectTaskStatusesQuery(ProjectId ProjectId) : IQuery<List<ProjectTaskStatusResponse>>;
+public sealed record GetProjectTaskStatusesQuery(ProjectId ProjectId) 
+    : IQuery<IEnumerable<ProjectTaskStatusResponse>>;
 
 /// <summary>
 /// <see cref="GetProjectTaskStatusesQueryHandler"/> handler.
 /// </summary>
 public class GetProjectTaskStatusesQueryHandler
-    : IQueryHandler<GetProjectTaskStatusesQuery, List<ProjectTaskStatusResponse>>
+    : IQueryHandler<GetProjectTaskStatusesQuery, IEnumerable<ProjectTaskStatusResponse>>
 {
     private readonly IQueryableSets _context;
     private readonly IUserIdentityProvider _identityProvider;
@@ -32,7 +33,7 @@ public class GetProjectTaskStatusesQueryHandler
     /// Initializes a new instance of the <see cref="GetProjectTaskStatusesQueryHandler"/> class.
     /// </summary>
     public GetProjectTaskStatusesQueryHandler(
-        IQueryableSets context, 
+        IQueryableSets context,
         IUserIdentityProvider identityProvider,
         IMapper mapper)
     {
@@ -42,7 +43,7 @@ public class GetProjectTaskStatusesQueryHandler
     }
 
     /// <inheritdoc />
-    public async Task<Result<List<ProjectTaskStatusResponse>>> Handle(GetProjectTaskStatusesQuery request,
+    public async Task<Result<IEnumerable<ProjectTaskStatusResponse>>> Handle(GetProjectTaskStatusesQuery request,
         CancellationToken cancellationToken)
     {
         var userId = _identityProvider.UserId;
@@ -56,6 +57,6 @@ public class GetProjectTaskStatusesQueryHandler
             .ProjectTo<ProjectTaskStatusResponse>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        return Result.Ok(statuses);
+        return Result.Ok(statuses.AsEnumerable());
     }
 }

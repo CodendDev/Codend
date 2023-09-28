@@ -4,6 +4,7 @@ using Codend.Application.ProjectTaskStatuses.Commands.UpdateProjectTaskStatus;
 using Codend.Application.ProjectTaskStatuses.Queries.GetProjectTaskStatuses;
 using Codend.Contracts;
 using Codend.Contracts.Requests.ProjectTaskStatuses;
+using Codend.Contracts.Responses.ProjectTaskStatus;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
@@ -139,7 +140,7 @@ public class ProjectTaskStatusController : ApiController
     /// - 200 on success with list of statuses
     /// </returns>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<ProjectTaskStatusResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMany(
         [FromRoute] Guid projectId)
