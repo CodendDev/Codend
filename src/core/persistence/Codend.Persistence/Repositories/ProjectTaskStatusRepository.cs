@@ -37,7 +37,7 @@ public class ProjectTaskStatusRepository
         return defaultStatus;
     }
 
-    public Task<bool> ExistsAsync(string name, ProjectId projectId, CancellationToken cancellationToken)
+    public Task<bool> ExistsWithNameAsync(string name, ProjectId projectId, CancellationToken cancellationToken)
     {
         var exists =
             Context.Set<ProjectTaskStatus>()
@@ -45,6 +45,16 @@ public class ProjectTaskStatusRepository
                                     status.ProjectId == projectId,
                     cancellationToken);
 
+        return exists;
+    }
+
+    public Task<bool> ExistsWithIdAsync(ProjectTaskStatusId statusId, ProjectId projectId, CancellationToken cancellationToken)
+    {
+        var exists =
+            Context.Set<ProjectTaskStatus>()
+                .AnyAsync(status => status.Id == statusId &&
+                                    status.ProjectId == projectId,
+                    cancellationToken);
         return exists;
     }
 }

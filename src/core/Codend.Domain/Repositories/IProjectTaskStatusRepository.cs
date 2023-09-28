@@ -18,5 +18,6 @@ public interface IProjectTaskStatusRepository
 
     Task<ProjectTaskStatus> GetDefaultStatusInProjectAsync(ProjectId projectId, CancellationToken cancellationToken);
 
-    public Task<bool> ExistsAsync(string name, ProjectId projectId, CancellationToken cancellationToken);
+    public Task<bool> ExistsWithNameAsync(string name, ProjectId projectId, CancellationToken cancellationToken);
+    public Task<bool> ExistsWithIdAsync(ProjectTaskStatusId statusId, ProjectId projectId, CancellationToken cancellationToken);
 }
