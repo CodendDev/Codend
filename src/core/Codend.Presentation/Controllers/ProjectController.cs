@@ -9,6 +9,7 @@ using Codend.Application.Projects.Queries.GetProjects;
 using Codend.Contracts;
 using Codend.Contracts.Common;
 using Codend.Contracts.Requests.Project;
+using Codend.Contracts.Responses;
 using Codend.Contracts.Responses.Project;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
@@ -243,7 +244,7 @@ public class ProjectController : ApiController
     /// 404 - when project was not found.
     /// </returns>
     [HttpPost("{projectId:guid}/members")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<UserResponse>),StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMembers(
         [FromRoute] Guid projectId,

@@ -17,18 +17,16 @@ namespace Codend.Application.Projects.Queries.GetMembers;
 /// </summary>
 /// <param name="ProjectId">Id of the project whose members will be retrieved.</param>
 /// <param name="Search">Text to be searched for in project title.</param>
-public sealed record GetMembersQuery(
-        ProjectId ProjectId,
-        string? Search = null
-    )
-    : IQuery<List<UserResponse>>, ITextSearchQuery
-{
-}
+public sealed record GetMembersQuery
+(
+    ProjectId ProjectId,
+    string? Search = null
+) : IQuery<IEnumerable<UserResponse>>, ITextSearchQuery;
 
 /// <summary>
 /// <see cref="GetMembersQueryHandler"/> Handler.
 /// </summary>
-public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, List<UserResponse>>
+public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, IEnumerable<UserResponse>>
 {
     private readonly IUserIdentityProvider _identityProvider;
     private readonly IQueryableSets _queryableSets;
@@ -48,7 +46,7 @@ public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, List<UserRe
     }
 
     /// <inheritdoc />
-    public async Task<Result<List<UserResponse>>> Handle(GetMembersQuery query,
+    public async Task<Result<IEnumerable<UserResponse>>> Handle(GetMembersQuery query,
         CancellationToken cancellationToken)
     {
         var userId = _identityProvider.UserId;

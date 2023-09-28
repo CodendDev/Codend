@@ -6,12 +6,12 @@ namespace Codend.Application.Core.Abstractions.Services;
 /// <summary>
 /// Interface for user managment.
 /// </summary>
-public interface IUserService 
+public interface IUserService
 {
     /// <summary>
     /// Retrieves users info with given ids.
     /// </summary>
     /// <param name="usersIds">Ids of the users whose info will be retrieved.</param>
     /// <returns>List of users info.</returns>
-    public Task<List<UserResponse>> GetUsersByIds(IEnumerable<UserId> usersIds);
+    public Task<IEnumerable<UserResponse>> GetUsersByIds(IEnumerable<UserId> usersIds);
 }

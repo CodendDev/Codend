@@ -104,7 +104,7 @@ public sealed class FusionAuthService : IAuthService, IUserService
     }
 
     /// <inheritdoc />
-    public async Task<List<UserResponse>> GetUsersByIds(IEnumerable<UserId> usersIds)
+    public async Task<IEnumerable<UserResponse>> GetUsersByIds(IEnumerable<UserId> usersIds)
     {
         var response = await _fusionAuthClient
             .SearchUsersByIdsAsync(usersIds.Select(x => x.Value.ToString()).ToList());
@@ -116,7 +116,7 @@ public sealed class FusionAuthService : IAuthService, IUserService
 
         var usersResponse = response.successResponse.users
             .Select(user => new UserResponse(user.firstName, user.lastName, user.email, user.imageUrl))
-            .ToList();
+            .AsEnumerable();
 
         return usersResponse;
     }
