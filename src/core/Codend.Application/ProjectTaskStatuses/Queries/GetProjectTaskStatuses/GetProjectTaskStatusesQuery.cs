@@ -21,8 +21,8 @@ public sealed record GetProjectTaskStatusesQuery(ProjectId ProjectId) : IQuery<L
 /// <summary>
 /// <see cref="GetProjectTaskStatusesQueryHandler"/> handler.
 /// </summary>
-public class
-    GetProjectTaskStatusesQueryHandler : IQueryHandler<GetProjectTaskStatusesQuery, List<ProjectTaskStatusResponse>>
+public class GetProjectTaskStatusesQueryHandler
+    : IQueryHandler<GetProjectTaskStatusesQuery, List<ProjectTaskStatusResponse>>
 {
     private readonly IQueryableSets _context;
     private readonly IUserIdentityProvider _identityProvider;
@@ -31,7 +31,9 @@ public class
     /// <summary>
     /// Initializes a new instance of the <see cref="GetProjectTaskStatusesQueryHandler"/> class.
     /// </summary>
-    public GetProjectTaskStatusesQueryHandler(IQueryableSets context, IUserIdentityProvider identityProvider,
+    public GetProjectTaskStatusesQueryHandler(
+        IQueryableSets context, 
+        IUserIdentityProvider identityProvider,
         IMapper mapper)
     {
         _context = context;
