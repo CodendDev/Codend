@@ -67,5 +67,12 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasForeignKey(projectMember => projectMember.ProjectId)
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
+        
+        builder
+            .HasOne<ProjectTaskStatus>()
+            .WithMany()
+            .HasForeignKey(project => project.DefaultStatusId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
