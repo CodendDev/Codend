@@ -1,6 +1,7 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -14,11 +15,13 @@ namespace Codend.Application.Epics.Commands.UpdateEpic;
 /// <param name="EpicId">Id of epic which will be updated.</param>
 /// <param name="Name">New name of the epic.</param>
 /// <param name="Description">New description of the epic.</param>
+/// <param name="StatusId">Id of the new epic status.</param>
 public sealed record UpdateEpicCommand
 (
     Guid EpicId,
     string? Name,
-    string? Description
+    string? Description,
+    Guid? StatusId
 ) : ICommand;
 
 /// <summary>
@@ -44,6 +47,7 @@ public class UpdateEpicCommandHandler : ICommandHandler<UpdateEpicCommand>
     public async Task<Result> Handle(UpdateEpicCommand request, CancellationToken cancellationToken)
     {
         var epic = await _epicRepository.GetByIdAsync(new EpicId(request.EpicId));
+        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
 
         if (epic is null)
         {
@@ -53,7 +57,8 @@ public class UpdateEpicCommandHandler : ICommandHandler<UpdateEpicCommand>
         var result = Result.Merge
         (
             request.Name.GetResultFromDelegate(epic.EditName, Result.Ok),
-            request.Description.GetResultFromDelegate(epic.EditDescription, Result.Ok)
+            request.Description.GetResultFromDelegate(epic.EditDescription, Result.Ok),
+            statusId.GetResultFromDelegate(epic.EditStatus, Result.Ok)
         );
 
         if (result.IsFailed)

@@ -1,5 +1,6 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -45,13 +46,14 @@ public class CreateEpicCommandHandler : ICommandHandler<CreateEpicCommand, Guid>
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateEpicCommand request, CancellationToken cancellationToken)
     {
-        var projectId = new ProjectId(request.ProjectId);
-        if (!await _projectRepository.Exists(projectId))
+        var projectId = request.ProjectId.GuidConversion<ProjectId>();
+        var project = await _projectRepository.GetByIdAsync(projectId);
+        if (project is null)
         {
             return DomainNotFound.Fail<Project>();
         }
 
-        var epicResult = Epic.Create(request.Name, request.Description, projectId);
+        var epicResult = Epic.Create(request.Name, request.Description, projectId, project.DefaultStatusId);
         if (epicResult.IsFailed)
         {
             return epicResult.ToResult();

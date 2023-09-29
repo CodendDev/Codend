@@ -114,7 +114,7 @@ public class EpicController : ApiController
         [FromRoute] Guid epicId,
         [FromBody] UpdateEpicRequest request)
     {
-        var command = new UpdateEpicCommand(epicId, request.Name, request.Description);
+        var command = new UpdateEpicCommand(epicId, request.Name, request.Description, request.StatusId);
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
