@@ -1,5 +1,4 @@
-﻿using Codend.Application.Core;
-using Codend.Application.Core.Abstractions.Data;
+﻿using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Stories.Commands.UpdateStory;
 using Codend.Contracts.Requests;
 using Codend.Domain.Entities;
@@ -27,7 +26,7 @@ public class UpdateStoryCommandHandlerTests
         var storyId = new StoryId(Guid.NewGuid());
         _storyRepository.Setup(r => r.GetByIdAsync(storyId)).Returns(Task.Run(() => story.Object)!);
 
-        var request = new UpdateStoryCommand(storyId.Value, "", "", new ShouldUpdateBinder<EpicId?>(false, null));
+        var request = new UpdateStoryCommand(storyId.Value, "", "", new ShouldUpdateBinder<EpicId?>(false, null), null);
         var handler =
             new UpdateStoryCommandHandler(_storyRepository.Object, _unitOfWork.Object, _projectRepository.Object);
 
