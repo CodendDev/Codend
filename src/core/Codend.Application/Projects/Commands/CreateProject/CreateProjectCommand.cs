@@ -2,6 +2,7 @@ using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Core.Enums;
+using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -66,6 +67,16 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
         {
             return result.ToResult();
         }
+
+        // Set To-Do as first project default status.
+        var defaultStatus = resultStatuses.FirstOrDefault(status => 
+            status.Value.Name.Value == nameof(DefaultTaskStatus.ToDo))?.Value;
+        if (defaultStatus is null)
+        {
+            throw new ApplicationException("Couldn't find default status for new Project.");
+        }
+
+        project.EditDefaultStatus(defaultStatus.Id);
 
         var resultProjectMember = ProjectMember.Create(project.Id, userId);
         if (resultProjectMember.IsFailed)

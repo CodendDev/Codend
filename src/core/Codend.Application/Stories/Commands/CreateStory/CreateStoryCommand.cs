@@ -56,12 +56,13 @@ public class CreateStoryCommandHandler : ICommandHandler<CreateStoryCommand, Gui
             return Result.Fail(new InvalidEpicId());
         }
 
-        if (!await _projectRepository.Exists(projectId))
+        var project = await _projectRepository.GetByIdAsync(projectId);
+        if (project is null)
         {
             return DomainNotFound.Fail<Project>();
         }
 
-        var storyResult = Story.Create(request.Name, request.Description, projectId, epicId);
+        var storyResult = Story.Create(request.Name, request.Description, projectId, epicId, project.DefaultStatusId);
         if (storyResult.IsFailed)
         {
             return storyResult.ToResult();

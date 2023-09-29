@@ -125,7 +125,8 @@ public class StoryController : ApiController
             storyId,
             request.Name,
             request.Description,
-            request.EpicId.HandleNull().Convert(EntityIdExtensions.GuidConversion<EpicId>)
+            request.EpicId.HandleNull().Convert(EntityIdExtensions.GuidConversion<EpicId>),
+            request.StatusId
         );
 
         var response = await Mediator.Send(command);

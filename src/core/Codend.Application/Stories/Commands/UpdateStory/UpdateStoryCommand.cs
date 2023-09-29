@@ -3,6 +3,7 @@ using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Contracts.Requests;
 using Codend.Domain.Core.Extensions;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -23,7 +24,8 @@ public sealed record UpdateStoryCommand
     Guid StoryId,
     string? Name,
     string? Description,
-    ShouldUpdateBinder<EpicId?> EpicId
+    ShouldUpdateBinder<EpicId?> EpicId,
+    Guid? StatusId
 ) : ICommand;
 
 /// <summary>
@@ -57,6 +59,7 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
     public async Task<Result> Handle(UpdateStoryCommand request, CancellationToken cancellationToken)
     {
         var story = await _storyRepository.GetByIdAsync(new StoryId(request.StoryId));
+        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
 
         if (story is null)
         {
@@ -72,7 +75,8 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
         var result = Result.Merge(
             request.Name.GetResultFromDelegate(story.EditName, Result.Ok),
             request.Description.GetResultFromDelegate(story.EditDescription, Result.Ok),
-            request.EpicId.HandleUpdate(story.EditEpicId)
+            request.EpicId.HandleUpdate(story.EditEpicId),
+            statusId.GetResultFromDelegate(story.EditStatus, Result.Ok)
         );
 
         if (result.IsFailed)
