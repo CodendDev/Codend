@@ -111,7 +111,12 @@ public class ProjectController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] UpdateProjectRequest request)
     {
-        var command = new UpdateProjectCommand(projectId, request.Name, request.Description);
+        var command = new UpdateProjectCommand(
+            projectId,
+            request.Name,
+            request.Description,
+            request.DefaultStatusId);
+        
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
