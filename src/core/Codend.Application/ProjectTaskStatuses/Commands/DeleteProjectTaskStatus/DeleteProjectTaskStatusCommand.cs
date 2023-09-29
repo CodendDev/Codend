@@ -22,6 +22,8 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
 {
     private readonly IProjectTaskStatusRepository _statusRepository;
     private readonly IProjectTaskRepository _taskRepository;
+    private readonly IStoryRepository _storyRepository;
+    private readonly IEpicRepository _epicRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     /// <summary>
@@ -30,11 +32,15 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
     public DeleteProjectTaskStatusCommandHandler(
         IProjectTaskStatusRepository statusRepository,
         IProjectTaskRepository taskRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IStoryRepository storyRepository,
+        IEpicRepository epicRepository)
     {
         _statusRepository = statusRepository;
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
+        _storyRepository = storyRepository;
+        _epicRepository = epicRepository;
     }
 
     /// <inheritdoc />
@@ -52,16 +58,15 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
             return Result.Fail(new ProjectHasToHaveProjectTaskStatus());
         }
 
-        var defaultStatus = await _statusRepository.GetDefaultStatusInProjectAsync(status.ProjectId, cancellationToken);
-        var statusTasks = _taskRepository.GetTasksByTaskStatusId(statusId).ToList();
-        foreach (var task in statusTasks)
-        {
-            var result = task.EditStatus(defaultStatus.Id);
-            if (result.IsFailed)
-            {
-                return result.ToResult();
-            }
-        }
+        var defaultStatusId = await _statusRepository.GetProjectDefaultStatusIdAsync(status.ProjectId, cancellationToken);
+
+        var statusTasks = await _taskRepository.GetTasksWithStatusId(statusId);
+        var statusStories = await _storyRepository.GetStoriesWithStatusId(statusId);
+        var statusEpics = await _epicRepository.GetEpicsWithStatusId(statusId);
+
+        foreach (var task in statusTasks) task.EditStatus(defaultStatusId);
+        foreach (var story in statusStories) story.EditStatus(defaultStatusId);
+        foreach (var epic in statusEpics) epic.EditStatus(defaultStatusId);
 
         _taskRepository.UpdateRange(statusTasks);
         _statusRepository.Remove(status);
@@ -69,4 +74,5 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
 
         return Result.Ok();
     }
+    
 }

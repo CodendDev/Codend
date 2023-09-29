@@ -50,7 +50,7 @@ public class DeleteEpicCommandHandler : ICommandHandler<DeleteEpicCommand>
             return Result.Fail(new DomainNotFound(nameof(Epic)));
         }
 
-        var epicStories = _storyRepository.GetByEpicId(epic.Id).ToList();
+        var epicStories = await _storyRepository.GetStoriesWithEpicId(epic.Id);
         foreach (var story in epicStories)
         {
             story.EditEpicId(null);
