@@ -35,11 +35,18 @@ public interface IStoryRepository
     /// <summary>
     /// Returns collection of stories which belongs to the given epic.
     /// </summary>
-    IEnumerable<Story> GetByEpicId(EpicId epicId);
+    Task<List<Story>> GetStoriesWithEpicId(EpicId epicId);
 
     /// <summary>
     /// Updates range.
     /// </summary>
     /// <param name="stories">Stories to update.</param>
     void UpdateRange(IEnumerable<Story> stories);
+
+    /// <summary>
+    /// Collects stories with given status.
+    /// </summary>
+    /// <param name="statusId">StatusId.</param>
+    /// <returns>List of stories which has given status.</returns>
+    Task<List<Story>> GetStoriesWithStatusId(ProjectTaskStatusId statusId);
 }
