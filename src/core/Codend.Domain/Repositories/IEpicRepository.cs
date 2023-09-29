@@ -8,4 +8,5 @@ public interface IEpicRepository
     Task<Epic?> GetByIdAsync(EpicId epicId);
     void Update(Epic epic);
     void Remove(Epic epic);
+    Task<List<Epic>> GetEpicsWithStatusId(ProjectTaskStatusId statusId);
 }
