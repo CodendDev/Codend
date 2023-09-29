@@ -68,11 +68,13 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
         
+        // Without required property because of circular dependency on project create.
+        // Enforced to exist in domain and validators.
         builder
             .HasOne<ProjectTaskStatus>()
             .WithMany()
             .HasForeignKey(project => project.DefaultStatusId)
-            .IsRequired()
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.NoAction);
     }
 }
