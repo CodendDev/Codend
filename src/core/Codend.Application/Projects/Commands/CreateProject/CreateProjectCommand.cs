@@ -76,19 +76,20 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
             throw new ApplicationException("Couldn't find default status for new Project.");
         }
 
-        project.EditDefaultStatus(defaultStatus.Id);
-
         var resultProjectMember = ProjectMember.Create(project.Id, userId);
         if (resultProjectMember.IsFailed)
         {
             return resultProjectMember.ToResult();
         }
-
-        var statuses = resultStatuses.Select(r => r.Value);
-
-        await _statusRepository.AddRangeAsync(statuses);
+        
         _projectRepository.Add(project);
         _projectMemberRepository.Add(resultProjectMember.Value);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        // Save statuses after project to avoid ciruclar reference in database.
+        project.EditDefaultStatus(defaultStatus.Id);
+        var statuses = resultStatuses.Select(r => r.Value);
+        await _statusRepository.AddRangeAsync(statuses);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return project.Id.Value;
