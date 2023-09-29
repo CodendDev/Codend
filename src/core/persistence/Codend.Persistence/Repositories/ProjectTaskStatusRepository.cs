@@ -27,14 +27,14 @@ public class ProjectTaskStatusRepository
         return count;
     }
 
-    public Task<ProjectTaskStatus> GetDefaultStatusInProjectAsync(ProjectId projectId,
-        CancellationToken cancellationToken)
+    public Task<ProjectTaskStatusId> GetProjectDefaultStatusIdAsync(ProjectId projectId, CancellationToken cancellationToken)
     {
-        var defaultStatus =
-            Context.Set<ProjectTaskStatus>()
-                .FirstAsync(status => status.ProjectId == projectId, cancellationToken);
+        var defaultStatusId = Context.Set<Project>()
+            .Where(project => project.Id == projectId)
+            .Select(project => project.DefaultStatusId)
+            .FirstAsync(cancellationToken);
 
-        return defaultStatus;
+        return defaultStatusId;
     }
 
     public Task<bool> ExistsWithNameAsync(string name, ProjectId projectId, CancellationToken cancellationToken)
