@@ -29,7 +29,12 @@ public interface IProjectTaskRepository
     /// </summary>
     /// <param name="storyId">StoryId.</param>
     /// <returns>List of tasks which belongs to the <see cref="Story"/>.</returns>
-    IEnumerable<BaseProjectTask> GetStoryTasks(StoryId storyId);
+    Task<List<BaseProjectTask>> GetStoryTasks(StoryId storyId);
 
-    IEnumerable<BaseProjectTask> GetTasksByTaskStatusId(ProjectTaskStatusId statusId);
+    /// <summary>
+    /// Collects tasks which has given status.
+    /// </summary>
+    /// <param name="statusId">StatusId.</param>
+    /// <returns>List of tasks which has given status.</returns>
+    Task<List<BaseProjectTask>> GetTasksWithStatusId(ProjectTaskStatusId statusId);
 }

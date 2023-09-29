@@ -1,5 +1,6 @@
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
 
@@ -20,20 +21,23 @@ public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, Base
     }
 
     /// <inheritdoc/>
-    public IEnumerable<BaseProjectTask> GetStoryTasks(StoryId storyId)
+    public Task<List<BaseProjectTask>> GetStoryTasks(StoryId storyId)
     {
         var tasks =
             Context.Set<BaseProjectTask>()
-                .Where(task => task.StoryId == storyId);
+                .Where(task => task.StoryId == storyId)
+                .ToListAsync();
 
         return tasks;
     }
 
-    public IEnumerable<BaseProjectTask> GetTasksByTaskStatusId(ProjectTaskStatusId statusId)
+    /// <inheritdoc/>
+    public Task<List<BaseProjectTask>> GetTasksWithStatusId(ProjectTaskStatusId statusId)
     {
         var tasks =
             Context.Set<BaseProjectTask>()
-                .Where(task => task.StatusId == statusId);
+                .Where(task => task.StatusId == statusId)
+                .ToListAsync();
 
         return tasks;
     }
