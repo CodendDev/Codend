@@ -7,6 +7,7 @@ using Codend.Domain.Repositories;
 using FluentResults;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 

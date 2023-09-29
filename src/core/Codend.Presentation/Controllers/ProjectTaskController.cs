@@ -175,7 +175,7 @@ public class ProjectTaskController : ApiController
     ///             "minutes": 45,
     ///             "hours": 3,
     ///             "days": 1,
-    ///         }
+    ///         },
     ///         "dueDate": "2023-12-30T15:30:56.123Z",
     ///         "storyPoints": 35,
     ///         "assigneeId": "e405f337-4da0-4cce-818b-9231642c93fe",
@@ -332,7 +332,7 @@ public class ProjectTaskController : ApiController
     ///             "minutes": 45,
     ///             "hours": 3,
     ///             "days": 1,
-    ///         }
+    ///         },
     ///         "dueDate": "2023-12-30T15:30:56.123Z",
     ///         "storyPoints": 35,
     ///         "assigneeId": "e405f337-4da0-4cce-818b-9231642c93fe",
