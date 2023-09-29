@@ -5,6 +5,7 @@ using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 
 namespace Codend.Application.Epics.Commands.CreateEpic;
 
@@ -14,11 +15,13 @@ namespace Codend.Application.Epics.Commands.CreateEpic;
 /// <param name="Name">Epic name.</param>
 /// <param name="Description">Epic description.</param>
 /// <param name="ProjectId">Epic projectId.</param>
+/// <param name="StatusId">Epic statusId.</param>
 public sealed record CreateEpicCommand
 (
     string Name,
     string Description,
-    Guid ProjectId
+    Guid ProjectId,
+    Guid? StatusId
 ) : ICommand<Guid>;
 
 /// <summary>
@@ -29,6 +32,7 @@ public class CreateEpicCommandHandler : ICommandHandler<CreateEpicCommand, Guid>
     private readonly IEpicRepository _epicRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectRepository _projectRepository;
+    private readonly IProjectTaskStatusRepository _statusRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateEpicCommandHandler"/> class.
@@ -36,24 +40,37 @@ public class CreateEpicCommandHandler : ICommandHandler<CreateEpicCommand, Guid>
     public CreateEpicCommandHandler(
         IEpicRepository epicRepository,
         IUnitOfWork unitOfWork,
-        IProjectRepository projectRepository)
+        IProjectRepository projectRepository,
+        IProjectTaskStatusRepository statusRepository)
     {
         _epicRepository = epicRepository;
         _unitOfWork = unitOfWork;
         _projectRepository = projectRepository;
+        _statusRepository = statusRepository;
     }
 
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateEpicCommand request, CancellationToken cancellationToken)
     {
         var projectId = request.ProjectId.GuidConversion<ProjectId>();
+        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
         var project = await _projectRepository.GetByIdAsync(projectId);
         if (project is null)
         {
             return DomainNotFound.Fail<Project>();
         }
 
-        var epicResult = Epic.Create(request.Name, request.Description, projectId, project.DefaultStatusId);
+        if (statusId is not null &&
+            await _statusRepository.ExistsWithIdAsync(statusId, projectId, cancellationToken) is false)
+        {
+            return Result.Fail(new InvalidStatusId());
+        }
+        
+        var epicResult = Epic.Create(
+            request.Name,
+            request.Description,
+            projectId,
+            statusId ?? project.DefaultStatusId);
         if (epicResult.IsFailed)
         {
             return epicResult.ToResult();

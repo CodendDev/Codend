@@ -1,11 +1,13 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 
 namespace Codend.Application.Epics.Commands.UpdateEpic;
 
@@ -31,16 +33,19 @@ public class UpdateEpicCommandHandler : ICommandHandler<UpdateEpicCommand>
 {
     private readonly IEpicRepository _epicRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IProjectTaskStatusRepository _statusRepository;
 
     /// <summary>
     /// Constructs <see cref="UpdateEpicCommandHandler"/>.
     /// </summary>
     public UpdateEpicCommandHandler(
         IEpicRepository epicRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IProjectTaskStatusRepository statusRepository)
     {
         _epicRepository = epicRepository;
         _unitOfWork = unitOfWork;
+        _statusRepository = statusRepository;
     }
 
     /// <inheritdoc />
@@ -54,6 +59,12 @@ public class UpdateEpicCommandHandler : ICommandHandler<UpdateEpicCommand>
             return Result.Fail(new DomainNotFound(nameof(Epic)));
         }
 
+        if (statusId is not null &&
+            await _statusRepository.ExistsWithIdAsync(statusId, epic.ProjectId, cancellationToken) is false)
+        {
+            return Result.Fail(new InvalidStatusId());
+        }
+        
         var result = Result.Merge
         (
             request.Name.GetResultFromDelegate(epic.EditName, Result.Ok),
