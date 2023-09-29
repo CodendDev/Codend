@@ -16,15 +16,6 @@ public static partial class DomainErrors
 
     public static class ProjectTaskErrors
     {
-        public class InvalidStatusId : DomainError
-        {
-            public InvalidStatusId()
-                : base("ProjectTaskErrors.InvalidStatusId",
-                    "ProjectTaskStatus is invalid for this project or project doesn't exist.")
-            {
-            }
-        }
-
         public class InvalidAssigneeId : DomainError
         {
             public InvalidAssigneeId()
