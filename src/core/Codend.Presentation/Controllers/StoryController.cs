@@ -29,14 +29,15 @@ public class StoryController : ApiController
     /// Creates story with given properties.
     /// </summary>
     /// <param name="projectId">Id of the project where the story will be created.</param>
-    /// <param name="request">Request with name, description and project Id.</param>
+    /// <param name="request">Request with name, description, epicId and statusId.</param>
     /// <remarks>
     /// Sample request:
     /// 
     ///     {
     ///         "name": "Story name",
-    ///         "description: "Story description"
-    ///         "epicId: "bda4a1f5-e135-493c-852c-826e6f9fbcb0"
+    ///         "description": "Story description",
+    ///         "epicId": "bda4a1f5-e135-493c-852c-826e6f9fbcb0",
+    ///         "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     /// <returns>
@@ -51,7 +52,13 @@ public class StoryController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] CreateStoryRequest request)
     {
-        var command = new CreateStoryCommand(request.Name, request.Description, projectId, request.EpicId);
+        var command = new CreateStoryCommand(
+            request.Name,
+            request.Description,
+            projectId,
+            request.EpicId,
+            request.StatusId);
+        
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -93,17 +100,18 @@ public class StoryController : ApiController
     /// </summary>
     /// <param name="projectId">Id of the project to which the story belongs.</param>
     /// <param name="storyId">Id of the story that will be updated.</param>
-    /// <param name="request">Request with id, name and description.</param>
+    /// <param name="request">Request with id, name, description and statusId.</param>
     /// <remarks>
     /// Sample request:
     /// 
     ///     {
     ///         "name": "New story name",
-    ///         "description: "New story description"
+    ///         "description": "New story description",
     ///         "epicId": {
     ///             "shouldUpdate": true,
     ///             "EpicId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    ///         }
+    ///         },
+    ///         "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     /// <returns>

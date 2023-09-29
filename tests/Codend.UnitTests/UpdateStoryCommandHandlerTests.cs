@@ -13,6 +13,7 @@ public class UpdateStoryCommandHandlerTests
 {
     private readonly Mock<IStoryRepository> _storyRepository = new();
     private readonly Mock<IProjectRepository> _projectRepository = new();
+    private readonly Mock<IProjectTaskStatusRepository> _statusRepository = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
 
     [Fact]
@@ -28,7 +29,11 @@ public class UpdateStoryCommandHandlerTests
 
         var request = new UpdateStoryCommand(storyId.Value, "", "", new ShouldUpdateBinder<EpicId?>(false, null), null);
         var handler =
-            new UpdateStoryCommandHandler(_storyRepository.Object, _unitOfWork.Object, _projectRepository.Object);
+            new UpdateStoryCommandHandler(
+                _storyRepository.Object,
+                _unitOfWork.Object,
+                _projectRepository.Object,
+                _statusRepository.Object);
 
         // act
         var result = await handler.Handle(request, default);

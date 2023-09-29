@@ -2,12 +2,14 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Contracts.Requests;
+using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 using static Codend.Domain.Core.Errors.DomainErrors.StoryErrors;
 
 namespace Codend.Application.Stories.Commands.UpdateStory;
@@ -36,6 +38,7 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
     private readonly IStoryRepository _storyRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectRepository _projectRepository;
+    private readonly IProjectTaskStatusRepository _statusRepository;
 
     /// <summary>
     /// Constructs <see cref="UpdateStoryCommandHandler"/>.
@@ -43,11 +46,13 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
     public UpdateStoryCommandHandler(
         IStoryRepository storyRepository,
         IUnitOfWork unitOfWork,
-        IProjectRepository projectRepository)
+        IProjectRepository projectRepository,
+        IProjectTaskStatusRepository statusRepository)
     {
         _storyRepository = storyRepository;
         _unitOfWork = unitOfWork;
         _projectRepository = projectRepository;
+        _statusRepository = statusRepository;
     }
 
     /// <summary>
@@ -70,6 +75,12 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
             await _projectRepository.ProjectContainsEpic(story.ProjectId, request.EpicId.Value!) is false)
         {
             return Result.Fail(new InvalidEpicId());
+        }
+
+        if (statusId is not null &&
+            await _statusRepository.ExistsWithIdAsync(statusId, story.ProjectId, cancellationToken) is false)
+        {
+            return Result.Fail(new InvalidStatusId());
         }
 
         var result = Result.Merge(
