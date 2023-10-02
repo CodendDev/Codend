@@ -85,7 +85,7 @@ public class StoryController : ApiController
         [FromRoute] Guid projectId,
         [FromRoute] Guid storyId)
     {
-        var command = new DeleteStoryCommand(storyId);
+        var command = new DeleteStoryCommand(storyId.GuidConversion<StoryId>());
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
