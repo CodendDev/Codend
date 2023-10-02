@@ -12,7 +12,7 @@ namespace Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 /// Command to delete project task with given id.
 /// </summary>
 /// <param name="ProjectTaskId">Id of the task that will be deleted.</param>
-public sealed record DeleteProjectTaskCommand(Guid ProjectTaskId) : ICommand;
+public sealed record DeleteProjectTaskCommand(ProjectTaskId ProjectTaskId) : ICommand;
 
 /// <summary>
 /// <see cref="DeleteProjectTaskCommand"/> handler.
@@ -42,7 +42,7 @@ public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTask
     /// <inheritdoc />
     public async Task<Result> Handle(DeleteProjectTaskCommand request, CancellationToken cancellationToken)
     {
-        var projectTask = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId), cancellationToken);
+        var projectTask = await _taskRepository.GetByIdAsync(request.ProjectTaskId, cancellationToken);
         if (projectTask is null)
         {
             return DomainNotFound.Fail<BaseProjectTask>();
