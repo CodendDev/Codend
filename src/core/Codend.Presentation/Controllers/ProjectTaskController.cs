@@ -107,7 +107,9 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectTaskId,
         [FromRoute] Guid userId)
     {
-        var command = new AssignUserCommand(projectTaskId, userId);
+        var command = new AssignUserCommand(
+            projectTaskId.GuidConversion<ProjectTaskId>(),
+            userId.GuidConversion<UserId>());
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
