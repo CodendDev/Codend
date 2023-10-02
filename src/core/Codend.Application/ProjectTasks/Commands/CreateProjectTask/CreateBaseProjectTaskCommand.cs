@@ -33,12 +33,14 @@ public class CreateBaseProjectTaskCommandHandler :
         IUnitOfWork unitOfWork,
         IUserIdentityProvider identityProvider,
         IProjectMemberRepository projectMemberRepository,
-        IStoryRepository storyRepository)
+        IStoryRepository storyRepository,
+        IProjectTaskStatusRepository statusRepository)
         : base(projectTaskRepository,
             unitOfWork,
             identityProvider,
             projectMemberRepository,
-            storyRepository)
+            storyRepository,
+            statusRepository)
     {
     }
 }

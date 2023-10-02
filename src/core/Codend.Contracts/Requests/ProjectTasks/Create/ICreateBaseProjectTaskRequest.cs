@@ -18,7 +18,7 @@ public interface ICreateBaseProjectTaskRequest
     /// <summary>
     /// StatusId of the task. Status and task must belong to the same project.
     /// </summary>
-    Guid StatusId { get; }
+    Guid? StatusId { get; }
 
     /// <summary>
     /// Description of the task.
