@@ -148,7 +148,7 @@ public class ProjectController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromRoute] Guid projectId)
     {
-        var query = new GetProjectByIdQuery(projectId);
+        var query = new GetProjectByIdQuery(projectId.GuidConversion<ProjectId>());
         var response = await Mediator.Send(query);
         if (response.IsFailed)
         {
