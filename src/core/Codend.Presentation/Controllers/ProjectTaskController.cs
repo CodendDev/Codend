@@ -141,7 +141,7 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectId,
         [FromRoute] Guid projectTaskId)
     {
-        var query = new GetProjectTaskByIdQuery(projectTaskId);
+        var query = new GetProjectTaskByIdQuery(projectTaskId.GuidConversion<ProjectTaskId>());
         var response = await Mediator.Send(query);
         if (response.IsSuccess)
         {
