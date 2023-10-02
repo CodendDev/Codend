@@ -53,7 +53,7 @@ public class DeleteStoryCommandHandler : ICommandHandler<DeleteStoryCommand>
             return DomainNotFound.Fail<Story>();
         }
 
-        var storyTasks = await _taskRepository.GetStoryTasks(story.Id, cancellationToken);
+        var storyTasks = await _taskRepository.GetStoryTasksAsync(story.Id, cancellationToken);
         foreach (var task in storyTasks)
         {
             task.EditStory(null);

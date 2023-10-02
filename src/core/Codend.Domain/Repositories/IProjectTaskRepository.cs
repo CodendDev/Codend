@@ -48,7 +48,7 @@ public interface IProjectTaskRepository
     /// <param name="storyId">StoryId.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>List of tasks which belongs to the <see cref="Story"/>.</returns>
-    Task<List<BaseProjectTask>> GetStoryTasks(StoryId storyId, CancellationToken cancellationToken);
+    Task<List<BaseProjectTask>> GetStoryTasksAsync(StoryId storyId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Collects tasks which has given status.
@@ -56,5 +56,5 @@ public interface IProjectTaskRepository
     /// <param name="statusId">StatusId.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>List of tasks which has given status.</returns>
-    Task<List<BaseProjectTask>> GetTasksByStatusId(ProjectTaskStatusId statusId, CancellationToken cancellationToken);
+    Task<List<BaseProjectTask>> GetTasksByStatusIdAsync(ProjectTaskStatusId statusId, CancellationToken cancellationToken);
 }

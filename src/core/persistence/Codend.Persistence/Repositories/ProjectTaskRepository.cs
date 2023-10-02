@@ -21,7 +21,7 @@ public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, Base
     }
 
     /// <inheritdoc/>
-    public Task<List<BaseProjectTask>> GetStoryTasks(StoryId storyId, CancellationToken cancellationToken)
+    public Task<List<BaseProjectTask>> GetStoryTasksAsync(StoryId storyId, CancellationToken cancellationToken)
     {
         var tasks =
             Context.Set<BaseProjectTask>()
@@ -32,7 +32,7 @@ public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, Base
     }
 
     /// <inheritdoc/>
-    public Task<List<BaseProjectTask>> GetTasksByStatusId(ProjectTaskStatusId statusId, CancellationToken cancellationToken)
+    public Task<List<BaseProjectTask>> GetTasksByStatusIdAsync(ProjectTaskStatusId statusId, CancellationToken cancellationToken)
     {
         var tasks =
             Context.Set<BaseProjectTask>()
