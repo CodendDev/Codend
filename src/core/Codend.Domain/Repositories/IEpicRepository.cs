@@ -34,5 +34,5 @@ public interface IEpicRepository
     /// Collects epics with given statusId.
     /// </summary>
     /// <returns>Collection of epics with given statusId.</returns>
-    Task<List<Epic>> GetEpicsByStatusId(ProjectTaskStatusId statusId, CancellationToken cancellationToken);
+    Task<List<Epic>> GetEpicsByStatusIdAsync(ProjectTaskStatusId statusId, CancellationToken cancellationToken);
 }

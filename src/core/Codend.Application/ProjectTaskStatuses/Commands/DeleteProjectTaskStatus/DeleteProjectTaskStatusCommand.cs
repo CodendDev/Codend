@@ -63,7 +63,7 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
 
         var statusTasks = await _taskRepository.GetTasksByStatusIdAsync(statusId, cancellationToken);
         var statusStories = await _storyRepository.GetStoriesByStatusIdAsync(statusId, cancellationToken);
-        var statusEpics = await _epicRepository.GetEpicsByStatusId(statusId, cancellationToken);
+        var statusEpics = await _epicRepository.GetEpicsByStatusIdAsync(statusId, cancellationToken);
 
         foreach (var task in statusTasks) task.EditStatus(defaultStatusId);
         foreach (var story in statusStories) story.EditStatus(defaultStatusId);
