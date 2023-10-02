@@ -79,7 +79,7 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
         }
 
         if (statusId is not null &&
-            await _statusRepository.StatusExistsWithIdAsync(statusId, story.ProjectId, cancellationToken) is false)
+            await _statusRepository.StatusExistsWithStatusIdAsync(statusId, story.ProjectId, cancellationToken) is false)
         {
             return Result.Fail(new InvalidStatusId());
         }

@@ -48,7 +48,7 @@ public class ProjectTaskStatusRepository
         return exists;
     }
 
-    public Task<bool> StatusExistsWithIdAsync(ProjectTaskStatusId statusId, ProjectId projectId, CancellationToken cancellationToken)
+    public Task<bool> StatusExistsWithStatusIdAsync(ProjectTaskStatusId statusId, ProjectId projectId, CancellationToken cancellationToken)
     {
         var exists =
             Context.Set<ProjectTaskStatus>()

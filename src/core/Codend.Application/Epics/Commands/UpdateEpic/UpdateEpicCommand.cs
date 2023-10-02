@@ -60,7 +60,7 @@ public class UpdateEpicCommandHandler : ICommandHandler<UpdateEpicCommand>
         }
 
         if (statusId is not null &&
-            await _statusRepository.StatusExistsWithIdAsync(statusId, epic.ProjectId, cancellationToken) is false)
+            await _statusRepository.StatusExistsWithStatusIdAsync(statusId, epic.ProjectId, cancellationToken) is false)
         {
             return Result.Fail(new InvalidStatusId());
         }
