@@ -115,7 +115,7 @@ public class ProjectTaskStatusController : ApiController
         [FromRoute] Guid statusId,
         [FromBody] UpdateProjectTaskStatusRequest request)
     {
-        var command = new UpdateProjectTaskStatusCommand(statusId, request.Name);
+        var command = new UpdateProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>(), request.Name);
 
         var response = await Mediator.Send(command);
         if (response.IsSuccess)

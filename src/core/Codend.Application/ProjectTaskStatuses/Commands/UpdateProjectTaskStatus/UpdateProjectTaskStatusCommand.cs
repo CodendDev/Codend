@@ -16,7 +16,7 @@ namespace Codend.Application.ProjectTaskStatuses.Commands.UpdateProjectTaskStatu
 /// <param name="Name">New name of task status.</param>
 public sealed record UpdateProjectTaskStatusCommand
 (
-    Guid StatusId,
+    ProjectTaskStatusId StatusId,
     string Name
 ) : ICommand;
 
@@ -40,8 +40,7 @@ public class UpdateProjectTaskStatusCommandHandler : ICommandHandler<UpdateProje
     /// <inheritdoc />
     public async Task<Result> Handle(UpdateProjectTaskStatusCommand request, CancellationToken cancellationToken)
     {
-        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
-        var status = await _statusRepository.GetByIdAsync(statusId, cancellationToken);
+        var status = await _statusRepository.GetByIdAsync(request.StatusId, cancellationToken);
         if (status is null)
         {
             return DomainNotFound.Fail<ProjectTaskStatus>();
