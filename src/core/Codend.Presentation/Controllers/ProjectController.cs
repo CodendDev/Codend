@@ -77,7 +77,7 @@ public class ProjectController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] Guid projectId)
     {
-        var command = new DeleteProjectCommand(projectId);
+        var command = new DeleteProjectCommand(projectId.GuidConversion<ProjectId>());
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {

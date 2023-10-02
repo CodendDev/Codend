@@ -2,7 +2,6 @@ using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Core.Enums;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -86,7 +85,7 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
         _projectMemberRepository.Add(resultProjectMember.Value);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         
-        // Save statuses after project to avoid ciruclar reference in database.
+        // Save statuses after project to avoid circular reference in database.
         project.EditDefaultStatus(defaultStatus.Id);
         var statuses = resultStatuses.Select(r => r.Value);
         await _statusRepository.AddRangeAsync(statuses);
