@@ -81,7 +81,7 @@ public class EpicController : ApiController
         [FromRoute] Guid projectId,
         [FromRoute] Guid epicId)
     {
-        var command = new DeleteEpicCommand(epicId);
+        var command = new DeleteEpicCommand(epicId.GuidConversion<EpicId>());
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
