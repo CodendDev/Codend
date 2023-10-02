@@ -21,10 +21,10 @@ namespace Codend.Application.Projects.Commands.UpdateProject;
 /// <param name="Description">New project description.</param>
 /// <param name="DefaultStatusId">New project default status.</param>
 public sealed record UpdateProjectCommand(
-        Guid ProjectId,
+        ProjectId ProjectId,
         string? Name,
         ShouldUpdateBinder<string?> Description,
-        Guid? DefaultStatusId)
+        ProjectTaskStatusId? DefaultStatusId)
     : ICommand;
 
 /// <summary>
@@ -55,23 +55,23 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
     public async Task<Result> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
         var userId = _identityProvider.UserId;
-        var projectId = request.ProjectId.GuidConversion<ProjectId>();
-        var defaultStatusId = request.DefaultStatusId.GuidConversion<ProjectTaskStatusId>();
         
-        var project = await _projectRepository.GetByIdAsync(projectId);
+        var project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project is null)
         {
             return DomainNotFound.Fail<Project>();
         }
 
-        if (!await _projectMemberRepository.IsProjectMember(userId, project.Id, cancellationToken))
+        if (!await _projectMemberRepository.IsProjectMember(userId, request.ProjectId, cancellationToken))
         {
             return DomainNotFound.Fail<Project>();
         }
 
-        if (defaultStatusId != null &&
-            !await _statusRepository
-                .StatusExistsWithStatusIdAsync(defaultStatusId, projectId, cancellationToken))
+        if (request.DefaultStatusId != null &&
+            await _statusRepository
+                .StatusExistsWithStatusIdAsync(request.DefaultStatusId,
+                    request.ProjectId,
+                    cancellationToken) is false)
         {
             return Result.Fail(new InvalidDefaultStatusId());
         }
@@ -79,7 +79,7 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
         var result = Result.Merge(
             request.Name.GetResultFromDelegate(project.EditName, Result.Ok),
             request.Description.HandleUpdateWithResult(project.EditDescription),
-            defaultStatusId.GetResultFromDelegate(project.EditDefaultStatus, Result.Ok));
+            request.DefaultStatusId.GetResultFromDelegate(project.EditDefaultStatus, Result.Ok));
         
         if (result.IsFailed)
         {

@@ -7,6 +7,6 @@
 /// <param name="Description">Project description.</param>
 /// <param name="DefaultStatusId">Default project status Id.</param>
 public sealed record UpdateProjectRequest(
-    string Name,
-    ShouldUpdateBinder<string?> Description,
-    Guid DefaultStatusId);
+    string? Name,
+    ShouldUpdateBinder<string?>? Description,
+    Guid? DefaultStatusId);
