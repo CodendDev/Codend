@@ -51,7 +51,7 @@ public class CreateProjectTaskStatusCommandHandler : ICommandHandler<CreateProje
             return DomainNotFound.Fail<Project>();
         }
 
-        if (await _statusRepository.ExistsAsync(request.Name, projectId, cancellationToken))
+        if (await _statusRepository.StatusExistsWithNameAsync(request.Name, projectId, cancellationToken))
         {
             return Result.Fail(new DomainErrors.ProjectTaskStatus.ProjectTaskStatusAlreadyExists());
         }

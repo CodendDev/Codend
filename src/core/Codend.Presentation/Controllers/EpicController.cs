@@ -27,13 +27,14 @@ public class EpicController : ApiController
     /// Creates epic with given properties.
     /// </summary>
     /// <param name="projectId">Id of the project where the epic will be created.</param>
-    /// <param name="request">Request with name, description and project Id.</param>
+    /// <param name="request">Request with name, description and statusId.</param>
     /// <remarks>
     /// Sample request:
     /// 
     ///     {
     ///         "name": "Epic name",
-    ///         "description: "Epic description"
+    ///         "description": "Epic description",
+    ///         "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     /// <returns>
@@ -48,7 +49,7 @@ public class EpicController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] CreateEpicRequest request)
     {
-        var command = new CreateEpicCommand(request.Name, request.Description, projectId);
+        var command = new CreateEpicCommand(request.Name, request.Description, projectId, request.StatusId);
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -90,13 +91,14 @@ public class EpicController : ApiController
     /// </summary>
     /// <param name="projectId">Id of the project to which the epic belongs.</param>
     /// <param name="epicId">Id of the epic that will be updated.</param>
-    /// <param name="request">Request name and description.</param>
+    /// <param name="request">Request name, description and statusID.</param>
     /// <remarks>
     /// Sample request:
     /// 
     ///     {
     ///         "name": "New epic name",
-    ///         "description: "New epic description"
+    ///         "description": "New epic description",
+    ///         "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     /// <returns>
@@ -114,7 +116,7 @@ public class EpicController : ApiController
         [FromRoute] Guid epicId,
         [FromBody] UpdateEpicRequest request)
     {
-        var command = new UpdateEpicCommand(epicId, request.Name, request.Description);
+        var command = new UpdateEpicCommand(epicId, request.Name, request.Description, request.StatusId);
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {

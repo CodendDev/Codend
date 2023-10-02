@@ -1,5 +1,4 @@
-﻿using Codend.Application.Core;
-using Codend.Application.Core.Abstractions.Data;
+﻿using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Stories.Commands.UpdateStory;
 using Codend.Contracts.Requests;
 using Codend.Domain.Entities;
@@ -14,6 +13,7 @@ public class UpdateStoryCommandHandlerTests
 {
     private readonly Mock<IStoryRepository> _storyRepository = new();
     private readonly Mock<IProjectRepository> _projectRepository = new();
+    private readonly Mock<IProjectTaskStatusRepository> _statusRepository = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
 
     [Fact]
@@ -25,11 +25,15 @@ public class UpdateStoryCommandHandlerTests
         story.Setup(s => s.EditDescription(It.IsAny<string>())).Returns(Result.Fail(error.Object));
 
         var storyId = new StoryId(Guid.NewGuid());
-        _storyRepository.Setup(r => r.GetByIdAsync(storyId)).Returns(Task.Run(() => story.Object)!);
+        _storyRepository.Setup(r => r.GetByIdAsync(storyId, CancellationToken.None)).Returns(Task.Run(() => story.Object)!);
 
-        var request = new UpdateStoryCommand(storyId.Value, "", "", new ShouldUpdateBinder<EpicId?>(false, null));
+        var request = new UpdateStoryCommand(storyId.Value, "", "", new ShouldUpdateBinder<EpicId?>(false, null), null);
         var handler =
-            new UpdateStoryCommandHandler(_storyRepository.Object, _unitOfWork.Object, _projectRepository.Object);
+            new UpdateStoryCommandHandler(
+                _storyRepository.Object,
+                _unitOfWork.Object,
+                _projectRepository.Object,
+                _statusRepository.Object);
 
         // act
         var result = await handler.Handle(request, default);

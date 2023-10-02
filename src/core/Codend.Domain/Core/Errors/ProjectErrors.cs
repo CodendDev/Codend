@@ -20,5 +20,14 @@ public static partial class DomainErrors
             {
             }
         }
+        
+        public class InvalidDefaultStatusId : DomainError
+        {
+            public InvalidDefaultStatusId()
+                : base("Project.InvalidDefaultStatusId",
+                    "Status id is invalid for this project or status does not exist.")
+            {
+            }
+        }
     }
 }

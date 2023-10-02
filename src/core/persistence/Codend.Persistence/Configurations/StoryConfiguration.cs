@@ -32,5 +32,12 @@ public class StoryConfiguration : IEntityTypeConfiguration<Story>
                 storyDescriptionBuilder.WithOwner();
                 storyDescriptionBuilder.ConfigureStringValueObject(nameof(Story.Description));
             });
+        
+        builder
+            .HasOne<ProjectTaskStatus>()
+            .WithMany()
+            .HasForeignKey(story => story.StatusId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

@@ -19,16 +19,22 @@ public class UpdateProjectCommandValidator : AbstractValidator<UpdateProjectComm
             .NotEmpty()
             .WithError(new PropertyNullOrEmpty(nameof(UpdateProjectCommand.ProjectId)));
 
-        RuleFor(x => x.Name)
-            .NotEmpty()
-            .WithError(new PropertyNullOrEmpty(nameof(UpdateProjectCommand.Name)))
-            .MaximumLength(ProjectName.MaxLength)
-            .WithError(new StringPropertyTooLong(nameof(UpdateProjectCommand.Name),
-                ProjectName.MaxLength));
+        When(x => x.Name is not null, () =>
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty()
+                .WithError(new PropertyNullOrEmpty(nameof(UpdateProjectCommand.Name)))
+                .MaximumLength(ProjectName.MaxLength)
+                .WithError(new StringPropertyTooLong(nameof(UpdateProjectCommand.Name),
+                    ProjectName.MaxLength));
+        });
 
-        RuleFor(x => x.Description)
-            .MaximumLength(ProjectDescription.MaxLength)
-            .WithError(new StringPropertyTooLong(nameof(UpdateProjectCommand.Description),
-                ProjectDescription.MaxLength));
+        When(x => x.Description.ShouldUpdate, () =>
+        {
+            RuleFor(x => x.Description.Value)
+                .MaximumLength(ProjectDescription.MaxLength)
+                .WithError(new StringPropertyTooLong(nameof(UpdateProjectCommand.Description),
+                    ProjectDescription.MaxLength));
+        });
     }
 }

@@ -97,7 +97,7 @@ public class ProjectTaskStatusController : ApiController
     /// Sample request:
     /// 
     ///     {
-    ///         "name": "New story name"
+    ///         "name": "New status name"
     ///     }
     /// </remarks>
     /// <returns>

@@ -1,9 +1,11 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 using static Codend.Domain.Core.Errors.DomainErrors.StoryErrors;
 
 namespace Codend.Application.Stories.Commands.CreateStory;
@@ -15,12 +17,14 @@ namespace Codend.Application.Stories.Commands.CreateStory;
 /// <param name="Description">Story description.</param>
 /// <param name="ProjectId">Story projectId.</param>
 /// <param name="EpicId">Story epicId.</param>
+/// <param name="StatusId">Story statusId.</param>
 public sealed record CreateStoryCommand
 (
     string Name,
     string Description,
     Guid ProjectId,
-    Guid? EpicId
+    Guid? EpicId,
+    Guid? StatusId
 ) : ICommand<Guid>;
 
 /// <summary>
@@ -31,6 +35,7 @@ public class CreateStoryCommandHandler : ICommandHandler<CreateStoryCommand, Gui
     private readonly IUnitOfWork _unitOfWork;
     private readonly IStoryRepository _storyRepository;
     private readonly IProjectRepository _projectRepository;
+    private readonly IProjectTaskStatusRepository _statusRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateStoryCommandHandler"/> class.
@@ -38,35 +43,50 @@ public class CreateStoryCommandHandler : ICommandHandler<CreateStoryCommand, Gui
     public CreateStoryCommandHandler(
         IUnitOfWork unitOfWork,
         IStoryRepository storyRepository,
-        IProjectRepository projectRepository)
+        IProjectRepository projectRepository,
+        IProjectTaskStatusRepository statusRepository)
     {
         _unitOfWork = unitOfWork;
         _storyRepository = storyRepository;
         _projectRepository = projectRepository;
+        _statusRepository = statusRepository;
     }
 
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateStoryCommand request, CancellationToken cancellationToken)
     {
-        var epicId = request.EpicId is not null ? new EpicId(request.EpicId.Value) : null;
-        var projectId = new ProjectId(request.ProjectId);
+        var epicId = request.EpicId.GuidConversion<EpicId>();
+        var projectId = request.ProjectId.GuidConversion<ProjectId>();
+        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
 
         if (epicId is not null && await _projectRepository.ProjectContainsEpic(projectId, epicId) is false)
         {
             return Result.Fail(new InvalidEpicId());
         }
 
-        if (!await _projectRepository.Exists(projectId))
+        var project = await _projectRepository.GetByIdAsync(projectId);
+        if (project is null)
         {
             return DomainNotFound.Fail<Project>();
         }
 
-        var storyResult = Story.Create(request.Name, request.Description, projectId, epicId);
+        if (statusId is not null && 
+            await _statusRepository.StatusExistsWithStatusIdAsync(statusId, projectId, cancellationToken) is false)
+        {
+            return Result.Fail(new InvalidStatusId());
+        }
+        
+        var storyResult = Story.Create(
+            request.Name,
+            request.Description,
+            projectId, epicId,
+            statusId ?? project.DefaultStatusId);
         if (storyResult.IsFailed)
         {
             return storyResult.ToResult();
         }
-
+        
+        
         var story = storyResult.Value;
         _storyRepository.Add(story);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

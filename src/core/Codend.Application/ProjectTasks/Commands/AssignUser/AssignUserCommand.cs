@@ -46,7 +46,7 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
     public async Task<Result> Handle(AssignUserCommand request, CancellationToken cancellationToken)
     {
         // Validate task id.
-        var task = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId));
+        var task = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId), cancellationToken);
         if (task is null)
         {
             return DomainNotFound.Fail<BaseProjectTask>();

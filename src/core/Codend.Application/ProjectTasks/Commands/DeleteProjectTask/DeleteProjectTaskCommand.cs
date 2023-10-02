@@ -42,7 +42,7 @@ public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTask
     /// <inheritdoc />
     public async Task<Result> Handle(DeleteProjectTaskCommand request, CancellationToken cancellationToken)
     {
-        var projectTask = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId));
+        var projectTask = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId), cancellationToken);
         if (projectTask is null)
         {
             return DomainNotFound.Fail<BaseProjectTask>();

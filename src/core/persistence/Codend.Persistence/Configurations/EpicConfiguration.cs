@@ -39,5 +39,12 @@ public class EpicConfiguration : IEntityTypeConfiguration<Epic>
             .WithOne()
             .HasForeignKey(story => story.EpicId)
             .OnDelete(DeleteBehavior.NoAction);
+        
+        builder
+            .HasOne<ProjectTaskStatus>()
+            .WithMany()
+            .HasForeignKey(epic => epic.StatusId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

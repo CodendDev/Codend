@@ -97,7 +97,11 @@ public class ProjectController : ApiController
     ///
     ///     {
     ///         "name": "Updated project name",
-    ///         "description": "Updated project description"
+    ///         "description": {
+    ///             "shouldUpdate": true,
+    ///             "value": "new description"
+    ///         },
+    ///         "defaultStatusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     /// <returns>
@@ -111,7 +115,12 @@ public class ProjectController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] UpdateProjectRequest request)
     {
-        var command = new UpdateProjectCommand(projectId, request.Name, request.Description);
+        var command = new UpdateProjectCommand(
+            projectId,
+            request.Name,
+            request.Description,
+            request.DefaultStatusId);
+        
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {

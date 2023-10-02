@@ -7,6 +7,7 @@ using Codend.Domain.Repositories;
 using FluentResults;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
@@ -62,7 +63,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     public async Task<Result> Handle(TCommand request, CancellationToken cancellationToken)
     {
         // Validate task id.
-        if (await _taskRepository.GetByIdAsync(request.TaskId) is not TProjectTask task)
+        if (await _taskRepository.GetByIdAsync(request.TaskId, cancellationToken) is not TProjectTask task)
         {
             return DomainNotFound.Fail<BaseProjectTask>();
         }
@@ -98,7 +99,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         // Validate story.
         if (request.StoryId.ShouldUpdate)
         {
-            var story = await _storyRepository.GetByIdAsync(request.StoryId.Value!);
+            var story = await _storyRepository.GetByIdAsync(request.StoryId.Value!, cancellationToken);
             if (story is null || story.ProjectId != task.ProjectId)
             {
                 return Result.Fail(new InvalidStoryId());

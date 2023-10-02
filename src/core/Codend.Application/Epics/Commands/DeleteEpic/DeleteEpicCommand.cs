@@ -43,14 +43,14 @@ public class DeleteEpicCommandHandler : ICommandHandler<DeleteEpicCommand>
     /// <returns><see cref="Result"/>.Ok() or a failure with errors.</returns>
     public async Task<Result> Handle(DeleteEpicCommand request, CancellationToken cancellationToken)
     {
-        var epic = await _epicRepository.GetByIdAsync(new EpicId(request.EpicId));
+        var epic = await _epicRepository.GetByIdAsync(new EpicId(request.EpicId), cancellationToken);
 
         if (epic is null)
         {
             return Result.Fail(new DomainNotFound(nameof(Epic)));
         }
 
-        var epicStories = _storyRepository.GetByEpicId(epic.Id).ToList();
+        var epicStories = await _storyRepository.GetStoriesByEpicIdAsync(epic.Id, cancellationToken);
         foreach (var story in epicStories)
         {
             story.EditEpicId(null);

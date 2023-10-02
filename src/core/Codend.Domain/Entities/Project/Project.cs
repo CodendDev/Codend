@@ -29,6 +29,7 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
     public ProjectName Name { get; private set; }
     public ProjectDescription Description { get; private set; }
     public UserId OwnerId { get; private set; }
+    public ProjectTaskStatusId DefaultStatusId { get; private set; }
 
     #endregion
 
@@ -57,26 +58,41 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
     }
 
     /// <summary>
-    /// Edits name and description of the Project, and validates new name.
+    /// Edits name of the Project, and validates new name.
     /// </summary>
     /// <param name="name">New name.</param>
-    /// <param name="description">New description</param>
     /// <returns>Ok result with ProjectName object or an error.</returns>
-    public Result<Project> Edit(string name, string? description)
+    public Result<ProjectName> EditName(string name)
     {
-        var resultName = ProjectName.Create(name);
-        var resultDescription = ProjectDescription.Create(description);
-
-        var result = Result.Ok(this).MergeReasons(resultName.ToResult(), resultDescription.ToResult());
-
+        var result = ProjectName.Create(name);
         if (result.IsFailed)
         {
             return result;
         }
 
-        Name = resultName.Value;
-        Description = resultDescription.Value;
+        Name = result.Value;
 
+        var evt = new ProjectEditedEvent(this);
+        Raise(evt);
+
+        return result;
+    }
+    
+    /// <summary>
+    /// Edits description of the Project, and validates new description.
+    /// </summary>
+    /// <param name="description">New description.</param>
+    /// <returns>Ok result with ProjectDescription object or an error.</returns>
+    public Result<ProjectDescription> EditDescription(string? description)
+    {
+        var result = ProjectDescription.Create(description);
+        if (result.IsFailed)
+        {
+            return result;
+        }
+
+        Description = result.Value;
+        
         var evt = new ProjectEditedEvent(this);
         Raise(evt);
 
@@ -197,6 +213,18 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Changes project default status id to one of Project defined or default statuses.
+    /// </summary>
+    /// <param name="defaultStatusId">New default status id.</param>
+    /// <returns>Ok result with ProjectTaskStatusId object.</returns>
+    public Result<ProjectTaskStatusId> EditDefaultStatus(ProjectTaskStatusId defaultStatusId)
+    {
+        DefaultStatusId = defaultStatusId;
+
+        return Result.Ok(defaultStatusId);
     }
 
     #endregion
