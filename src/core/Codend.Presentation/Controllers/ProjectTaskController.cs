@@ -160,8 +160,8 @@ public class ProjectTaskController : ApiController
     /// </summary>
     /// <param name="projectId">Id of the project where the task will be created.</param>
     /// <param name="request">The create base project task request which body
-    /// includes required fields (name, priority, statusId) and
-    /// optional fields (description, estimatedTime, dueDate, storyPoints, assigneeId, storyId).
+    /// includes required fields (name, priority) and
+    /// optional fields (statusId, description, estimatedTime, dueDate, storyPoints, assigneeId, storyId).
     /// </param>
     /// <remarks>
     /// Valid priorities: [VeryHigh, High, Normal, Low, VeryLow]
@@ -198,10 +198,9 @@ public class ProjectTaskController : ApiController
     {
         var command = new CreateBaseProjectTaskCommand(
             new BaseProjectTaskCreateProperties(
+                projectId.GuidConversion<ProjectId>(),
                 request.Name,
                 request.Priority,
-                new ProjectTaskStatusId(request.StatusId),
-                new ProjectId(projectId),
                 request.Description,
                 request.EstimatedTime.ToTimeSpan(),
                 request.DueDate,
@@ -209,6 +208,9 @@ public class ProjectTaskController : ApiController
                 request.AssigneeId.GuidConversion<UserId>(),
                 request.StoryId.GuidConversion<StoryId>()
             )
+            {
+                StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>()
+            }
         );
 
         var response = await Mediator.Send(command);
@@ -317,8 +319,8 @@ public class ProjectTaskController : ApiController
     /// </summary>
     /// <param name="projectId">Id of the project where the task will be created.</param>
     /// <param name="request">The create bugfix project task request which body
-    /// includes required fields (name, priority, statusId) and
-    /// optional fields (description, estimatedTime, dueDate, storyPoints, assigneeId, storyId).
+    /// includes required fields (name, priority) and
+    /// optional fields (statusId, description, estimatedTime, dueDate, storyPoints, assigneeId, storyId).
     /// </param>
     /// <remarks>
     /// Valid priorities: [VeryHigh, High, Normal, Low, VeryLow]
@@ -355,10 +357,9 @@ public class ProjectTaskController : ApiController
     {
         var command = new CreateBugfixProjectTaskCommand(
             new BugfixProjectTaskCreateProperties(
+                projectId.GuidConversion<ProjectId>(),
                 request.Name,
                 request.Priority,
-                new ProjectTaskStatusId(request.StatusId),
-                new ProjectId(projectId),
                 request.Description,
                 request.EstimatedTime.ToTimeSpan(),
                 request.DueDate,
@@ -366,6 +367,9 @@ public class ProjectTaskController : ApiController
                 request.AssigneeId.GuidConversion<UserId>(),
                 request.StoryId.GuidConversion<StoryId>()
             )
+            {
+                StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>(),
+            }
         );
 
         var response = await Mediator.Send(command);

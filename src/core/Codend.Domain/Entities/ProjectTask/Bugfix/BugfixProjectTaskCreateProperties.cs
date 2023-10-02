@@ -4,14 +4,16 @@ namespace Codend.Domain.Entities.ProjectTask.Bugfix;
 
 public record BugfixProjectTaskCreateProperties
 (
+    ProjectId ProjectId,
     string Name,
     string Priority,
-    ProjectTaskStatusId StatusId,
-    ProjectId ProjectId,
     string? Description,
     TimeSpan? EstimatedTime,
     DateTime? DueDate,
     uint? StoryPoints,
     UserId? AssigneeId,
     StoryId? StoryId
-) : IProjectTaskCreateProperties;
+) : IProjectTaskCreateProperties
+{
+    public ProjectTaskStatusId? StatusId { get; set; }
+}
