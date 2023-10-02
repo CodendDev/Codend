@@ -13,18 +13,18 @@ namespace Codend.Application.Stories.Commands.CreateStory;
 /// <summary>
 /// Command user for creating user story.
 /// </summary>
+/// <param name="ProjectId">Story projectId.</param>
 /// <param name="Name">Story name.</param>
 /// <param name="Description">Story description.</param>
-/// <param name="ProjectId">Story projectId.</param>
 /// <param name="EpicId">Story epicId.</param>
 /// <param name="StatusId">Story statusId.</param>
 public sealed record CreateStoryCommand
 (
+    ProjectId ProjectId,
     string Name,
     string Description,
-    Guid ProjectId,
-    Guid? EpicId,
-    Guid? StatusId
+    EpicId? EpicId,
+    ProjectTaskStatusId? StatusId
 ) : ICommand<Guid>;
 
 /// <summary>
@@ -55,23 +55,20 @@ public class CreateStoryCommandHandler : ICommandHandler<CreateStoryCommand, Gui
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateStoryCommand request, CancellationToken cancellationToken)
     {
-        var epicId = request.EpicId.GuidConversion<EpicId>();
-        var projectId = request.ProjectId.GuidConversion<ProjectId>();
-        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
-
-        if (epicId is not null && await _projectRepository.ProjectContainsEpic(projectId, epicId) is false)
+        if (request.EpicId is not null 
+            && await _projectRepository.ProjectContainsEpic(request.ProjectId, request.EpicId) is false)
         {
             return Result.Fail(new InvalidEpicId());
         }
 
-        var project = await _projectRepository.GetByIdAsync(projectId);
+        var project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project is null)
         {
             return DomainNotFound.Fail<Project>();
         }
 
-        if (statusId is not null && 
-            await _statusRepository.StatusExistsWithIdAsync(statusId, projectId, cancellationToken) is false)
+        if (request.StatusId is not null && 
+            await _statusRepository.StatusExistsWithIdAsync(request.StatusId, request.ProjectId, cancellationToken) is false)
         {
             return Result.Fail(new InvalidStatusId());
         }
@@ -79,8 +76,9 @@ public class CreateStoryCommandHandler : ICommandHandler<CreateStoryCommand, Gui
         var storyResult = Story.Create(
             request.Name,
             request.Description,
-            projectId, epicId,
-            statusId ?? project.DefaultStatusId);
+            request.ProjectId, 
+            request.EpicId,
+            request.StatusId ?? project.DefaultStatusId);
         if (storyResult.IsFailed)
         {
             return storyResult.ToResult();

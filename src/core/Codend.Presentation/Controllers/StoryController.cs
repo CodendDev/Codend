@@ -53,11 +53,11 @@ public class StoryController : ApiController
         [FromBody] CreateStoryRequest request)
     {
         var command = new CreateStoryCommand(
+            projectId.GuidConversion<ProjectId>(),
             request.Name,
             request.Description,
-            projectId,
-            request.EpicId,
-            request.StatusId);
+            request.EpicId.GuidConversion<EpicId>(),
+            request.StatusId.GuidConversion<ProjectTaskStatusId>());
         
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
