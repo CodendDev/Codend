@@ -77,7 +77,7 @@ public class ProjectTaskStatusController : ApiController
         [FromRoute] Guid projectId,
         [FromRoute] Guid statusId)
     {
-        var command = new DeleteProjectTaskStatusCommand(statusId);
+        var command = new DeleteProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>());
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
