@@ -27,7 +27,7 @@ public class UpdateStoryCommandHandlerTests
         var storyId = new StoryId(Guid.NewGuid());
         _storyRepository.Setup(r => r.GetByIdAsync(storyId, CancellationToken.None)).Returns(Task.Run(() => story.Object)!);
 
-        var request = new UpdateStoryCommand(storyId.Value, "", "", new ShouldUpdateBinder<EpicId?>(false, null), null);
+        var request = new UpdateStoryCommand(storyId, "", "", new ShouldUpdateBinder<EpicId?>(false, null), null);
         var handler =
             new UpdateStoryCommandHandler(
                 _storyRepository.Object,

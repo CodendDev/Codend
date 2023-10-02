@@ -8,8 +8,8 @@
 /// <param name="EpicId">EpicId of the story.</param>
 /// <param name="StatusId">Story status.</param>
 public record UpdateStoryRequest(
-    string Name,
-    string Description,
+    string? Name,
+    string? Description,
     ShouldUpdateBinder<Guid?>? EpicId,
-    Guid StatusId
+    Guid? StatusId
 );

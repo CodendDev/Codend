@@ -130,11 +130,11 @@ public class StoryController : ApiController
         [FromBody] UpdateStoryRequest request)
     {
         var command = new UpdateStoryCommand(
-            storyId,
+            storyId.GuidConversion<StoryId>(),
             request.Name,
             request.Description,
             request.EpicId.HandleNull().Convert(EntityIdExtensions.GuidConversion<EpicId>),
-            request.StatusId
+            request.StatusId.GuidConversion<ProjectTaskStatusId>()
         );
 
         var response = await Mediator.Send(command);
