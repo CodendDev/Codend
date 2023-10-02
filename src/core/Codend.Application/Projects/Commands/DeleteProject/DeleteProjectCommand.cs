@@ -13,7 +13,7 @@ namespace Codend.Application.Projects.Commands.DeleteProject;
 /// </summary>
 /// <param name="ProjectId">Id of the project that will be deleted.</param>
 public sealed record DeleteProjectCommand(
-        Guid ProjectId)
+        ProjectId ProjectId)
     : ICommand;
 
 /// <summary>
@@ -40,7 +40,7 @@ public class DeleteProjectCommandHandler : ICommandHandler<DeleteProjectCommand>
     public async Task<Result> Handle(DeleteProjectCommand request, CancellationToken cancellationToken)
     {
         var userId = _identityProvider.UserId;
-        var project = await _projectRepository.GetByIdAsync(new ProjectId(request.ProjectId));
+        var project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project is null)
         {
             return DomainNotFound.Fail<Project>();
