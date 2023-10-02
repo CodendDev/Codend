@@ -50,7 +50,7 @@ public class ProjectTaskStatusController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] CreateProjectTaskStatusRequest request)
     {
-        var command = new CreateProjectTaskStatusCommand(request.Name, projectId);
+        var command = new CreateProjectTaskStatusCommand(request.Name, projectId.GuidConversion<ProjectId>());
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
