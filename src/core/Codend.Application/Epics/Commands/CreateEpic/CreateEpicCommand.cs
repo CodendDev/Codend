@@ -20,8 +20,8 @@ public sealed record CreateEpicCommand
 (
     string Name,
     string Description,
-    Guid ProjectId,
-    Guid? StatusId
+    ProjectId ProjectId,
+    ProjectTaskStatusId? StatusId
 ) : ICommand<Guid>;
 
 /// <summary>
@@ -52,16 +52,17 @@ public class CreateEpicCommandHandler : ICommandHandler<CreateEpicCommand, Guid>
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateEpicCommand request, CancellationToken cancellationToken)
     {
-        var projectId = request.ProjectId.GuidConversion<ProjectId>();
-        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
-        var project = await _projectRepository.GetByIdAsync(projectId);
+        var project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project is null)
         {
             return DomainNotFound.Fail<Project>();
         }
 
-        if (statusId is not null &&
-            await _statusRepository.StatusExistsWithStatusIdAsync(statusId, projectId, cancellationToken) is false)
+        if (request.StatusId is not null &&
+            await _statusRepository.StatusExistsWithStatusIdAsync(
+                request.StatusId,
+                request.ProjectId,
+                cancellationToken) is false)
         {
             return Result.Fail(new InvalidStatusId());
         }
@@ -69,8 +70,8 @@ public class CreateEpicCommandHandler : ICommandHandler<CreateEpicCommand, Guid>
         var epicResult = Epic.Create(
             request.Name,
             request.Description,
-            projectId,
-            statusId ?? project.DefaultStatusId);
+            request.ProjectId,
+            request.StatusId ?? project.DefaultStatusId);
         if (epicResult.IsFailed)
         {
             return epicResult.ToResult();
