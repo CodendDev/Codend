@@ -234,14 +234,9 @@ public class ProjectTaskController : ApiController
     /// Sample request():
     /// 
     ///     {
-    ///         "name": {
-    ///             "shouldUpdate": true,
-    ///             "value": "New base project task name."
-    ///         },
-    ///         "priority": {
-    ///             "shouldUpdate": true,
-    ///             "value": "High"
-    ///         },
+    ///         "name": "new name",
+    ///         "priority": "Low",
+    ///         "statusId": "1f0c1930-50f4-4f17-8470-211b3a5cc873",
     ///         "description": {
     ///             "shouldUpdate": true,
     ///             "value": "New description"
@@ -293,19 +288,17 @@ public class ProjectTaskController : ApiController
     {
         var command = new UpdateBaseProjectTaskCommand
         (
-            request.Name.HandleNull(),
-            request.Priority.HandleNull(),
-            request.StatusId.HandleNull().Convert(guid => new ProjectTaskStatusId(guid)),
+            projectTaskId.GuidConversion<ProjectTaskId>(),
+            request.Name,
+            request.Priority,
+            request.StatusId.GuidConversion<ProjectTaskStatusId>(),
             request.Description.HandleNull(),
             request.EstimatedTime.HandleNull().Convert(EstimatedTimeRequestExtensions.ToTimeSpan),
             request.DueDate.HandleNull(),
             request.StoryPoints.HandleNull(),
             request.AssigneeId.HandleNull().Convert(EntityIdExtensions.GuidConversion<UserId>),
             request.StoryId.HandleNull().Convert(EntityIdExtensions.GuidConversion<StoryId>)
-        )
-        {
-            TaskId = projectTaskId.GuidConversion<ProjectTaskId>()
-        };
+        );
 
         return await UpdateTask(command);
     }
@@ -394,14 +387,9 @@ public class ProjectTaskController : ApiController
     /// Sample request():
     /// 
     ///     {
-    ///         "name": {
-    ///             "shouldUpdate": true,
-    ///             "value": "New bugfix project task name."
-    ///         },
-    ///         "priority": {
-    ///             "shouldUpdate": true,
-    ///             "value": "High"
-    ///         },
+    ///         "name": "new name",
+    ///         "priority": "Low",
+    ///         "statusId": "1f0c1930-50f4-4f17-8470-211b3a5cc873",
     ///         "description": {
     ///             "shouldUpdate": true,
     ///             "value": "New description"
@@ -413,10 +401,6 @@ public class ProjectTaskController : ApiController
     ///         "storyPoints": {
     ///             "shouldUpdate": true,
     ///             "value": 10
-    ///         },
-    ///         "statusId": {
-    ///             "shouldUpdate": false,
-    ///             "value": ""
     ///         },
     ///         "estimatedTime": {
     ///             "shouldUpdate": true,
@@ -453,9 +437,10 @@ public class ProjectTaskController : ApiController
     {
         var command = new UpdateBugfixProjectTaskCommand
         (
-            request.Name.HandleNull(),
-            request.Priority.HandleNull(),
-            request.StatusId.HandleNull().Convert(guid => new ProjectTaskStatusId(guid)),
+            projectTaskId.GuidConversion<ProjectTaskId>(),
+            request.Name,
+            request.Priority,
+            request.StatusId.GuidConversion<ProjectTaskStatusId>(),
             request.Description.HandleNull(),
             request.EstimatedTime.HandleNull().Convert(EstimatedTimeRequestExtensions.ToTimeSpan),
             request.DueDate.HandleNull(),

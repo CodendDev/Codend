@@ -8,13 +8,13 @@ namespace Codend.Contracts.Requests.ProjectTasks.Update;
 /// </summary>
 public record UpdateBaseProjectTaskRequest
 (
-    ShouldUpdateBinder<string>? Name,
-    ShouldUpdateBinder<string>? Priority,
+    string? Name,
+    string? Priority,
+    Guid? StatusId,
     ShouldUpdateBinder<string?>? Description,
     ShouldUpdateBinder<DateTime?>? DueDate,
     ShouldUpdateBinder<uint?>? StoryPoints,
-    ShouldUpdateBinder<Guid>? StatusId,
-    ShouldUpdateBinder<EstimatedTimeRequest>? EstimatedTime,
+    ShouldUpdateBinder<EstimatedTimeRequest?>? EstimatedTime,
     ShouldUpdateBinder<Guid?>? AssigneeId,
     ShouldUpdateBinder<Guid?>? StoryId
 ) : IUpdateBaseProjectTaskRequest;
