@@ -10,11 +10,11 @@ public class EpicRepository : GenericRepository<EpicId, Guid, Epic>, IEpicReposi
     {
     }
 
-    public Task<List<Epic>> GetEpicsWithStatusId(ProjectTaskStatusId statusId)
+    public Task<List<Epic>> GetEpicsByStatusId(ProjectTaskStatusId statusId, CancellationToken cancellationToken)
     {
         var epics = Context.Set<Epic>()
             .Where(epic => epic.StatusId == statusId)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return epics;
     }

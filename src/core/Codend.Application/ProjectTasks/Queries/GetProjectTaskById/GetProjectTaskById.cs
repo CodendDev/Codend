@@ -61,7 +61,7 @@ public class GetProjectTaskByIdQueryHandler : IQueryHandler<GetProjectTaskByIdQu
         GetProjectTaskByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var task = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId));
+        var task = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId), cancellationToken);
         if (task is null)
         {
             return DomainNotFound.Fail<BaseProjectTask>();

@@ -21,6 +21,7 @@ namespace Codend.Application.Stories.Commands.UpdateStory;
 /// <param name="Name">New name of the story.</param>
 /// <param name="Description">New description of the story.</param>
 /// <param name="EpicId">New epicId of the story.</param>
+/// <param name="StatusId">New story status.</param>
 public sealed record UpdateStoryCommand
 (
     Guid StoryId,
@@ -63,7 +64,7 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
     /// <returns><see cref="Result"/>.Ok() or a failure with errors.</returns>
     public async Task<Result> Handle(UpdateStoryCommand request, CancellationToken cancellationToken)
     {
-        var story = await _storyRepository.GetByIdAsync(new StoryId(request.StoryId));
+        var story = await _storyRepository.GetByIdAsync(new StoryId(request.StoryId), cancellationToken);
         var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
 
         if (story is null)
@@ -78,7 +79,7 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
         }
 
         if (statusId is not null &&
-            await _statusRepository.ExistsWithIdAsync(statusId, story.ProjectId, cancellationToken) is false)
+            await _statusRepository.StatusExistsWithIdAsync(statusId, story.ProjectId, cancellationToken) is false)
         {
             return Result.Fail(new InvalidStatusId());
         }

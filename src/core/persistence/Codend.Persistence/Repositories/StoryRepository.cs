@@ -11,21 +11,21 @@ public class StoryRepository : GenericRepository<StoryId, Guid, Story>, IStoryRe
     }
 
     /// <inheritdoc />
-    public Task<List<Story>> GetStoriesWithEpicId(EpicId epicId)
+    public Task<List<Story>> GetStoriesByEpicIdAsync(EpicId epicId, CancellationToken cancellationToken)
     {
         var stories = Context.Set<Story>()
             .Where(story => story.EpicId == epicId)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return stories;
     }
     
     /// <inheritdoc />
-    public Task<List<Story>> GetStoriesWithStatusId(ProjectTaskStatusId statusId)
+    public Task<List<Story>> GetStoriesByStatusIdAsync(ProjectTaskStatusId statusId, CancellationToken cancellationToken)
     {
         var stories = Context.Set<Story>()
             .Where(story => story.StatusId == statusId)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return stories;
     }

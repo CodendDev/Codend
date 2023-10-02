@@ -71,7 +71,7 @@ public class CreateStoryCommandHandler : ICommandHandler<CreateStoryCommand, Gui
         }
 
         if (statusId is not null && 
-            await _statusRepository.ExistsWithIdAsync(statusId, projectId, cancellationToken) is false)
+            await _statusRepository.StatusExistsWithIdAsync(statusId, projectId, cancellationToken) is false)
         {
             return Result.Fail(new InvalidStatusId());
         }

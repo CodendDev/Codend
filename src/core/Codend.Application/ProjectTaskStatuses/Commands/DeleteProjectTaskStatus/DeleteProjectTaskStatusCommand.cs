@@ -58,11 +58,12 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
             return Result.Fail(new ProjectHasToHaveProjectTaskStatus());
         }
 
-        var defaultStatusId = await _statusRepository.GetProjectDefaultStatusIdAsync(status.ProjectId, cancellationToken);
+        var defaultStatusId =
+            await _statusRepository.GetProjectDefaultStatusIdAsync(status.ProjectId, cancellationToken);
 
-        var statusTasks = await _taskRepository.GetTasksWithStatusId(statusId);
-        var statusStories = await _storyRepository.GetStoriesWithStatusId(statusId);
-        var statusEpics = await _epicRepository.GetEpicsWithStatusId(statusId);
+        var statusTasks = await _taskRepository.GetTasksByStatusId(statusId, cancellationToken);
+        var statusStories = await _storyRepository.GetStoriesByStatusIdAsync(statusId, cancellationToken);
+        var statusEpics = await _epicRepository.GetEpicsByStatusId(statusId, cancellationToken);
 
         foreach (var task in statusTasks) task.EditStatus(defaultStatusId);
         foreach (var story in statusStories) story.EditStatus(defaultStatusId);
@@ -74,5 +75,4 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
 
         return Result.Ok();
     }
-    
 }

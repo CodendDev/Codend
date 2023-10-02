@@ -83,7 +83,7 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         var storyId = request.TaskProperties.StoryId;
         if (storyId is not null)
         {
-            var story = await _storyRepository.GetByIdAsync(storyId);
+            var story = await _storyRepository.GetByIdAsync(storyId, cancellationToken);
             if (story is null || story.ProjectId != projectId)
                 return Result.Fail(new InvalidStoryId());
         }

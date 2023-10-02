@@ -21,23 +21,23 @@ public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, Base
     }
 
     /// <inheritdoc/>
-    public Task<List<BaseProjectTask>> GetStoryTasks(StoryId storyId)
+    public Task<List<BaseProjectTask>> GetStoryTasks(StoryId storyId, CancellationToken cancellationToken)
     {
         var tasks =
             Context.Set<BaseProjectTask>()
                 .Where(task => task.StoryId == storyId)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
         return tasks;
     }
 
     /// <inheritdoc/>
-    public Task<List<BaseProjectTask>> GetTasksWithStatusId(ProjectTaskStatusId statusId)
+    public Task<List<BaseProjectTask>> GetTasksByStatusId(ProjectTaskStatusId statusId, CancellationToken cancellationToken)
     {
         var tasks =
             Context.Set<BaseProjectTask>()
                 .Where(task => task.StatusId == statusId)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
         return tasks;
     }

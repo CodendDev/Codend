@@ -71,7 +71,7 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
 
         if (defaultStatusId != null &&
             !await _statusRepository
-                .ExistsWithIdAsync(defaultStatusId, projectId, cancellationToken))
+                .StatusExistsWithIdAsync(defaultStatusId, projectId, cancellationToken))
         {
             return Result.Fail(new InvalidDefaultStatusId());
         }

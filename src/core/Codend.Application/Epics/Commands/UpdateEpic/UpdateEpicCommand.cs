@@ -51,7 +51,7 @@ public class UpdateEpicCommandHandler : ICommandHandler<UpdateEpicCommand>
     /// <inheritdoc />
     public async Task<Result> Handle(UpdateEpicCommand request, CancellationToken cancellationToken)
     {
-        var epic = await _epicRepository.GetByIdAsync(new EpicId(request.EpicId));
+        var epic = await _epicRepository.GetByIdAsync(new EpicId(request.EpicId), cancellationToken);
         var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
 
         if (epic is null)
@@ -60,7 +60,7 @@ public class UpdateEpicCommandHandler : ICommandHandler<UpdateEpicCommand>
         }
 
         if (statusId is not null &&
-            await _statusRepository.ExistsWithIdAsync(statusId, epic.ProjectId, cancellationToken) is false)
+            await _statusRepository.StatusExistsWithIdAsync(statusId, epic.ProjectId, cancellationToken) is false)
         {
             return Result.Fail(new InvalidStatusId());
         }

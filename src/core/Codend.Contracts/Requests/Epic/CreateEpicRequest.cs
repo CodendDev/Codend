@@ -5,7 +5,7 @@ namespace Codend.Contracts.Requests.Epic;
 /// </summary>
 /// <param name="Name">Name of the epic.</param>
 /// <param name="Description">Description of the epic.</param>
-/// <param name="Description">Epic status.</param>
+/// <param name="StatusId">Epic status.</param>
 public record CreateEpicRequest
 (
     string Name,
