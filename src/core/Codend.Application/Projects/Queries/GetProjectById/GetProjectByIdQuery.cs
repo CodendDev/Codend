@@ -13,7 +13,7 @@ namespace Codend.Application.Projects.Queries.GetProjectById;
 /// </summary>
 /// <param name="Id">Id of the project to be retrieved.</param>
 public sealed record GetProjectByIdQuery(
-        Guid Id)
+        ProjectId Id)
     : IQuery<ProjectResponse>;
 
 /// <summary>
@@ -37,7 +37,7 @@ public class GetProjectByIdQueryHandler : IQueryHandler<GetProjectByIdQuery, Pro
     public async Task<Result<ProjectResponse>> Handle(GetProjectByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var project = await _projectRepository.GetByIdAsync(new ProjectId(request.Id));
+        var project = await _projectRepository.GetByIdAsync(request.Id);
         if (project is null)
         {
             return DomainNotFound.Fail<Project>();
