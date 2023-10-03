@@ -10,7 +10,7 @@ namespace Codend.Contracts.Automapper.Entities;
 public sealed class EpicResponseProfile : Profile
 {
     /// <summary>
-    /// Initializes maps for <see cref="ProjectTaskStatus"/> class.
+    /// Initializes maps for <see cref="Epic"/> class.
     /// </summary>
     public EpicResponseProfile()
     {
