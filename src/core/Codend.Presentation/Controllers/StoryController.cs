@@ -1,9 +1,11 @@
 using Codend.Application.Stories.Commands.CreateStory;
 using Codend.Application.Stories.Commands.DeleteStory;
 using Codend.Application.Stories.Commands.UpdateStory;
+using Codend.Application.Stories.Queries.GetStoryById;
 using Codend.Contracts;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.Story;
+using Codend.Contracts.Responses.Story;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
@@ -151,5 +153,34 @@ public class StoryController : ApiController
         }
 
         return BadRequest(response.MapToApiErrorsResponse());
+    }
+
+    /// <summary>
+    /// Retrieves common information about Story with given <paramref name="storyId"/>
+    /// </summary>
+    /// <param name="projectId">Id of the project to which the story belongs.</param>
+    /// <param name="storyId">Id of the story that will be retrieved.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 200 on Success with StoryResponse
+    /// - 404 on failure
+    /// </returns>
+    [HttpGet("{storyId:guid}")]
+    [ProducesResponseType(typeof(StoryResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid storyId)
+    {
+        var query = new GetStoryByIdQuery(storyId.GuidConversion<StoryId>());
+
+        var response = await Mediator.Send(query);
+
+        if (response.IsSuccess)
+        {
+            return Ok(response.Value);
+        }
+
+        return NotFound();
     }
 }
