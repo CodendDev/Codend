@@ -76,6 +76,7 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectTaskId)
     {
         var command = new DeleteProjectTaskCommand(projectTaskId.GuidConversion<ProjectTaskId>());
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -90,14 +91,14 @@ public class ProjectTaskController : ApiController
     /// </summary>
     /// <param name="projectId">Id of the project to which the task belongs.</param>
     /// <param name="projectTaskId">Id of the project task to which the user will be assigned.</param>
-    /// <param name="userId">Id of the user that will be assigned.</param>
+    /// <param name="assigneeId">Id of the user that will be assigned.</param>
     /// <returns>
     /// HTTP response with status code:
     /// - 204 on success
     /// - 400 on userId failure with error response
     /// - 404 on failure
     /// </returns>
-    [Route("{projectTaskId:guid}/assign/{userId:guid}")]
+    [Route("{projectTaskId:guid}/assign/{assigneeId:guid}")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
@@ -105,11 +106,13 @@ public class ProjectTaskController : ApiController
     public async Task<IActionResult> AssignUser(
         [FromRoute] Guid projectId,
         [FromRoute] Guid projectTaskId,
-        [FromRoute] Guid userId)
+        [FromRoute] Guid assigneeId)
     {
         var command = new AssignUserCommand(
             projectTaskId.GuidConversion<ProjectTaskId>(),
-            userId.GuidConversion<UserId>());
+            assigneeId.GuidConversion<UserId>()
+        );
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -142,6 +145,7 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectTaskId)
     {
         var query = new GetProjectTaskByIdQuery(projectTaskId.GuidConversion<ProjectTaskId>());
+
         var response = await Mediator.Send(query);
         if (response.IsSuccess)
         {

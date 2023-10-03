@@ -68,20 +68,8 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
             return DomainNotFound.Fail<Project>();
         }
 
-        // Validate status id, if null set defaultStatusId as statusId.
-        var statusId = request.TaskProperties.StatusId;
-        var resultProjectTaskStatus = Result.Ok();
-        if (statusId is not null)
-        {
-            var projectStatusIsValid =  _projectTaskRepository.ProjectTaskStatusIsValid(projectId, statusId);
-            resultProjectTaskStatus = projectStatusIsValid ? Result.Ok() : Result.Fail(new InvalidStatusId());
-        }
-        else
-        {
-            var defaultStatusId = await _statusRepository.GetProjectDefaultStatusIdAsync(projectId, cancellationToken);
-            request.TaskProperties.StatusId = defaultStatusId;
-        }
-        
+        var resultProjectTaskStatus = await ValidateStatus(request, cancellationToken);
+
         // Validate assignee id.
         var assigneeId = request.TaskProperties.AssigneeId;
         if (assigneeId is not null &&
@@ -111,5 +99,22 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Ok(task.Id.Value);
+    }
+
+    // Validate status id, if null set defaultStatusId as statusId.
+    private async Task<Result> ValidateStatus(TCommand request, CancellationToken cancellationToken)
+    {
+        var statusId = request.TaskProperties.StatusId;
+        var projectId = request.TaskProperties.ProjectId;
+
+        if (statusId is not null)
+        {
+            var projectStatusIsValid = _projectTaskRepository.ProjectTaskStatusIsValid(projectId, statusId);
+            return projectStatusIsValid ? Result.Ok() : Result.Fail(new InvalidStatusId());
+        }
+
+        var defaultStatusId = await _statusRepository.GetProjectDefaultStatusIdAsync(projectId, cancellationToken);
+        request.TaskProperties.StatusId = defaultStatusId;
+        return Result.Ok();
     }
 }

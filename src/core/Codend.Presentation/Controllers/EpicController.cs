@@ -54,7 +54,9 @@ public class EpicController : ApiController
             request.Name,
             request.Description,
             projectId.GuidConversion<ProjectId>(),
-            request.StatusId.GuidConversion<ProjectTaskStatusId>());
+            request.StatusId.GuidConversion<ProjectTaskStatusId>()
+        );
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -82,6 +84,7 @@ public class EpicController : ApiController
         [FromRoute] Guid epicId)
     {
         var command = new DeleteEpicCommand(epicId.GuidConversion<EpicId>());
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -125,7 +128,9 @@ public class EpicController : ApiController
             epicId.GuidConversion<EpicId>(),
             request.Name,
             request.Description,
-            request.StatusId.GuidConversion<ProjectTaskStatusId>());
+            request.StatusId.GuidConversion<ProjectTaskStatusId>()
+        );
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {

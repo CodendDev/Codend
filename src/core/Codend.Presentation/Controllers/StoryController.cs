@@ -57,8 +57,9 @@ public class StoryController : ApiController
             request.Name,
             request.Description,
             request.EpicId.GuidConversion<EpicId>(),
-            request.StatusId.GuidConversion<ProjectTaskStatusId>());
-        
+            request.StatusId.GuidConversion<ProjectTaskStatusId>()
+        );
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -86,6 +87,7 @@ public class StoryController : ApiController
         [FromRoute] Guid storyId)
     {
         var command = new DeleteStoryCommand(storyId.GuidConversion<StoryId>());
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
