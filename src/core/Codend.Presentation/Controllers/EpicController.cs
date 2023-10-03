@@ -1,8 +1,10 @@
 using Codend.Application.Epics.Commands.CreateEpic;
 using Codend.Application.Epics.Commands.DeleteEpic;
 using Codend.Application.Epics.Commands.UpdateEpic;
+using Codend.Application.Epics.Queries.GetEpicById;
 using Codend.Contracts;
 using Codend.Contracts.Requests.Epic;
+using Codend.Contracts.Responses.Epic;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
@@ -143,5 +145,34 @@ public class EpicController : ApiController
         }
 
         return BadRequest(response.MapToApiErrorsResponse());
+    }
+
+    /// <summary>
+    /// Retrieves common information about Epic with given <paramref name="epicId"/>
+    /// </summary>
+    /// <param name="projectId">Id of the project to which the epic belongs.</param>
+    /// <param name="epicId">Id of the epic that will be retrieved.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 200 on Success with EpicResponse
+    /// - 404 on failure
+    /// </returns>
+    [HttpGet("{epicId:guid}")]
+    [ProducesResponseType(typeof(EpicResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid epicId)
+    {
+        var query = new GetEpicByIdQuery(epicId.GuidConversion<EpicId>());
+
+        var response = await Mediator.Send(query);
+
+        if (response.IsSuccess)
+        {
+            return Ok(response.Value);
+        }
+
+        return NotFound();
     }
 }
