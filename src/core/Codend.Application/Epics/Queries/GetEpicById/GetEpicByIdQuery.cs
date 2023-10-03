@@ -49,7 +49,7 @@ public class GetEpicByIdQueryHandler : IQueryHandler<GetEpicByIdQuery, EpicRespo
         var epic = await _epicRepository.GetByIdAsync(request.Id, cancellationToken);
         if (epic is null)
         {
-            return DomainNotFound.Fail<Project>();
+            return DomainNotFound.Fail<Epic>();
         }
 
         var userId = _identityProvider.UserId;

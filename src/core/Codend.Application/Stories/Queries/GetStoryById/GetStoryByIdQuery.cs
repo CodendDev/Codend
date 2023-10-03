@@ -49,7 +49,7 @@ public class GetStoryByIdQueryHandler : IQueryHandler<GetStoryByIdQuery, StoryRe
         var story = await _storyRepository.GetByIdAsync(request.Id, cancellationToken);
         if (story is null)
         {
-            return DomainNotFound.Fail<Project>();
+            return DomainNotFound.Fail<Story>();
         }
 
         var userId = _identityProvider.UserId;
