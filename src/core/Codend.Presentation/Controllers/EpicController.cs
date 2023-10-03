@@ -4,6 +4,7 @@ using Codend.Application.Epics.Commands.UpdateEpic;
 using Codend.Contracts;
 using Codend.Contracts.Requests.Epic;
 using Codend.Domain.Core.Errors;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Infrastructure;
 using MediatR;
@@ -49,7 +50,13 @@ public class EpicController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] CreateEpicRequest request)
     {
-        var command = new CreateEpicCommand(request.Name, request.Description, projectId, request.StatusId);
+        var command = new CreateEpicCommand(
+            request.Name,
+            request.Description,
+            projectId.GuidConversion<ProjectId>(),
+            request.StatusId.GuidConversion<ProjectTaskStatusId>()
+        );
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -76,7 +83,8 @@ public class EpicController : ApiController
         [FromRoute] Guid projectId,
         [FromRoute] Guid epicId)
     {
-        var command = new DeleteEpicCommand(epicId);
+        var command = new DeleteEpicCommand(epicId.GuidConversion<EpicId>());
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -116,7 +124,13 @@ public class EpicController : ApiController
         [FromRoute] Guid epicId,
         [FromBody] UpdateEpicRequest request)
     {
-        var command = new UpdateEpicCommand(epicId, request.Name, request.Description, request.StatusId);
+        var command = new UpdateEpicCommand(
+            epicId.GuidConversion<EpicId>(),
+            request.Name,
+            request.Description,
+            request.StatusId.GuidConversion<ProjectTaskStatusId>()
+        );
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {

@@ -13,7 +13,7 @@ namespace Codend.Application.ProjectTaskStatuses.Commands.DeleteProjectTaskStatu
 /// Command used for deleting and task status.
 /// </summary>
 /// <param name="StatusId">Id of task status which will be deleted.</param>
-public sealed record DeleteProjectTaskStatusCommand(Guid StatusId) : ICommand;
+public sealed record DeleteProjectTaskStatusCommand(ProjectTaskStatusId StatusId) : ICommand;
 
 /// <summary>
 /// <see cref="DeleteProjectTaskStatusCommand"/> handler.
@@ -46,8 +46,7 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
     /// <inheritdoc />
     public async Task<Result> Handle(DeleteProjectTaskStatusCommand request, CancellationToken cancellationToken)
     {
-        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
-        var status = await _statusRepository.GetByIdAsync(statusId, cancellationToken);
+        var status = await _statusRepository.GetByIdAsync(request.StatusId, cancellationToken);
         if (status is null)
         {
             return DomainNotFound.Fail<ProjectTaskStatus>();
@@ -61,9 +60,9 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
         var defaultStatusId =
             await _statusRepository.GetProjectDefaultStatusIdAsync(status.ProjectId, cancellationToken);
 
-        var statusTasks = await _taskRepository.GetTasksByStatusIdAsync(statusId, cancellationToken);
-        var statusStories = await _storyRepository.GetStoriesByStatusIdAsync(statusId, cancellationToken);
-        var statusEpics = await _epicRepository.GetEpicsByStatusIdAsync(statusId, cancellationToken);
+        var statusTasks = await _taskRepository.GetTasksByStatusIdAsync(request.StatusId, cancellationToken);
+        var statusStories = await _storyRepository.GetStoriesByStatusIdAsync(request.StatusId, cancellationToken);
+        var statusEpics = await _epicRepository.GetEpicsByStatusIdAsync(request.StatusId, cancellationToken);
 
         foreach (var task in statusTasks) task.EditStatus(defaultStatusId);
         foreach (var story in statusStories) story.EditStatus(defaultStatusId);

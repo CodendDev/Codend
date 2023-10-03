@@ -50,7 +50,7 @@ public class ProjectTaskStatusController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] CreateProjectTaskStatusRequest request)
     {
-        var command = new CreateProjectTaskStatusCommand(request.Name, projectId);
+        var command = new CreateProjectTaskStatusCommand(request.Name, projectId.GuidConversion<ProjectId>());
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -77,7 +77,7 @@ public class ProjectTaskStatusController : ApiController
         [FromRoute] Guid projectId,
         [FromRoute] Guid statusId)
     {
-        var command = new DeleteProjectTaskStatusCommand(statusId);
+        var command = new DeleteProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>());
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -115,7 +115,7 @@ public class ProjectTaskStatusController : ApiController
         [FromRoute] Guid statusId,
         [FromBody] UpdateProjectTaskStatusRequest request)
     {
-        var command = new UpdateProjectTaskStatusCommand(statusId, request.Name);
+        var command = new UpdateProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>(), request.Name);
 
         var response = await Mediator.Send(command);
         if (response.IsSuccess)

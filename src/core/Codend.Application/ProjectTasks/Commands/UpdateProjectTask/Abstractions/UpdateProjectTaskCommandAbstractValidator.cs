@@ -25,9 +25,9 @@ public abstract class UpdateProjectTaskCommandAbstractValidator<TUpdateProjectTa
             .NotEmpty()
             .WithError(new PropertyNullOrEmpty(nameof(IUpdateProjectTaskCommand.TaskId)));
 
-        When(x => x.Name.ShouldUpdate, () =>
+        When(x => x.Name is not null, () =>
         {
-            RuleFor(x => x.Name.Value)
+            RuleFor(x => x.Name)
                 .NotEmpty()
                 .WithError(new PropertyNullOrEmpty(nameof(IUpdateProjectTaskCommand.Name)))
                 .MaximumLength(ProjectTaskName.MaxLength)
@@ -35,21 +35,18 @@ public abstract class UpdateProjectTaskCommandAbstractValidator<TUpdateProjectTa
                     ProjectTaskName.MaxLength));
         });
 
-        When(x => x.Priority.ShouldUpdate, () =>
+        When(x => x.Priority is not null, () =>
         {
-            RuleFor(x => x.Priority.Value)
+            RuleFor(x => x.Priority)
                 .NotEmpty()
                 .WithError(new PropertyNullOrEmpty(nameof(IUpdateProjectTaskCommand.Priority)))
                 .Must(x => ProjectTaskPriority.TryFromName(x, true, out _))
                 .WithError(new ProjectTask.PriorityNotDefined());
         });
 
-        When(x => x.StatusId.ShouldUpdate, () =>
-        {
-            RuleFor(x => x.StatusId.Value)
-                .NotEmpty()
-                .WithError(new PropertyNullOrEmpty(nameof(IUpdateProjectTaskCommand.StatusId)));
-        });
+        RuleFor(x => x.StatusId)
+            .MustNotBeDefaultGuid()
+            .WithError(new PropertyNullOrEmpty(nameof(IUpdateProjectTaskCommand.StatusId)));
 
         When(x => x.Description.ShouldUpdate, () =>
         {

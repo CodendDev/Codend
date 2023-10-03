@@ -8,6 +8,7 @@ using Codend.Application.Projects.Queries.GetProjectById;
 using Codend.Application.Projects.Queries.GetProjects;
 using Codend.Contracts;
 using Codend.Contracts.Common;
+using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.Project;
 using Codend.Contracts.Responses;
 using Codend.Contracts.Responses.Project;
@@ -77,7 +78,7 @@ public class ProjectController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] Guid projectId)
     {
-        var command = new DeleteProjectCommand(projectId);
+        var command = new DeleteProjectCommand(projectId.GuidConversion<ProjectId>());
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -116,10 +117,10 @@ public class ProjectController : ApiController
         [FromBody] UpdateProjectRequest request)
     {
         var command = new UpdateProjectCommand(
-            projectId,
+            projectId.GuidConversion<ProjectId>(),
             request.Name,
-            request.Description,
-            request.DefaultStatusId);
+            request.Description.HandleNull(),
+            request.DefaultStatusId.GuidConversion<ProjectTaskStatusId>());
         
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
@@ -147,7 +148,7 @@ public class ProjectController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromRoute] Guid projectId)
     {
-        var query = new GetProjectByIdQuery(projectId);
+        var query = new GetProjectByIdQuery(projectId.GuidConversion<ProjectId>());
         var response = await Mediator.Send(query);
         if (response.IsFailed)
         {

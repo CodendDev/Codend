@@ -2,6 +2,7 @@ using Codend.Application.Core;
 using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Domain.Core.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -76,9 +77,9 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         }
 
         // Validate status.
-        if (request.StatusId.ShouldUpdate)
+        if (request.StatusId is not null)
         {
-            var statusExists = _taskRepository.ProjectTaskStatusIsValid(task.ProjectId, request.StatusId.Value!);
+            var statusExists = _taskRepository.ProjectTaskStatusIsValid(task.ProjectId, request.StatusId);
             if (!statusExists)
             {
                 return Result.Fail(new InvalidStatusId());
@@ -129,15 +130,15 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     {
         var result = Result.Merge
         (
-            request.Name.HandleUpdateWithResult(task.EditName),
+            request.Name.GetResultFromDelegate(task.EditName, Result.Ok),
             request.Description.HandleUpdateWithResult(task.EditDescription),
             request.EstimatedTime.HandleUpdate(task.EditEstimatedTime),
             request.DueDate.HandleUpdate(task.EditDueDate),
             request.StoryPoints.HandleUpdate(task.EditStoryPoints),
             request.AssigneeId.HandleUpdate(task.AssignUser),
             request.StoryId.HandleUpdate(task.EditStory),
-            request.StatusId.HandleUpdate(task.EditStatus),
-            request.Priority.HandleUpdateWithResult(task.EditPriority)
+            request.StatusId.GetResultFromDelegate(task.EditStatus, Result.Ok),
+            request.Priority.GetResultFromDelegate(task.EditPriority, Result.Ok)
         );
 
         return result;

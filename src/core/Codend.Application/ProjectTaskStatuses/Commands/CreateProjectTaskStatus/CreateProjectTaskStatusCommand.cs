@@ -17,7 +17,7 @@ namespace Codend.Application.ProjectTaskStatuses.Commands.CreateProjectTaskStatu
 public sealed record CreateProjectTaskStatusCommand
 (
     string Name,
-    Guid ProjectId
+    ProjectId ProjectId
 ) : ICommand<Guid>;
 
 /// <summary>
@@ -45,18 +45,17 @@ public class CreateProjectTaskStatusCommandHandler : ICommandHandler<CreateProje
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateProjectTaskStatusCommand request, CancellationToken cancellationToken)
     {
-        var projectId = request.ProjectId.GuidConversion<ProjectId>();
-        if (!await _projectRepository.Exists(projectId))
+        if (!await _projectRepository.Exists(request.ProjectId))
         {
             return DomainNotFound.Fail<Project>();
         }
 
-        if (await _statusRepository.StatusExistsWithNameAsync(request.Name, projectId, cancellationToken))
+        if (await _statusRepository.StatusExistsWithNameAsync(request.Name, request.ProjectId, cancellationToken))
         {
             return Result.Fail(new DomainErrors.ProjectTaskStatus.ProjectTaskStatusAlreadyExists());
         }
 
-        var status = ProjectTaskStatus.Create(projectId, request.Name);
+        var status = ProjectTaskStatus.Create(request.ProjectId, request.Name);
         if (status.IsFailed)
         {
             return status.ToResult();

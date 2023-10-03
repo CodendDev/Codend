@@ -13,8 +13,8 @@ namespace Codend.Application.ProjectTasks.Commands.AssignUser;
 /// Assign user to a ProjectTask command.
 /// </summary>
 public sealed record AssignUserCommand(
-        Guid ProjectTaskId,
-        Guid AssigneeId)
+        ProjectTaskId ProjectTaskId,
+        UserId AssigneeId)
     : ICommand;
 
 /// <summary>
@@ -46,7 +46,7 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
     public async Task<Result> Handle(AssignUserCommand request, CancellationToken cancellationToken)
     {
         // Validate task id.
-        var task = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId), cancellationToken);
+        var task = await _taskRepository.GetByIdAsync(request.ProjectTaskId, cancellationToken);
         if (task is null)
         {
             return DomainNotFound.Fail<BaseProjectTask>();
@@ -60,13 +60,12 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
         }
 
         // Validate assignee id.
-        var assigneeId = new UserId(request.AssigneeId);
-        if (!await _projectMemberRepository.IsProjectMember(assigneeId, task.ProjectId, cancellationToken))
+        if (!await _projectMemberRepository.IsProjectMember(request.AssigneeId, task.ProjectId, cancellationToken))
         {
             return Result.Fail(new InvalidAssigneeId());
         }
 
-        var result = task.AssignUser(new UserId(request.AssigneeId));
+        var result = task.AssignUser(request.AssigneeId);
         if (result.IsFailed)
         {
             return result.ToResult();

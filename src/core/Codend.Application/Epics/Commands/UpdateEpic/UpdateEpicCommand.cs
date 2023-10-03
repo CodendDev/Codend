@@ -1,8 +1,6 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
-using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -20,10 +18,10 @@ namespace Codend.Application.Epics.Commands.UpdateEpic;
 /// <param name="StatusId">Id of the new epic status.</param>
 public sealed record UpdateEpicCommand
 (
-    Guid EpicId,
+    EpicId EpicId,
     string? Name,
     string? Description,
-    Guid? StatusId
+    ProjectTaskStatusId? StatusId
 ) : ICommand;
 
 /// <summary>
@@ -51,16 +49,18 @@ public class UpdateEpicCommandHandler : ICommandHandler<UpdateEpicCommand>
     /// <inheritdoc />
     public async Task<Result> Handle(UpdateEpicCommand request, CancellationToken cancellationToken)
     {
-        var epic = await _epicRepository.GetByIdAsync(new EpicId(request.EpicId), cancellationToken);
-        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
+        var epic = await _epicRepository.GetByIdAsync(request.EpicId, cancellationToken);
 
         if (epic is null)
         {
             return Result.Fail(new DomainNotFound(nameof(Epic)));
         }
 
-        if (statusId is not null &&
-            await _statusRepository.StatusExistsWithStatusIdAsync(statusId, epic.ProjectId, cancellationToken) is false)
+        if (request.StatusId is not null &&
+            await _statusRepository.StatusExistsWithStatusIdAsync(
+                request.StatusId,
+                epic.ProjectId,
+                cancellationToken) is false)
         {
             return Result.Fail(new InvalidStatusId());
         }
@@ -69,7 +69,7 @@ public class UpdateEpicCommandHandler : ICommandHandler<UpdateEpicCommand>
         (
             request.Name.GetResultFromDelegate(epic.EditName, Result.Ok),
             request.Description.GetResultFromDelegate(epic.EditDescription, Result.Ok),
-            statusId.GetResultFromDelegate(epic.EditStatus, Result.Ok)
+            request.StatusId.GetResultFromDelegate(epic.EditStatus, Result.Ok)
         );
 
         if (result.IsFailed)

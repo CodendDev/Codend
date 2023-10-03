@@ -7,7 +7,7 @@ namespace Codend.Contracts.Requests.Epic;
 /// <param name="Description">Description of the epic.</param>
 /// <param name="StatusId">Epic status.</param>
 public record UpdateEpicRequest(
-    string Name,
-    string Description,
-    Guid StatusId
+    string? Name,
+    string? Description,
+    Guid? StatusId
 );

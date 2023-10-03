@@ -2,9 +2,7 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Contracts.Requests;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
-using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -24,11 +22,11 @@ namespace Codend.Application.Stories.Commands.UpdateStory;
 /// <param name="StatusId">New story status.</param>
 public sealed record UpdateStoryCommand
 (
-    Guid StoryId,
+    StoryId StoryId,
     string? Name,
     string? Description,
     ShouldUpdateBinder<EpicId?> EpicId,
-    Guid? StatusId
+    ProjectTaskStatusId? StatusId
 ) : ICommand;
 
 /// <summary>
@@ -64,8 +62,7 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
     /// <returns><see cref="Result"/>.Ok() or a failure with errors.</returns>
     public async Task<Result> Handle(UpdateStoryCommand request, CancellationToken cancellationToken)
     {
-        var story = await _storyRepository.GetByIdAsync(new StoryId(request.StoryId), cancellationToken);
-        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
+        var story = await _storyRepository.GetByIdAsync(request.StoryId, cancellationToken);
 
         if (story is null)
         {
@@ -78,8 +75,8 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
             return Result.Fail(new InvalidEpicId());
         }
 
-        if (statusId is not null &&
-            await _statusRepository.StatusExistsWithStatusIdAsync(statusId, story.ProjectId, cancellationToken) is false)
+        if (request.StatusId is not null &&
+            await _statusRepository.StatusExistsWithStatusIdAsync(request.StatusId, story.ProjectId, cancellationToken) is false)
         {
             return Result.Fail(new InvalidStatusId());
         }
@@ -88,7 +85,7 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
             request.Name.GetResultFromDelegate(story.EditName, Result.Ok),
             request.Description.GetResultFromDelegate(story.EditDescription, Result.Ok),
             request.EpicId.HandleUpdate(story.EditEpicId),
-            statusId.GetResultFromDelegate(story.EditStatus, Result.Ok)
+            request.StatusId.GetResultFromDelegate(story.EditStatus, Result.Ok)
         );
 
         if (result.IsFailed)

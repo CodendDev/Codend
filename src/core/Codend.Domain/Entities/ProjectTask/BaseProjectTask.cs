@@ -225,7 +225,7 @@ public class BaseProjectTask :
         Name = resultName.Value;
         OwnerId = ownerId ?? throw new ArgumentException("Owner can't be null");
         Priority = resultPriority.Value;
-        StatusId = properties.StatusId;
+        StatusId = properties.StatusId!;
         ProjectId = properties.ProjectId;
         Description = resultDescription.Value;
         EstimatedTime = properties.EstimatedTime;

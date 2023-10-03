@@ -16,17 +16,17 @@ public interface IUpdateProjectTaskCommand
     /// <summary>
     /// Name of the task.
     /// </summary>
-    ShouldUpdateBinder<string> Name { get; }
+    string? Name { get; }
 
     /// <summary>
     /// Priority of the task.
     /// </summary>
-    ShouldUpdateBinder<string> Priority { get; }
+    string? Priority { get; }
 
     /// <summary>
     /// StatusId of the task. Status and task must belong to the same project.
     /// </summary>
-    ShouldUpdateBinder<ProjectTaskStatusId> StatusId { get; }
+    ProjectTaskStatusId? StatusId { get; }
 
     /// <summary>
     /// Description of the task.

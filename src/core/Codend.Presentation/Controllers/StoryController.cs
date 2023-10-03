@@ -53,12 +53,13 @@ public class StoryController : ApiController
         [FromBody] CreateStoryRequest request)
     {
         var command = new CreateStoryCommand(
+            projectId.GuidConversion<ProjectId>(),
             request.Name,
             request.Description,
-            projectId,
-            request.EpicId,
-            request.StatusId);
-        
+            request.EpicId.GuidConversion<EpicId>(),
+            request.StatusId.GuidConversion<ProjectTaskStatusId>()
+        );
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -85,7 +86,8 @@ public class StoryController : ApiController
         [FromRoute] Guid projectId,
         [FromRoute] Guid storyId)
     {
-        var command = new DeleteStoryCommand(storyId);
+        var command = new DeleteStoryCommand(storyId.GuidConversion<StoryId>());
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -130,11 +132,11 @@ public class StoryController : ApiController
         [FromBody] UpdateStoryRequest request)
     {
         var command = new UpdateStoryCommand(
-            storyId,
+            storyId.GuidConversion<StoryId>(),
             request.Name,
             request.Description,
             request.EpicId.HandleNull().Convert(EntityIdExtensions.GuidConversion<EpicId>),
-            request.StatusId
+            request.StatusId.GuidConversion<ProjectTaskStatusId>()
         );
 
         var response = await Mediator.Send(command);

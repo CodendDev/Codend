@@ -28,13 +28,14 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     : ICommandHandler<TCommand, Guid>
     where TCommand : ICommand<Guid>, ICreateProjectTaskCommand<TProjectTaskProperties>
     where TProjectTask : BaseProjectTask, IProjectTaskCreator<TProjectTask, TProjectTaskProperties>
-    where TProjectTaskProperties : IProjectTaskCreateProperties
+    where TProjectTaskProperties : class, IProjectTaskCreateProperties
 {
     private readonly IProjectTaskRepository _projectTaskRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserIdentityProvider _identityProvider;
     private readonly IStoryRepository _storyRepository;
+    private readonly IProjectTaskStatusRepository _statusRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateProjectTaskCommandAbstractHandler{TCommand,TProjectTask,TProjectTaskProperties}"/> class.
@@ -44,13 +45,15 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         IUnitOfWork unitOfWork,
         IUserIdentityProvider identityProvider,
         IProjectMemberRepository projectMemberRepository,
-        IStoryRepository storyRepository)
+        IStoryRepository storyRepository,
+        IProjectTaskStatusRepository statusRepository)
     {
         _projectTaskRepository = projectTaskRepository;
         _unitOfWork = unitOfWork;
         _identityProvider = identityProvider;
         _projectMemberRepository = projectMemberRepository;
         _storyRepository = storyRepository;
+        _statusRepository = statusRepository;
     }
 
     /// <inheritdoc />
@@ -65,11 +68,7 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
             return DomainNotFound.Fail<Project>();
         }
 
-        // Validate status id.
-        var statusId = request.TaskProperties.StatusId;
-        var projectStatusIsValid = _projectTaskRepository.ProjectTaskStatusIsValid(projectId, statusId);
-        var resultProjectTaskStatus =
-            projectStatusIsValid ? Result.Ok() : Result.Fail(new InvalidStatusId());
+        var resultProjectTaskStatus = await ValidateStatus(request, cancellationToken);
 
         // Validate assignee id.
         var assigneeId = request.TaskProperties.AssigneeId;
@@ -100,5 +99,22 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Ok(task.Id.Value);
+    }
+
+    // Validate status id, if null set defaultStatusId as statusId.
+    private async Task<Result> ValidateStatus(TCommand request, CancellationToken cancellationToken)
+    {
+        var statusId = request.TaskProperties.StatusId;
+        var projectId = request.TaskProperties.ProjectId;
+
+        if (statusId is not null)
+        {
+            var projectStatusIsValid = _projectTaskRepository.ProjectTaskStatusIsValid(projectId, statusId);
+            return projectStatusIsValid ? Result.Ok() : Result.Fail(new InvalidStatusId());
+        }
+
+        var defaultStatusId = await _statusRepository.GetProjectDefaultStatusIdAsync(projectId, cancellationToken);
+        request.TaskProperties.StatusId = defaultStatusId;
+        return Result.Ok();
     }
 }

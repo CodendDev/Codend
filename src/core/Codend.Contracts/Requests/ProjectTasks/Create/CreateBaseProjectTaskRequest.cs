@@ -5,7 +5,7 @@ public record CreateBaseProjectTaskRequest
 (
     string Name,
     string Priority,
-    Guid StatusId,
+    Guid? StatusId,
     string? Description,
     EstimatedTimeRequest? EstimatedTime,
     DateTime? DueDate,
