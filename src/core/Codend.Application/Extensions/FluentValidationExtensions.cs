@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Codend.Domain.Core.Abstractions;
+using FluentValidation;
 using static Codend.Application.Core.Errors.ValidationErrors;
 
 namespace Codend.Application.Extensions;
@@ -25,5 +26,26 @@ internal static class FluentValidationExtensions
         }
 
         return rule.WithErrorCode(error.ErrorCode).WithMessage(error.Message);
+    }
+
+    /// <summary>
+    /// Validates that provided guid is not default guid.
+    /// </summary>
+    /// <param name="rule">The current rule.</param>
+    /// <typeparam name="T">The type being validated.</typeparam>
+    /// <typeparam name="TProperty">The nullable <see cref="IEntityId{TKey}"/> being validated.</typeparam>
+    /// <returns>The same rule builder.</returns>
+    public static IRuleBuilderOptions<T, TProperty> MustNotBeDefaultGuid<T, TProperty>(
+        this IRuleBuilder<T, TProperty> rule) where TProperty : IEntityId<Guid>?
+    {
+        return rule.Must((rootObject, property, context) =>
+        {
+            if (property == null)
+            {
+                return true;
+            }
+
+            return property.Value != Guid.Empty;
+        });
     }
 }

@@ -39,6 +39,10 @@ public abstract class CreateProjectTaskCommandAbstractValidator<TCreateProjectTa
             .Must(x => ProjectTaskPriority.TryFromName(x, true, out _))
             .WithError(new ProjectTask.PriorityNotDefined());
 
+        RuleFor(x => x.TaskProperties.StatusId)
+            .MustNotBeDefaultGuid()
+            .WithError(new PropertyNullOrEmpty(nameof(IProjectTaskCreateProperties.StatusId)));
+
         RuleFor(x => x.TaskProperties.Description)
             .MaximumLength(ProjectTaskDescription.MaxLength)
             .WithError(new StringPropertyTooLong(nameof(IProjectTaskCreateProperties.Description),

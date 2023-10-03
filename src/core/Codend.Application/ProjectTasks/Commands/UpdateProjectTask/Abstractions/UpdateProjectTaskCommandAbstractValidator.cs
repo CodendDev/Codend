@@ -44,6 +44,10 @@ public abstract class UpdateProjectTaskCommandAbstractValidator<TUpdateProjectTa
                 .WithError(new ProjectTask.PriorityNotDefined());
         });
 
+        RuleFor(x => x.StatusId)
+            .MustNotBeDefaultGuid()
+            .WithError(new PropertyNullOrEmpty(nameof(IUpdateProjectTaskCommand.StatusId)));
+
         When(x => x.Description.ShouldUpdate, () =>
         {
             RuleFor(x => x.Description.Value)
