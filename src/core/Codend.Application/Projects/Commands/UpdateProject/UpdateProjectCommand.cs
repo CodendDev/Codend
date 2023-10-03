@@ -40,8 +40,11 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateProjectCommandHandler"/> class.
     /// </summary>
-    public UpdateProjectCommandHandler(IProjectRepository projectRepository, IUnitOfWork unitOfWork,
-        IProjectMemberRepository projectMemberRepository, IUserIdentityProvider identityProvider,
+    public UpdateProjectCommandHandler(
+        IProjectRepository projectRepository,
+        IUnitOfWork unitOfWork,
+        IProjectMemberRepository projectMemberRepository,
+        IUserIdentityProvider identityProvider,
         IProjectTaskStatusRepository statusRepository)
     {
         _projectRepository = projectRepository;

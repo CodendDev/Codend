@@ -87,7 +87,7 @@ public class ProjectTaskController : ApiController
     }
 
     /// <summary>
-    /// Assigns project member with id <paramref name="userId"/> to task with id <paramref name="projectTaskId"/>.
+    /// Assigns project member with id <paramref name="assigneeId"/> to task with id <paramref name="projectTaskId"/>.
     /// </summary>
     /// <param name="projectId">Id of the project to which the task belongs.</param>
     /// <param name="projectTaskId">Id of the project task to which the user will be assigned.</param>
