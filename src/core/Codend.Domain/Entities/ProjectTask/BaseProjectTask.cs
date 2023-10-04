@@ -47,7 +47,7 @@ public class BaseProjectTask :
     public ProjectId ProjectId { get; private set; }
     public TimeSpan? EstimatedTime { get; private set; }
     public uint? StoryPoints { get; private set; }
-    public StoryId? StoryId { get; set; }
+    public StoryId? StoryId { get; private set; }
 
     #endregion
 

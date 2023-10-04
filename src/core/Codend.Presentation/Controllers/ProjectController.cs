@@ -3,6 +3,7 @@ using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
 using Codend.Application.Projects.Commands.RemoveMember;
 using Codend.Application.Projects.Commands.UpdateProject;
+using Codend.Application.Projects.Queries.GetBoard;
 using Codend.Application.Projects.Queries.GetMembers;
 using Codend.Application.Projects.Queries.GetProjectById;
 using Codend.Application.Projects.Queries.GetProjects;
@@ -11,6 +12,7 @@ using Codend.Contracts.Common;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.Project;
 using Codend.Contracts.Responses;
+using Codend.Contracts.Responses.Board;
 using Codend.Contracts.Responses.Project;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
@@ -121,7 +123,7 @@ public class ProjectController : ApiController
             request.Name,
             request.Description.HandleNull(),
             request.DefaultStatusId.GuidConversion<ProjectTaskStatusId>());
-        
+
         var response = await Mediator.Send(command);
         if (response.IsSuccess)
         {
@@ -254,7 +256,7 @@ public class ProjectController : ApiController
     /// 404 - when project was not found.
     /// </returns>
     [HttpPost("{projectId:guid}/members")]
-    [ProducesResponseType(typeof(IEnumerable<UserResponse>),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMembers(
         [FromRoute] Guid projectId,
@@ -269,5 +271,31 @@ public class ProjectController : ApiController
         }
 
         return Ok(response.Value);
+    }
+
+    /// <summary>
+    /// Retrieves all project tasks, stories and epics within one object.
+    /// </summary>
+    /// <param name="projectId">The id of the project whose elements will be returned.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 200 - on success with board response.
+    /// 404 - when project was not found.
+    /// </returns>
+    [HttpPost("{projectId:guid}/board")]
+    [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetBoard(
+        [FromRoute] Guid projectId)
+    {
+        var query = new GetBoardQuery(projectId.GuidConversion<ProjectId>());
+        var response = await Mediator.Send(query);
+
+        if (response.IsSuccess)
+        {
+            return Ok(response.Value);
+        }
+
+        return NotFound();
     }
 }

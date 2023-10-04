@@ -5,15 +5,15 @@ using Codend.Domain.Entities;
 namespace Codend.Contracts.Automapper.Entities;
 
 /// <summary>
-/// <see cref="Epic"/> automapper profile.
+/// <see cref="Epic"/> board automapper profile.
 /// </summary>
-public sealed class EpicResponseProfile : Profile
+public sealed class BoardEpicResponseProfile : Profile
 {
     /// <summary>
     /// Initializes maps for <see cref="Epic"/> class.
     /// </summary>
-    public EpicResponseProfile()
+    public BoardEpicResponseProfile()
     {
-        CreateMap<Epic, EpicResponse>();
+        CreateMap<Epic, BoardEpicResponse>();
     }
 }
