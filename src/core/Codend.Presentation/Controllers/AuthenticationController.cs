@@ -45,7 +45,7 @@ public class AuthenticationController : ApiController
         var response = await Mediator.Send(command);
         if (response.IsFailed)
         {
-            return BadRequest(response.Reasons);
+            return BadRequest(response.MapToApiErrorsResponse());
         }
 
         return Ok(response.Value);
@@ -77,7 +77,7 @@ public class AuthenticationController : ApiController
         var response = await Mediator.Send(command);
         if (response.IsFailed)
         {
-            return BadRequest(response.Reasons);
+            return BadRequest(response.MapToApiErrorsResponse());
         }
 
         return Ok(response.Value);
