@@ -282,7 +282,7 @@ public class ProjectController : ApiController
     /// 200 - on success with board response.
     /// 404 - when project was not found.
     /// </returns>
-    [HttpPost("{projectId:guid}/board")]
+    [HttpGet("{projectId:guid}/board")]
     [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetBoard(
