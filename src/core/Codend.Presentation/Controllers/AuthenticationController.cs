@@ -2,6 +2,7 @@
 using Codend.Application.Authentication.Register;
 using Codend.Contracts;
 using Codend.Contracts.Authentication;
+using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -40,16 +41,12 @@ public class AuthenticationController : ApiController
     [ProducesResponseType(typeof(TokenResponse), 200)]
     [ProducesResponseType(typeof(ApiErrorsResponse), 400)]
     [AllowAnonymous]
-    public async Task<IActionResult> Login([FromBody] LoginCommand command)
-    {
-        var response = await Mediator.Send(command);
-        if (response.IsFailed)
-        {
-            return BadRequest(response.MapToApiErrorsResponse());
-        }
+    public async Task<IActionResult> Login([FromBody] LoginCommand command) =>
+        await Resolver<LoginCommand>
+            .For(command)
+            .Execute(req => Mediator.Send(req))
+            .ResolveResponse(this);
 
-        return Ok(response.Value);
-    }
 
     /// <summary>
     /// Registers new user and returns a JWT token.
@@ -72,14 +69,9 @@ public class AuthenticationController : ApiController
     [ProducesResponseType(typeof(TokenResponse), 200)]
     [ProducesResponseType(typeof(ApiErrorsResponse), 400)]
     [AllowAnonymous]
-    public async Task<IActionResult> Register([FromBody] RegisterCommand command)
-    {
-        var response = await Mediator.Send(command);
-        if (response.IsFailed)
-        {
-            return BadRequest(response.MapToApiErrorsResponse());
-        }
-
-        return Ok(response.Value);
-    }
+    public async Task<IActionResult> Register([FromBody] RegisterCommand command) =>
+        await Resolver<RegisterCommand>
+            .For(command)
+            .Execute(req => Mediator.Send(req))
+            .ResolveResponse(this);
 }
