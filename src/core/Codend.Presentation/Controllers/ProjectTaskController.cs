@@ -14,6 +14,7 @@ using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
+using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -38,21 +39,11 @@ public class ProjectTaskController : ApiController
     #region Private methods
 
     private async Task<IActionResult> UpdateTask<TCommand>(TCommand command)
-        where TCommand : ICommand, IUpdateProjectTaskCommand
-    {
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        if (response.HasError<DomainNotFound>())
-        {
-            return NotFound();
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        where TCommand : ICommand, IUpdateProjectTaskCommand =>
+        await Resolver<TCommand>
+            .For(command)
+            .Execute(req => Mediator.Send(req))
+            .ResolveResponse(this);
 
     #endregion
 
@@ -73,18 +64,11 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid projectTaskId)
-    {
-        var command = new DeleteProjectTaskCommand(projectTaskId.GuidConversion<ProjectTaskId>());
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        return NotFound();
-    }
+        [FromRoute] Guid projectTaskId) =>
+        await Resolver<DeleteProjectTaskCommand>
+            .For(new DeleteProjectTaskCommand(projectTaskId.GuidConversion<ProjectTaskId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse(this);
 
     /// <summary>
     /// Assigns project member with id <paramref name="assigneeId"/> to task with id <paramref name="projectTaskId"/>.
@@ -106,26 +90,14 @@ public class ProjectTaskController : ApiController
     public async Task<IActionResult> AssignUser(
         [FromRoute] Guid projectId,
         [FromRoute] Guid projectTaskId,
-        [FromRoute] Guid assigneeId)
-    {
-        var command = new AssignUserCommand(
-            projectTaskId.GuidConversion<ProjectTaskId>(),
-            assigneeId.GuidConversion<UserId>()
-        );
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return Ok();
-        }
-
-        if (response.HasError<DomainErrors.ProjectTaskErrors.InvalidAssigneeId>())
-        {
-            return BadRequest(response.MapToApiErrorsResponse());
-        }
-
-        return NotFound();
-    }
+        [FromRoute] Guid assigneeId) =>
+        await Resolver<AssignUserCommand>
+            .For(new AssignUserCommand(
+                projectTaskId.GuidConversion<ProjectTaskId>(),
+                assigneeId.GuidConversion<UserId>()
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse(this);
 
     /// <summary>
     /// Retrieves common data of project task with <paramref name="projectTaskId"/>.
@@ -142,18 +114,11 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid projectTaskId)
-    {
-        var query = new GetProjectTaskByIdQuery(projectTaskId.GuidConversion<ProjectTaskId>());
-
-        var response = await Mediator.Send(query);
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return NotFound();
-    }
+        [FromRoute] Guid projectTaskId) =>
+        await Resolver<GetProjectTaskByIdQuery>
+            .For(new GetProjectTaskByIdQuery(projectTaskId.GuidConversion<ProjectTaskId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse(this);
 
     #endregion
 
@@ -198,33 +163,26 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateBaseTask(
         [FromRoute] Guid projectId,
-        [FromBody] CreateBaseProjectTaskRequest request)
-    {
-        var command = new CreateBaseProjectTaskCommand(
-            new BaseProjectTaskCreateProperties(
-                projectId.GuidConversion<ProjectId>(),
-                request.Name,
-                request.Priority,
-                request.Description,
-                request.EstimatedTime.ToTimeSpan(),
-                request.DueDate,
-                request.StoryPoints,
-                request.AssigneeId.GuidConversion<UserId>(),
-                request.StoryId.GuidConversion<StoryId>()
-            )
-            {
-                StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>()
-            }
-        );
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        [FromBody] CreateBaseProjectTaskRequest request) =>
+        await Resolver<CreateBaseProjectTaskCommand>
+            .For(new CreateBaseProjectTaskCommand(
+                new BaseProjectTaskCreateProperties(
+                    projectId.GuidConversion<ProjectId>(),
+                    request.Name,
+                    request.Priority,
+                    request.Description,
+                    request.EstimatedTime.ToTimeSpan(),
+                    request.DueDate,
+                    request.StoryPoints,
+                    request.AssigneeId.GuidConversion<UserId>(),
+                    request.StoryId.GuidConversion<StoryId>()
+                )
+                {
+                    StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>()
+                }
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse(this);
 
     /// <summary>
     /// Updates BaseProjectTask entity with given <paramref name="projectTaskId"/>.
@@ -350,33 +308,26 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateBugfix(
         [FromRoute] Guid projectId,
-        [FromBody] CreateBugfixProjectTaskRequest request)
-    {
-        var command = new CreateBugfixProjectTaskCommand(
-            new BugfixProjectTaskCreateProperties(
-                projectId.GuidConversion<ProjectId>(),
-                request.Name,
-                request.Priority,
-                request.Description,
-                request.EstimatedTime.ToTimeSpan(),
-                request.DueDate,
-                request.StoryPoints,
-                request.AssigneeId.GuidConversion<UserId>(),
-                request.StoryId.GuidConversion<StoryId>()
-            )
-            {
-                StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>(),
-            }
-        );
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        [FromBody] CreateBugfixProjectTaskRequest request) =>
+        await Resolver<CreateBugfixProjectTaskCommand>
+            .For(new CreateBugfixProjectTaskCommand(
+                new BugfixProjectTaskCreateProperties(
+                    projectId.GuidConversion<ProjectId>(),
+                    request.Name,
+                    request.Priority,
+                    request.Description,
+                    request.EstimatedTime.ToTimeSpan(),
+                    request.DueDate,
+                    request.StoryPoints,
+                    request.AssigneeId.GuidConversion<UserId>(),
+                    request.StoryId.GuidConversion<StoryId>()
+                )
+                {
+                    StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>(),
+                }
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse(this);
 
 
     /// <summary>
