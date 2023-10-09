@@ -208,7 +208,7 @@ public class ProjectController : ApiController
     /// 200 - on success with users list.
     /// 404 - when project was not found.
     /// </returns>
-    [HttpPost("{projectId:guid}/members")]
+    [HttpGet("{projectId:guid}/members")]
     [ProducesResponseType(typeof(IEnumerable<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMembers(
