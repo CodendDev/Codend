@@ -23,8 +23,7 @@ public static class DependencyInjection
 
         services.AddScoped<IUserIdentityProvider, UserIdentityProvider>();
         services.AddScoped<IAuthService, FusionAuthService>();
-        services.AddScoped<IUserService, FusionAuthService>(
-            serviceProvider => serviceProvider.GetRequiredService<FusionAuthService>());
+        services.AddScoped<IUserService, FusionAuthService>();
 
         return services;
     }
