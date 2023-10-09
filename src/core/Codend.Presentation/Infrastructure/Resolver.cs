@@ -1,7 +1,7 @@
 ﻿namespace Codend.Presentation.Infrastructure;
 
 /// <summary>
-/// Class for resolving query/commands. Can authorize and return appriopriate ActionResult based on request result.
+/// Class for resolving query/commands. Can authorize and return appropriate ActionResult based on request result.
 /// </summary>
 /// <typeparam name="TRequest">Command/Query to be resolved.</typeparam>
 internal sealed class Resolver<TRequest>

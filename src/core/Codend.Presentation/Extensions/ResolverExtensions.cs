@@ -32,7 +32,7 @@ internal static class ResolverExtensions
         await func(resolver.Request);
 
     /// <summary>
-    /// Resolves command/query response. Returns succes or error response based on result.
+    /// Resolves command/query response. Returns success or error response based on result.
     /// </summary>
     /// <param name="responseTask">Async task of the response to be resolved.</param>
     /// <param name="controller">Controller instance.</param>
