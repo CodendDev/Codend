@@ -9,6 +9,15 @@ namespace Codend.Presentation.Infrastructure.Authorization;
 public static class ProjectOperations
 {
     /// <summary>
+    /// IsProjectOwner policy name.
+    /// </summary>
+    public const string IsProjectOwnerPolicy = nameof(IsProjectOwnerPolicy);
+    /// <summary>
+    /// IsProjectMember policy name.
+    /// </summary>
+    public const string IsProjectMemberPolicy = nameof(IsProjectMemberPolicy);
+    
+    /// <summary>
     /// Represents the "edit" operation authorization requirement,
     /// which allows to manage project properties and entities.
     /// </summary>
