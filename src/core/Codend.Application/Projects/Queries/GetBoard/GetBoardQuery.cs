@@ -34,7 +34,7 @@ public sealed record GetBoardQuery(ProjectId ProjectId) : IQuery<BoardResponse>;
 public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
 {
     private readonly IMapper _mapper;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
     private readonly IQueryableSets _queryableSets;
 
     /// <summary>
@@ -42,7 +42,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
     /// </summary>
     public GetBoardQueryHandler(
         IMapper mapper,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider identityProvider,
         IQueryableSets queryableSets)
     {
         _mapper = mapper;

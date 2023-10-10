@@ -10,11 +10,11 @@ namespace Codend.Infrastructure.Authentication;
 /// Implementation of IUserIdentityProvider which uses JWT token to
 /// obtain required information e.g. GetUserId uses "sub" claim to retrieve id.
 /// </summary>
-public class UserIdentityProvider : IUserIdentityProvider
+public class HttpContextProvider : IHttpContextProvider
 {
     private readonly IHttpContextAccessor _contextAccessor;
 
-    public UserIdentityProvider(IHttpContextAccessor contextAccessor)
+    public HttpContextProvider(IHttpContextAccessor contextAccessor)
     {
         _contextAccessor = contextAccessor;
     }

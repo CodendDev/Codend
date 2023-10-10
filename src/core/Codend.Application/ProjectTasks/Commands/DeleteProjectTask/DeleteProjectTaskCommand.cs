@@ -21,7 +21,7 @@ public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTask
 {
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
     private readonly IProjectMemberRepository _projectMemberRepository;
 
     /// <summary>
@@ -30,7 +30,7 @@ public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTask
     public DeleteProjectTaskCommandHandler(
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider identityProvider,
         IProjectMemberRepository projectMemberRepository)
     {
         _taskRepository = taskRepository;

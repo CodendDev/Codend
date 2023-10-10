@@ -34,7 +34,7 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
     private readonly IProjectRepository _projectRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectMemberRepository _projectMemberRepository;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
     private readonly IProjectTaskStatusRepository _statusRepository;
 
     /// <summary>
@@ -44,7 +44,7 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
         IProjectRepository projectRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository projectMemberRepository,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider identityProvider,
         IProjectTaskStatusRepository statusRepository)
     {
         _projectRepository = projectRepository;

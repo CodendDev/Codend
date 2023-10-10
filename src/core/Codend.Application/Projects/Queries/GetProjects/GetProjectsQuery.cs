@@ -38,7 +38,7 @@ public sealed record GetProjectsQuery(
 public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList<ProjectResponse>>
 {
     private readonly IMapper _mapper;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
     private readonly IQueryableSets _queryableSets;
 
     /// <summary>
@@ -46,7 +46,7 @@ public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList
     /// </summary>
     public GetProjectsQueryHandler(
         IMapper mapper,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider identityProvider,
         IQueryableSets queryableSets)
     {
         _mapper = mapper;

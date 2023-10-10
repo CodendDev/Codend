@@ -28,7 +28,7 @@ public sealed record GetMembersQuery
 /// </summary>
 public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, IEnumerable<UserResponse>>
 {
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
     private readonly IQueryableSets _queryableSets;
     private readonly IUserService _userService;
 
@@ -36,7 +36,7 @@ public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, IEnumerable
     /// Initializes a new instance of the <see cref="GetMembersQueryHandler"/> class.
     /// </summary>
     public GetMembersQueryHandler(
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider identityProvider,
         IQueryableSets queryableSets,
         IUserService userService)
     {

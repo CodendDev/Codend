@@ -39,7 +39,7 @@ public class UpdateBugfixProjectTaskCommandHandler :
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
         IStoryRepository storyRepository,
-        IUserIdentityProvider identityProvider)
+        IHttpContextProvider identityProvider)
         : base(taskRepository,
             unitOfWork,
             memberRepository,

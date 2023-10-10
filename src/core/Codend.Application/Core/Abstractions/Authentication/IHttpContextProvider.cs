@@ -5,7 +5,7 @@ namespace Codend.Application.Core.Abstractions.Authentication;
 /// <summary>
 /// Interface to retrieve user id from HttpContext.
 /// </summary>
-public interface IUserIdentityProvider
+public interface IHttpContextProvider
 {
     /// <summary>
     /// Logged in user id.

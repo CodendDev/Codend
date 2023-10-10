@@ -33,7 +33,7 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     private readonly IProjectTaskRepository _projectTaskRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
     private readonly IStoryRepository _storyRepository;
     private readonly IProjectTaskStatusRepository _statusRepository;
 
@@ -43,7 +43,7 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     protected CreateProjectTaskCommandAbstractHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider identityProvider,
         IProjectMemberRepository projectMemberRepository,
         IStoryRepository storyRepository,
         IProjectTaskStatusRepository statusRepository)

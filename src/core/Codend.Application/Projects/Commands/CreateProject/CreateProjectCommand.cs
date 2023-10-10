@@ -26,7 +26,7 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectTaskStatusRepository _statusRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
     private readonly IProjectMemberRepository _projectMemberRepository;
 
     /// <summary>
@@ -35,7 +35,7 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
     public CreateProjectCommandHandler(
         IProjectRepository projectRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider identityProvider,
         IProjectTaskStatusRepository statusRepository,
         IProjectMemberRepository projectMemberRepository)
     {

@@ -31,7 +31,7 @@ public class CreateBaseProjectTaskCommandHandler :
     public CreateBaseProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider identityProvider,
         IProjectMemberRepository projectMemberRepository,
         IStoryRepository storyRepository,
         IProjectTaskStatusRepository statusRepository)

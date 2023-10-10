@@ -23,13 +23,13 @@ public class DeleteProjectCommandHandler : ICommandHandler<DeleteProjectCommand>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteProjectCommandHandler"/> class.
     /// </summary>
     public DeleteProjectCommandHandler(IProjectRepository projectRepository, IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider)
+        IHttpContextProvider identityProvider)
     {
         _projectRepository = projectRepository;
         _unitOfWork = unitOfWork;

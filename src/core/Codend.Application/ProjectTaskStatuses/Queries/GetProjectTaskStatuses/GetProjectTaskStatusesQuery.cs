@@ -26,7 +26,7 @@ public class GetProjectTaskStatusesQueryHandler
     : IQueryHandler<GetProjectTaskStatusesQuery, IEnumerable<ProjectTaskStatusResponse>>
 {
     private readonly IQueryableSets _context;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -34,7 +34,7 @@ public class GetProjectTaskStatusesQueryHandler
     /// </summary>
     public GetProjectTaskStatusesQueryHandler(
         IQueryableSets context,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider identityProvider,
         IMapper mapper)
     {
         _context = context;

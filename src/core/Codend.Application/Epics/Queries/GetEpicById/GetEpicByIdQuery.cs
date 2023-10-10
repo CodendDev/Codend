@@ -24,7 +24,7 @@ public class GetEpicByIdQueryHandler : IQueryHandler<GetEpicByIdQuery, EpicRespo
 {
     private readonly IEpicRepository _epicRepository;
     private readonly IProjectMemberRepository _memberRepository;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -34,7 +34,7 @@ public class GetEpicByIdQueryHandler : IQueryHandler<GetEpicByIdQuery, EpicRespo
         IMapper mapper,
         IEpicRepository epicRepository,
         IProjectMemberRepository memberRepository,
-        IUserIdentityProvider identityProvider)
+        IHttpContextProvider identityProvider)
     {
         _mapper = mapper;
         _epicRepository = epicRepository;

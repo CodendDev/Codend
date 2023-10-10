@@ -25,7 +25,7 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectMemberRepository _projectMemberRepository;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AssignUserCommandHandler"/> class.
@@ -34,7 +34,7 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository projectMemberRepository,
-        IUserIdentityProvider identityProvider)
+        IHttpContextProvider identityProvider)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;

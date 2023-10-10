@@ -30,7 +30,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectMemberRepository _memberRepository;
     private readonly IStoryRepository _storyRepository;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
 
     /// <summary>
     /// Constructs implementation of <see cref="UpdateProjectTaskCommandAbstractHandler{TCommand,TProjectTask}"/> with
@@ -46,7 +46,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
         IStoryRepository storyRepository,
-        IUserIdentityProvider identityProvider)
+        IHttpContextProvider identityProvider)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;

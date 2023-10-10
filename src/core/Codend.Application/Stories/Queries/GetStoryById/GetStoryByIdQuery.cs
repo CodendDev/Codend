@@ -24,7 +24,7 @@ public class GetStoryByIdQueryHandler : IQueryHandler<GetStoryByIdQuery, StoryRe
 {
     private readonly IStoryRepository _storyRepository;
     private readonly IProjectMemberRepository _memberRepository;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _identityProvider;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -33,7 +33,7 @@ public class GetStoryByIdQueryHandler : IQueryHandler<GetStoryByIdQuery, StoryRe
     public GetStoryByIdQueryHandler(
         IStoryRepository storyRepository,
         IProjectMemberRepository memberRepository,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider identityProvider,
         IMapper mapper)
     {
         _storyRepository = storyRepository;
