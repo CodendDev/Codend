@@ -3,6 +3,7 @@ using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Http;
 
 namespace Codend.Presentation.Infrastructure.Authorization;
 
@@ -10,9 +11,9 @@ namespace Codend.Presentation.Infrastructure.Authorization;
 /// Handles authorization logic for project operations.
 /// </summary>
 internal sealed class ProjectOperationsAuthorizationHandler :
-    AuthorizationHandler<OperationAuthorizationRequirement, ProjectId>
+    AuthorizationHandler<OperationAuthorizationRequirement>
 {
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
 
@@ -20,24 +21,28 @@ internal sealed class ProjectOperationsAuthorizationHandler :
     /// Initializes a new instance of the <see cref="ProjectOperationsAuthorizationHandler"/> class.
     /// </summary>
     public ProjectOperationsAuthorizationHandler(
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IProjectRepository projectRepository,
         IProjectMemberRepository projectMemberRepository)
     {
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _projectRepository = projectRepository;
         _projectMemberRepository = projectMemberRepository;
     }
 
     protected override async Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
-        OperationAuthorizationRequirement requirement,
-        ProjectId projectId)
+        OperationAuthorizationRequirement requirement)
     {
-        // TODO: grant access to admin
-
-        var userId = _identityProvider.UserId;
-
+        var userId = _contextProvider.UserId;
+        var projectId = _contextProvider.ProjectId;
+        if (projectId is null)
+        {
+            context.Fail();
+            _contextProvider.SetResponseStatusCode(StatusCodes.Status404NotFound);
+            return;
+        }
+        
         switch (requirement.Name)
         {
             // User must be project member.
@@ -45,16 +50,17 @@ internal sealed class ProjectOperationsAuthorizationHandler :
                 if (await IsUserProjectMember(userId, projectId))
                 {
                     context.Succeed(requirement);
+                    return;
                 }
 
                 context.Fail();
                 break;
-
             // User must be project owner.
             case nameof(ProjectOperations.Owner):
                 if (await IsUserProjectOwner(userId, projectId))
                 {
                     context.Succeed(requirement);
+                    return;
                 }
 
                 context.Fail();
@@ -62,6 +68,7 @@ internal sealed class ProjectOperationsAuthorizationHandler :
             default:
                 throw new ArgumentException("Unknown permission requirement.", nameof(requirement));
         }
+        _contextProvider.SetResponseStatusCode(StatusCodes.Status404NotFound);
     }
 
     private async Task<bool> IsUserProjectMember(UserId userId, ProjectId projectId)
