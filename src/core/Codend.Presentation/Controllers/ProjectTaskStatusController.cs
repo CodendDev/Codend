@@ -9,10 +9,11 @@ using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
+using Codend.Presentation.Infrastructure.Authorization;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Presentation.Controllers;
 
@@ -20,6 +21,7 @@ namespace Codend.Presentation.Controllers;
 /// Controller for <see cref="ProjectTaskStatus"/> commands.
 /// </summary>
 [Route("api/projects/{projectId:guid}/task-statuses")]
+[Authorize(ProjectOperations.IsProjectMemberPolicy)]
 public class ProjectTaskStatusController : ApiController
 {
     /// <inheritdoc />
@@ -53,7 +55,7 @@ public class ProjectTaskStatusController : ApiController
         await Resolver<CreateProjectTaskStatusCommand>
             .For(new CreateProjectTaskStatusCommand(request.Name, projectId.GuidConversion<ProjectId>()))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Deletes project task status with given <paramref name="statusId"/>.
@@ -74,7 +76,7 @@ public class ProjectTaskStatusController : ApiController
         await Resolver<DeleteProjectTaskStatusCommand>
             .For(new DeleteProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>()))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Updates task status with id <paramref name="statusId"/>.
@@ -106,7 +108,7 @@ public class ProjectTaskStatusController : ApiController
         await Resolver<UpdateProjectTaskStatusCommand>
             .For(new UpdateProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>(), request.Name))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves all task statuses of the project with id <paramref name="projectId"/>.
@@ -124,5 +126,5 @@ public class ProjectTaskStatusController : ApiController
         await Resolver<GetProjectTaskStatusesQuery>
             .For(new GetProjectTaskStatusesQuery(projectId.GuidConversion<ProjectId>()))
             .Execute(query => Mediator.Send(query))
-            .ResolveResponse(this);
+            .ResolveResponse();
 }

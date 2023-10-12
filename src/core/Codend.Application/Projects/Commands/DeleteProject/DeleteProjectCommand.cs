@@ -1,4 +1,3 @@
-using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
@@ -23,30 +22,21 @@ public class DeleteProjectCommandHandler : ICommandHandler<DeleteProjectCommand>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IHttpContextProvider _contextProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteProjectCommandHandler"/> class.
     /// </summary>
-    public DeleteProjectCommandHandler(IProjectRepository projectRepository, IUnitOfWork unitOfWork,
-        IHttpContextProvider contextProvider)
+    public DeleteProjectCommandHandler(IProjectRepository projectRepository, IUnitOfWork unitOfWork)
     {
         _projectRepository = projectRepository;
         _unitOfWork = unitOfWork;
-        _contextProvider = contextProvider;
     }
 
     /// <inheritdoc />
     public async Task<Result> Handle(DeleteProjectCommand request, CancellationToken cancellationToken)
     {
-        var userId = _contextProvider.UserId;
         var project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project is null)
-        {
-            return DomainNotFound.Fail<Project>();
-        }
-
-        if (project.OwnerId != userId)
         {
             return DomainNotFound.Fail<Project>();
         }

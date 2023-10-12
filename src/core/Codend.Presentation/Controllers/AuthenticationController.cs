@@ -45,7 +45,7 @@ public class AuthenticationController : ApiController
         await Resolver<LoginCommand>
             .For(command)
             .Execute(req => Mediator.Send(req))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
 
     /// <summary>
@@ -73,5 +73,5 @@ public class AuthenticationController : ApiController
         await Resolver<RegisterCommand>
             .For(command)
             .Execute(req => Mediator.Send(req))
-            .ResolveResponse(this);
+            .ResolveResponse();
 }

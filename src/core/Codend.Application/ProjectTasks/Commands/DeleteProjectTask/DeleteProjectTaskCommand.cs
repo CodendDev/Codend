@@ -1,4 +1,3 @@
-using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
@@ -21,22 +20,16 @@ public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTask
 {
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IHttpContextProvider _contextProvider;
-    private readonly IProjectMemberRepository _projectMemberRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteProjectTaskCommandHandler"/> class.
     /// </summary>
     public DeleteProjectTaskCommandHandler(
         IProjectTaskRepository taskRepository,
-        IUnitOfWork unitOfWork,
-        IHttpContextProvider contextProvider,
-        IProjectMemberRepository projectMemberRepository)
+        IUnitOfWork unitOfWork)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
-        _contextProvider = contextProvider;
-        _projectMemberRepository = projectMemberRepository;
     }
 
     /// <inheritdoc />
@@ -44,13 +37,6 @@ public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTask
     {
         var projectTask = await _taskRepository.GetByIdAsync(request.ProjectTaskId, cancellationToken);
         if (projectTask is null)
-        {
-            return DomainNotFound.Fail<BaseProjectTask>();
-        }
-        
-        // Validate user permission.
-        var userId = _contextProvider.UserId;
-        if (!await _projectMemberRepository.IsProjectMember(userId, projectTask.ProjectId, cancellationToken))
         {
             return DomainNotFound.Fail<BaseProjectTask>();
         }

@@ -10,16 +10,16 @@ using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.ProjectTasks.Create;
 using Codend.Contracts.Requests.ProjectTasks.Update;
 using Codend.Contracts.Responses.ProjectTask;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
+using Codend.Presentation.Infrastructure.Authorization;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Presentation.Controllers;
 
@@ -27,6 +27,7 @@ namespace Codend.Presentation.Controllers;
 /// Controller containing endpoints associated with <see cref="BaseProjectTask"/> and it's derived entities management.
 /// </summary>
 [Route("api/projects/{projectId:guid}/task")]
+[Authorize(ProjectOperations.IsProjectMemberPolicy)]
 public class ProjectTaskController : ApiController
 {
     /// <summary>
@@ -43,7 +44,7 @@ public class ProjectTaskController : ApiController
         await Resolver<TCommand>
             .For(command)
             .Execute(req => Mediator.Send(req))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     #endregion
 
@@ -62,13 +63,14 @@ public class ProjectTaskController : ApiController
     [HttpDelete("{projectTaskId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(ProjectOperations.IsProjectMemberPolicy)]
     public async Task<IActionResult> Delete(
         [FromRoute] Guid projectId,
         [FromRoute] Guid projectTaskId) =>
         await Resolver<DeleteProjectTaskCommand>
             .For(new DeleteProjectTaskCommand(projectTaskId.GuidConversion<ProjectTaskId>()))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Assigns project member with id <paramref name="assigneeId"/> to task with id <paramref name="projectTaskId"/>.
@@ -97,7 +99,7 @@ public class ProjectTaskController : ApiController
                 assigneeId.GuidConversion<UserId>()
             ))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves common data of project task with <paramref name="projectTaskId"/>.
@@ -118,7 +120,7 @@ public class ProjectTaskController : ApiController
         await Resolver<GetProjectTaskByIdQuery>
             .For(new GetProjectTaskByIdQuery(projectTaskId.GuidConversion<ProjectTaskId>()))
             .Execute(query => Mediator.Send(query))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     #endregion
 
@@ -182,7 +184,7 @@ public class ProjectTaskController : ApiController
                 }
             ))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Updates BaseProjectTask entity with given <paramref name="projectTaskId"/>.
@@ -327,7 +329,7 @@ public class ProjectTaskController : ApiController
                 }
             ))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
 
     /// <summary>

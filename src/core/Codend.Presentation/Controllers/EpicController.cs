@@ -5,13 +5,13 @@ using Codend.Application.Epics.Queries.GetEpicById;
 using Codend.Contracts;
 using Codend.Contracts.Requests.Epic;
 using Codend.Contracts.Responses.Epic;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
-using FluentResults;
+using Codend.Presentation.Infrastructure.Authorization;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +21,7 @@ namespace Codend.Presentation.Controllers;
 /// Controller for <see cref="Epic"/> commands.
 /// </summary>
 [Route("api/projects/{projectId:guid}/epics")]
+[Authorize(ProjectOperations.IsProjectMemberPolicy)]
 public class EpicController : ApiController
 {
     /// <inheritdoc />
@@ -61,7 +62,7 @@ public class EpicController : ApiController
                 request.StatusId.GuidConversion<ProjectTaskStatusId>()
             ))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Deletes epic with given <paramref name="epicId"/>.
@@ -82,7 +83,7 @@ public class EpicController : ApiController
         await Resolver<DeleteEpicCommand>
             .For(new DeleteEpicCommand(epicId.GuidConversion<EpicId>()))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Updates epic with id <paramref name="epicId"/>.
@@ -121,7 +122,7 @@ public class EpicController : ApiController
                 request.StatusId.GuidConversion<ProjectTaskStatusId>()
             ))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves common information about Epic with given <paramref name="epicId"/>
@@ -142,5 +143,5 @@ public class EpicController : ApiController
         await Resolver<GetEpicByIdQuery>
             .For(new GetEpicByIdQuery(epicId.GuidConversion<EpicId>()))
             .Execute(query => Mediator.Send(query))
-            .ResolveResponse(this);
+            .ResolveResponse();
 }
