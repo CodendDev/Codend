@@ -35,29 +35,26 @@ internal static class ResolverExtensions
     /// Resolves command/query response. Returns success or error response based on result.
     /// </summary>
     /// <param name="responseTask">Async task of the response to be resolved.</param>
-    /// <param name="controller">Controller instance.</param>
     /// <returns>
     /// 200 OK on success.
     /// 404 NotFound when <see cref="DomainNotFound"/> present in result errors.
     /// 400 BadRequest when other errors present.
     /// </returns>
     /// <inheritdoc cref="ResolveResponse"/>
-    internal static async Task<IActionResult> ResolveResponse<T>(
-        this Task<Result<T>> responseTask,
-        ApiController controller)
+    internal static async Task<IActionResult> ResolveResponse<T>(this Task<Result<T>> responseTask)
     {
         var response = await responseTask;
         if (response.IsSuccess)
         {
-            return controller.Ok(response.Value);
+            return new OkObjectResult(response.Value);
         }
 
         if (response.HasError<DomainNotFound>())
         {
-            return controller.NotFound();
+            return new NotFoundResult();
         }
 
-        return controller.BadRequest(response.MapToApiErrorsResponse());
+        return new BadRequestObjectResult(response.MapToApiErrorsResponse());
     }
 
     /// <inheritdoc cref="ResolveResponse{T}"/>
@@ -67,21 +64,19 @@ internal static class ResolverExtensions
     /// 404 NotFound when <see cref="DomainNotFound"/> present in result errors.
     /// 400 BadRequest when other errors present.
     /// </returns>
-    internal static async Task<IActionResult> ResolveResponse(
-        this Task<Result> responseTask,
-        ApiController controller)
+    internal static async Task<IActionResult> ResolveResponse(this Task<Result> responseTask)
     {
         var response = await responseTask;
         if (response.IsSuccess)
         {
-            return controller.NoContent();
+            return new NoContentResult();
         }
 
         if (response.HasError<DomainNotFound>())
         {
-            return controller.NotFound();
+            return new NotFoundResult();
         }
 
-        return controller.BadRequest(response.MapToApiErrorsResponse());
+        return new BadRequestObjectResult(response.MapToApiErrorsResponse());
     }
 }
