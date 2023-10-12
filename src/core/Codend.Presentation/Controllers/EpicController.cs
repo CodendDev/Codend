@@ -5,13 +5,13 @@ using Codend.Application.Epics.Queries.GetEpicById;
 using Codend.Contracts;
 using Codend.Contracts.Requests.Epic;
 using Codend.Contracts.Responses.Epic;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
-using FluentResults;
+using Codend.Presentation.Infrastructure.Authorization;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +21,7 @@ namespace Codend.Presentation.Controllers;
 /// Controller for <see cref="Epic"/> commands.
 /// </summary>
 [Route("api/projects/{projectId:guid}/epics")]
+[Authorize(ProjectOperations.IsProjectMemberPolicy)]
 public class EpicController : ApiController
 {
     /// <inheritdoc />
