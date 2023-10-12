@@ -1,5 +1,4 @@
 using AutoMapper;
-using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
 using Codend.Contracts.Responses.Story;
 using Codend.Domain.Entities;
@@ -13,9 +12,7 @@ namespace Codend.Application.Stories.Queries.GetStoryById;
 /// Command to retrieve story by it's id.
 /// </summary>
 /// <param name="Id">Id of the story to be retrieved.</param>
-public sealed record GetStoryByIdQuery(
-        StoryId Id)
-    : IQuery<StoryResponse>;
+public sealed record GetStoryByIdQuery(StoryId Id) : IQuery<StoryResponse>;
 
 /// <summary>
 /// <see cref="GetStoryByIdQuery"/> Handler.
@@ -23,8 +20,6 @@ public sealed record GetStoryByIdQuery(
 public class GetStoryByIdQueryHandler : IQueryHandler<GetStoryByIdQuery, StoryResponse>
 {
     private readonly IStoryRepository _storyRepository;
-    private readonly IProjectMemberRepository _memberRepository;
-    private readonly IHttpContextProvider _contextProvider;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -32,13 +27,9 @@ public class GetStoryByIdQueryHandler : IQueryHandler<GetStoryByIdQuery, StoryRe
     /// </summary>
     public GetStoryByIdQueryHandler(
         IStoryRepository storyRepository,
-        IProjectMemberRepository memberRepository,
-        IHttpContextProvider contextProvider,
         IMapper mapper)
     {
         _storyRepository = storyRepository;
-        _memberRepository = memberRepository;
-        _contextProvider = contextProvider;
         _mapper = mapper;
     }
 
@@ -50,12 +41,6 @@ public class GetStoryByIdQueryHandler : IQueryHandler<GetStoryByIdQuery, StoryRe
         if (story is null)
         {
             return DomainNotFound.Fail<Story>();
-        }
-
-        var userId = _contextProvider.UserId;
-        if (await _memberRepository.IsProjectMember(userId, story.ProjectId, cancellationToken) is false)
-        {
-            return DomainNotFound.Fail<Project>();
         }
 
         var dto = _mapper.Map<StoryResponse>(story);

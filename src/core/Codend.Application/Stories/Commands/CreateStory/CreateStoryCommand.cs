@@ -1,6 +1,5 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -55,7 +54,7 @@ public class CreateStoryCommandHandler : ICommandHandler<CreateStoryCommand, Gui
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateStoryCommand request, CancellationToken cancellationToken)
     {
-        if (request.EpicId is not null 
+        if (request.EpicId is not null
             && await _projectRepository.ProjectContainsEpic(request.ProjectId, request.EpicId) is false)
         {
             return Result.Fail(new InvalidEpicId());
@@ -67,24 +66,25 @@ public class CreateStoryCommandHandler : ICommandHandler<CreateStoryCommand, Gui
             return DomainNotFound.Fail<Project>();
         }
 
-        if (request.StatusId is not null && 
-            await _statusRepository.StatusExistsWithStatusIdAsync(request.StatusId, request.ProjectId, cancellationToken) is false)
+        if (request.StatusId is not null &&
+            await _statusRepository.StatusExistsWithStatusIdAsync(request.StatusId, request.ProjectId,
+                cancellationToken) is false)
         {
             return Result.Fail(new InvalidStatusId());
         }
-        
+
         var storyResult = Story.Create(
             request.Name,
             request.Description,
-            request.ProjectId, 
+            request.ProjectId,
             request.EpicId,
             request.StatusId ?? project.DefaultStatusId);
         if (storyResult.IsFailed)
         {
             return storyResult.ToResult();
         }
-        
-        
+
+
         var story = storyResult.Value;
         _storyRepository.Add(story);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

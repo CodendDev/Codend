@@ -10,7 +10,9 @@ using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
+using Codend.Presentation.Infrastructure.Authorization;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +22,7 @@ namespace Codend.Presentation.Controllers;
 /// Controller for <see cref="Story"/> commands. 
 /// </summary>
 [Route("api/projects/{projectId:guid}/stories")]
+[Authorize(ProjectOperations.IsProjectMemberPolicy)]
 public class StoryController : ApiController
 {
     /// <inheritdoc />
@@ -62,7 +65,7 @@ public class StoryController : ApiController
                 request.StatusId.GuidConversion<ProjectTaskStatusId>()
             ))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Deletes story with given <paramref name="storyId"/>.
@@ -83,7 +86,7 @@ public class StoryController : ApiController
         await Resolver<DeleteStoryCommand>
             .For(new DeleteStoryCommand(storyId.GuidConversion<StoryId>()))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Updates story with id <paramref name="storyId"/>.
@@ -127,7 +130,7 @@ public class StoryController : ApiController
                 request.StatusId.GuidConversion<ProjectTaskStatusId>()
             ))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves common information about Story with given <paramref name="storyId"/>
@@ -148,5 +151,5 @@ public class StoryController : ApiController
         await Resolver<GetStoryByIdQuery>
             .For(new GetStoryByIdQuery(storyId.GuidConversion<StoryId>()))
             .Execute(query => Mediator.Send(query))
-            .ResolveResponse(this);
+            .ResolveResponse();
 }
