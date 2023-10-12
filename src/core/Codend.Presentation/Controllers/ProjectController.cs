@@ -61,7 +61,7 @@ public class ProjectController : ApiController
         await Resolver<CreateProjectCommand>
             .For(new CreateProjectCommand(request.Name, request.Description))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Deletes Project entity with given <paramref name="projectId"/>.
@@ -70,15 +70,15 @@ public class ProjectController : ApiController
     /// <returns>
     /// A HTTP NoContent response if project was successfully deleted or an error response.
     /// </returns>
-    [Authorize(IsProjectOwnerPolicy)]
     [HttpDelete("{projectId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectOwnerPolicy)]
     public async Task<IActionResult> Delete([FromRoute] Guid projectId) =>
         await Resolver<DeleteProjectCommand>
             .For(new DeleteProjectCommand(projectId.GuidConversion<ProjectId>()))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Updated the Project entity with given <paramref name="projectId"/>.
@@ -104,6 +104,7 @@ public class ProjectController : ApiController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> Update(
         [FromRoute] Guid projectId,
         [FromBody] UpdateProjectRequest request) =>
@@ -115,7 +116,7 @@ public class ProjectController : ApiController
                 request.DefaultStatusId.GuidConversion<ProjectTaskStatusId>()
             ))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves common information about Project with given <paramref name="projectId"/>
@@ -127,11 +128,12 @@ public class ProjectController : ApiController
     [HttpGet("{projectId:guid}")]
     [ProducesResponseType(typeof(ProjectResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> Get([FromRoute] Guid projectId) =>
         await Resolver<GetProjectByIdQuery>
             .For(new GetProjectByIdQuery(projectId.GuidConversion<ProjectId>()))
             .Execute(query => Mediator.Send(query))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves all matching projects with their common information.
@@ -153,7 +155,7 @@ public class ProjectController : ApiController
                 request.Search
             ))
             .Execute(query => Mediator.Send(query))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Adds member with given <paramref name="userId"/> to project with given <paramref name="projectId"/>.
@@ -170,13 +172,14 @@ public class ProjectController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> AddMember(
         [FromRoute] Guid projectId,
         [FromRoute] Guid userId) =>
         await Resolver<AddMemberCommand>
             .For(new AddMemberCommand(projectId.GuidConversion<ProjectId>(), userId.GuidConversion<UserId>()))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Removes member with given <paramref name="userId"/> from project with given <paramref name="projectId"/>.
@@ -191,13 +194,14 @@ public class ProjectController : ApiController
     [HttpDelete("{projectId:guid}/members/{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> RemoveMember(
         [FromRoute] Guid projectId,
         [FromRoute] Guid userId) =>
         await Resolver<RemoveMemberCommand>
             .For(new RemoveMemberCommand(projectId.GuidConversion<ProjectId>(), userId.GuidConversion<UserId>()))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves all project members who match given criteria.
@@ -212,13 +216,14 @@ public class ProjectController : ApiController
     [HttpGet("{projectId:guid}/members")]
     [ProducesResponseType(typeof(IEnumerable<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> GetMembers(
         [FromRoute] Guid projectId,
         [FromQuery] GetMembersRequest request) =>
         await Resolver<GetMembersQuery>
             .For(new GetMembersQuery(projectId.GuidConversion<ProjectId>(), request.Search))
             .Execute(query => Mediator.Send(query))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves all project tasks, stories and epics within one object.
@@ -232,10 +237,11 @@ public class ProjectController : ApiController
     [HttpGet("{projectId:guid}/board")]
     [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> GetBoard(
         [FromRoute] Guid projectId) =>
         await Resolver<GetBoardQuery>
             .For(new GetBoardQuery(projectId.GuidConversion<ProjectId>()))
             .Execute(query => Mediator.Send(query))
-            .ResolveResponse(this);
+            .ResolveResponse();
 }
