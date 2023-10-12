@@ -1,7 +1,6 @@
 ﻿using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Core.Errors;
-using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
