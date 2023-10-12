@@ -62,7 +62,7 @@ public class EpicController : ApiController
                 request.StatusId.GuidConversion<ProjectTaskStatusId>()
             ))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Deletes epic with given <paramref name="epicId"/>.
@@ -83,7 +83,7 @@ public class EpicController : ApiController
         await Resolver<DeleteEpicCommand>
             .For(new DeleteEpicCommand(epicId.GuidConversion<EpicId>()))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Updates epic with id <paramref name="epicId"/>.
@@ -122,7 +122,7 @@ public class EpicController : ApiController
                 request.StatusId.GuidConversion<ProjectTaskStatusId>()
             ))
             .Execute(command => Mediator.Send(command))
-            .ResolveResponse(this);
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves common information about Epic with given <paramref name="epicId"/>
@@ -143,5 +143,5 @@ public class EpicController : ApiController
         await Resolver<GetEpicByIdQuery>
             .For(new GetEpicByIdQuery(epicId.GuidConversion<EpicId>()))
             .Execute(query => Mediator.Send(query))
-            .ResolveResponse(this);
+            .ResolveResponse();
 }
