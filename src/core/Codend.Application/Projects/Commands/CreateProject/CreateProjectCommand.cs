@@ -26,7 +26,7 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectTaskStatusRepository _statusRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IProjectMemberRepository _projectMemberRepository;
 
     /// <summary>
@@ -35,13 +35,13 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
     public CreateProjectCommandHandler(
         IProjectRepository projectRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IProjectTaskStatusRepository statusRepository,
         IProjectMemberRepository projectMemberRepository)
     {
         _projectRepository = projectRepository;
         _unitOfWork = unitOfWork;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _statusRepository = statusRepository;
         _projectMemberRepository = projectMemberRepository;
     }
@@ -49,7 +49,7 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         var resultProject = Project.Create(userId, request.Name, request.Description);
         if (resultProject.IsFailed)
         {

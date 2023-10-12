@@ -31,13 +31,13 @@ public class CreateBugfixProjectTaskCommandHandler :
     public CreateBugfixProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IProjectMemberRepository projectMemberRepository,
         IStoryRepository storyRepository,
         IProjectTaskStatusRepository statusRepository)
         : base(projectTaskRepository,
             unitOfWork,
-            identityProvider,
+            contextProvider,
             projectMemberRepository,
             storyRepository,
             statusRepository)

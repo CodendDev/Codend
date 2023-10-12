@@ -24,7 +24,7 @@ public class GetEpicByIdQueryHandler : IQueryHandler<GetEpicByIdQuery, EpicRespo
 {
     private readonly IEpicRepository _epicRepository;
     private readonly IProjectMemberRepository _memberRepository;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -34,12 +34,12 @@ public class GetEpicByIdQueryHandler : IQueryHandler<GetEpicByIdQuery, EpicRespo
         IMapper mapper,
         IEpicRepository epicRepository,
         IProjectMemberRepository memberRepository,
-        IUserIdentityProvider identityProvider)
+        IHttpContextProvider contextProvider)
     {
         _mapper = mapper;
         _epicRepository = epicRepository;
         _memberRepository = memberRepository;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
     }
 
     /// <inheritdoc />
@@ -52,7 +52,7 @@ public class GetEpicByIdQueryHandler : IQueryHandler<GetEpicByIdQuery, EpicRespo
             return DomainNotFound.Fail<Epic>();
         }
 
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         if (await _memberRepository.IsProjectMember(userId, epic.ProjectId, cancellationToken) is false)
         {
             return DomainNotFound.Fail<Project>();

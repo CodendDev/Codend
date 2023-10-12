@@ -34,7 +34,7 @@ public sealed record GetBoardQuery(ProjectId ProjectId) : IQuery<BoardResponse>;
 public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
 {
     private readonly IMapper _mapper;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IQueryableSets _queryableSets;
 
     /// <summary>
@@ -42,11 +42,11 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
     /// </summary>
     public GetBoardQueryHandler(
         IMapper mapper,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IQueryableSets queryableSets)
     {
         _mapper = mapper;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _queryableSets = queryableSets;
     }
 
@@ -54,7 +54,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
     public async Task<Result<BoardResponse>> Handle(GetBoardQuery query,
         CancellationToken cancellationToken)
     {
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         if (await _queryableSets.Queryable<ProjectMember>().IsUserMember(userId, query.ProjectId) is false)
         {
             return DomainNotFound.Fail<Project>();

@@ -30,7 +30,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectMemberRepository _memberRepository;
     private readonly IStoryRepository _storyRepository;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
 
     /// <summary>
     /// Constructs implementation of <see cref="UpdateProjectTaskCommandAbstractHandler{TCommand,TProjectTask}"/> with
@@ -40,19 +40,19 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     /// <param name="unitOfWork">Unit of work.</param>
     /// <param name="memberRepository">Repository for <see cref="ProjectMember"/>.</param>
     /// <param name="storyRepository">Repository for <see cref="Story"/></param>
-    /// <param name="identityProvider">Identity provider.</param>
+    /// <param name="contextProvider">Identity provider.</param>
     protected UpdateProjectTaskCommandAbstractHandler(
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
         IStoryRepository storyRepository,
-        IUserIdentityProvider identityProvider)
+        IHttpContextProvider contextProvider)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
         _memberRepository = memberRepository;
         _storyRepository = storyRepository;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         }
 
         // Validate current user permissions.
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         if (!await _memberRepository.IsProjectMember(userId, task.ProjectId, cancellationToken))
         {
             return DomainNotFound.Fail<BaseProjectTask>();

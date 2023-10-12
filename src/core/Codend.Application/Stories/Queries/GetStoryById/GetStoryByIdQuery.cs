@@ -24,7 +24,7 @@ public class GetStoryByIdQueryHandler : IQueryHandler<GetStoryByIdQuery, StoryRe
 {
     private readonly IStoryRepository _storyRepository;
     private readonly IProjectMemberRepository _memberRepository;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -33,12 +33,12 @@ public class GetStoryByIdQueryHandler : IQueryHandler<GetStoryByIdQuery, StoryRe
     public GetStoryByIdQueryHandler(
         IStoryRepository storyRepository,
         IProjectMemberRepository memberRepository,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IMapper mapper)
     {
         _storyRepository = storyRepository;
         _memberRepository = memberRepository;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _mapper = mapper;
     }
 
@@ -52,7 +52,7 @@ public class GetStoryByIdQueryHandler : IQueryHandler<GetStoryByIdQuery, StoryRe
             return DomainNotFound.Fail<Story>();
         }
 
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         if (await _memberRepository.IsProjectMember(userId, story.ProjectId, cancellationToken) is false)
         {
             return DomainNotFound.Fail<Project>();

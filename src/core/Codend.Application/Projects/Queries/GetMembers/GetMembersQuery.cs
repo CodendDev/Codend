@@ -28,7 +28,7 @@ public sealed record GetMembersQuery
 /// </summary>
 public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, IEnumerable<UserResponse>>
 {
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IQueryableSets _queryableSets;
     private readonly IUserService _userService;
 
@@ -36,11 +36,11 @@ public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, IEnumerable
     /// Initializes a new instance of the <see cref="GetMembersQueryHandler"/> class.
     /// </summary>
     public GetMembersQueryHandler(
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IQueryableSets queryableSets,
         IUserService userService)
     {
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _queryableSets = queryableSets;
         _userService = userService;
     }
@@ -49,7 +49,7 @@ public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, IEnumerable
     public async Task<Result<IEnumerable<UserResponse>>> Handle(GetMembersQuery query,
         CancellationToken cancellationToken)
     {
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         if (await _queryableSets.Queryable<ProjectMember>().IsUserMember(userId, query.ProjectId) is false)
         {
             return DomainNotFound.Fail<Project>();

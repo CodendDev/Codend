@@ -23,23 +23,23 @@ public class DeleteProjectCommandHandler : ICommandHandler<DeleteProjectCommand>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteProjectCommandHandler"/> class.
     /// </summary>
     public DeleteProjectCommandHandler(IProjectRepository projectRepository, IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider)
+        IHttpContextProvider contextProvider)
     {
         _projectRepository = projectRepository;
         _unitOfWork = unitOfWork;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
     }
 
     /// <inheritdoc />
     public async Task<Result> Handle(DeleteProjectCommand request, CancellationToken cancellationToken)
     {
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         var project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project is null)
         {
