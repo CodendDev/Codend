@@ -51,7 +51,7 @@ public class HttpContextProvider : IHttpContextProvider
     private Guid? GetProjectIdFromRoute()
     {
         var projectIdString = _contextAccessor.HttpContext?.GetRouteData().Values["projectId"]?.ToString();
-        if (projectIdString is null || Guid.TryParse(projectIdString, out var projectId))
+        if (projectIdString is null || !Guid.TryParse(projectIdString, out var projectId))
         {
             return null;
         }
