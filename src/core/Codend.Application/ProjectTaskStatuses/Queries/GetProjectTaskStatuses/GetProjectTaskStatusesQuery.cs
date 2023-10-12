@@ -26,7 +26,7 @@ public class GetProjectTaskStatusesQueryHandler
     : IQueryHandler<GetProjectTaskStatusesQuery, IEnumerable<ProjectTaskStatusResponse>>
 {
     private readonly IQueryableSets _context;
-    private readonly IHttpContextProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -34,11 +34,11 @@ public class GetProjectTaskStatusesQueryHandler
     /// </summary>
     public GetProjectTaskStatusesQueryHandler(
         IQueryableSets context,
-        IHttpContextProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IMapper mapper)
     {
         _context = context;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _mapper = mapper;
     }
 
@@ -46,7 +46,7 @@ public class GetProjectTaskStatusesQueryHandler
     public async Task<Result<IEnumerable<ProjectTaskStatusResponse>>> Handle(GetProjectTaskStatusesQuery request,
         CancellationToken cancellationToken)
     {
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         if (await _context.Queryable<ProjectMember>().IsUserMember(userId, request.ProjectId) is false)
         {
             return DomainNotFound.Fail<Project>();

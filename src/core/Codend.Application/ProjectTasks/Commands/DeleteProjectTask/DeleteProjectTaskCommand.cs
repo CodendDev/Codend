@@ -21,7 +21,7 @@ public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTask
 {
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IHttpContextProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IProjectMemberRepository _projectMemberRepository;
 
     /// <summary>
@@ -30,12 +30,12 @@ public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTask
     public DeleteProjectTaskCommandHandler(
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
-        IHttpContextProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IProjectMemberRepository projectMemberRepository)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _projectMemberRepository = projectMemberRepository;
     }
 
@@ -49,7 +49,7 @@ public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTask
         }
         
         // Validate user permission.
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         if (!await _projectMemberRepository.IsProjectMember(userId, projectTask.ProjectId, cancellationToken))
         {
             return DomainNotFound.Fail<BaseProjectTask>();

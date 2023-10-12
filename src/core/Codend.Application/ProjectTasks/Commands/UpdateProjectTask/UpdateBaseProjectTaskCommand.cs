@@ -39,12 +39,12 @@ public class UpdateAbstractProjectTaskCommandHandler :
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
         IStoryRepository storyRepository,
-        IHttpContextProvider identityProvider)
+        IHttpContextProvider contextProvider)
         : base(taskRepository,
             unitOfWork,
             memberRepository,
             storyRepository,
-            identityProvider)
+            contextProvider)
     {
     }
 }

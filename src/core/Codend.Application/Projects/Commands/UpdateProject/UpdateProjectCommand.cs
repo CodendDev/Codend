@@ -34,7 +34,7 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
     private readonly IProjectRepository _projectRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectMemberRepository _projectMemberRepository;
-    private readonly IHttpContextProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IProjectTaskStatusRepository _statusRepository;
 
     /// <summary>
@@ -44,20 +44,20 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
         IProjectRepository projectRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository projectMemberRepository,
-        IHttpContextProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IProjectTaskStatusRepository statusRepository)
     {
         _projectRepository = projectRepository;
         _unitOfWork = unitOfWork;
         _projectMemberRepository = projectMemberRepository;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _statusRepository = statusRepository;
     }
 
     /// <inheritdoc />
     public async Task<Result> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
 
         var project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project is null)

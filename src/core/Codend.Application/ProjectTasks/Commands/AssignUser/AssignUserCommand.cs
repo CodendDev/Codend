@@ -25,7 +25,7 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectMemberRepository _projectMemberRepository;
-    private readonly IHttpContextProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AssignUserCommandHandler"/> class.
@@ -34,12 +34,12 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository projectMemberRepository,
-        IHttpContextProvider identityProvider)
+        IHttpContextProvider contextProvider)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
         _projectMemberRepository = projectMemberRepository;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
     }
 
     /// <inheritdoc />
@@ -53,7 +53,7 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
         }
 
         // Validate user permission.
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         if (!await _projectMemberRepository.IsProjectMember(userId, task.ProjectId, cancellationToken))
         {
             return DomainNotFound.Fail<BaseProjectTask>();
