@@ -14,15 +14,15 @@ using Codend.Contracts.Requests.Project;
 using Codend.Contracts.Responses;
 using Codend.Contracts.Responses.Board;
 using Codend.Contracts.Responses.Project;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
+using static Codend.Presentation.Infrastructure.Authorization.ProjectOperations;
 
 namespace Codend.Presentation.Controllers;
 
@@ -70,6 +70,7 @@ public class ProjectController : ApiController
     /// <returns>
     /// A HTTP NoContent response if project was successfully deleted or an error response.
     /// </returns>
+    [Authorize(IsProjectOwnerPolicy)]
     [HttpDelete("{projectId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
