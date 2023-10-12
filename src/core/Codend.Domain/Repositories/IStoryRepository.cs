@@ -17,8 +17,9 @@ public interface IStoryRepository
     /// Returns story with given id or null.
     /// </summary>
     /// <param name="storyId">Id of the task.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns><see cref="Story"/> or null.</returns>
-    Task<Story?> GetByIdAsync(StoryId storyId);
+    Task<Story?> GetByIdAsync(StoryId storyId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Removes given story.
@@ -35,11 +36,17 @@ public interface IStoryRepository
     /// <summary>
     /// Returns collection of stories which belongs to the given epic.
     /// </summary>
-    IEnumerable<Story> GetByEpicId(EpicId epicId);
+    Task<List<Story>> GetStoriesByEpicIdAsync(EpicId epicId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Updates range.
     /// </summary>
     /// <param name="stories">Stories to update.</param>
     void UpdateRange(IEnumerable<Story> stories);
+
+    /// <summary>
+    /// Collects stories with given status.
+    /// </summary>
+    /// <returns>List of stories which has given status.</returns>
+    Task<List<Story>> GetStoriesByStatusIdAsync(ProjectTaskStatusId statusId, CancellationToken cancellationToken);
 }

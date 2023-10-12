@@ -110,9 +110,14 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("StatusId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("Epic");
                 });
@@ -125,6 +130,9 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasPrecision(0)
                         .HasColumnType("timestamp(0) with time zone");
+
+                    b.Property<Guid?>("DefaultStatusId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("Deleted")
                         .ValueGeneratedOnAdd()
@@ -139,6 +147,8 @@ namespace Codend.Persistence.Postgres.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DefaultStatusId");
 
                     b.ToTable("Project");
                 });
@@ -270,11 +280,16 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("StatusId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EpicId");
 
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("Story");
                 });
@@ -372,6 +387,12 @@ namespace Codend.Persistence.Postgres.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Codend.Domain.Entities.ProjectTaskStatus", null)
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.OwnsOne("Codend.Domain.ValueObjects.EpicDescription", "Description", b1 =>
                         {
                             b1.Property<Guid>("EpicId")
@@ -419,6 +440,11 @@ namespace Codend.Persistence.Postgres.Migrations
 
             modelBuilder.Entity("Codend.Domain.Entities.Project", b =>
                 {
+                    b.HasOne("Codend.Domain.Entities.ProjectTaskStatus", null)
+                        .WithMany()
+                        .HasForeignKey("DefaultStatusId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.OwnsOne("Codend.Domain.ValueObjects.ProjectDescription", "Description", b1 =>
                         {
                             b1.Property<Guid>("ProjectId")
@@ -642,6 +668,12 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.HasOne("Codend.Domain.Entities.Project", null)
                         .WithMany()
                         .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Codend.Domain.Entities.ProjectTaskStatus", null)
+                        .WithMany()
+                        .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 

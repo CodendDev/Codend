@@ -31,14 +31,16 @@ public class CreateBaseProjectTaskCommandHandler :
     public CreateBaseProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IProjectMemberRepository projectMemberRepository,
-        IStoryRepository storyRepository)
+        IStoryRepository storyRepository,
+        IProjectTaskStatusRepository statusRepository)
         : base(projectTaskRepository,
             unitOfWork,
-            identityProvider,
+            contextProvider,
             projectMemberRepository,
-            storyRepository)
+            storyRepository,
+            statusRepository)
     {
     }
 }

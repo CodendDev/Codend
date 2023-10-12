@@ -37,6 +37,11 @@ public class Epic : Entity<EpicId>, ISoftDeletableEntity
     /// </summary>
     public EpicDescription Description { get; private set; }
 
+    /// <summary>
+    /// Epic status.
+    /// </summary>
+    public ProjectTaskStatusId StatusId { get; private set; }
+
     #endregion
 
     #region Domain methods
@@ -47,8 +52,9 @@ public class Epic : Entity<EpicId>, ISoftDeletableEntity
     /// <param name="name">Epic name.</param>
     /// <param name="description">Epic description.</param>
     /// <param name="projectId">Epic project id.</param>
+    /// <param name="statusId">Epic status id.</param>
     /// <returns>Created <see cref="Epic"/> or <see cref="Result"/> with errors.</returns>
-    public static Result<Epic> Create(string name, string description, ProjectId projectId)
+    public static Result<Epic> Create(string name, string description, ProjectId projectId, ProjectTaskStatusId statusId)
     {
         var resultName = EpicName.Create(name);
         var resultDescription = EpicDescription.Create(description);
@@ -63,7 +69,8 @@ public class Epic : Entity<EpicId>, ISoftDeletableEntity
         {
             ProjectId = projectId,
             Name = resultName.Value,
-            Description = resultDescription.Value
+            Description = resultDescription.Value,
+            StatusId = statusId
         };
 
         return Result.Ok(epic);
@@ -101,6 +108,18 @@ public class Epic : Entity<EpicId>, ISoftDeletableEntity
 
         Description = resultDescription.Value;
         return resultDescription;
+    }
+
+    /// <summary>
+    /// Changes Epic status id to one of Project defined or default statuses.
+    /// </summary>
+    /// <param name="statusId">New status id.</param>
+    /// <returns>Ok result with ProjectTaskStatusId object.</returns>
+    public Result<ProjectTaskStatusId> EditStatus(ProjectTaskStatusId statusId)
+    {
+        StatusId = statusId;
+
+        return Result.Ok(statusId);
     }
 
     #endregion

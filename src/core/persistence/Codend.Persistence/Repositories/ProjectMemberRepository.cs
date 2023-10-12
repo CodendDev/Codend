@@ -30,4 +30,10 @@ public class ProjectMemberRepository : GenericRepository<ProjectMemberId, Guid, 
 
         return isMember;
     }
+
+    public Task<int> GetProjectMembersCount(ProjectId projectId)
+    {
+        return Context.Set<ProjectMember>()
+            .CountAsync(x => x.ProjectId == projectId);
+    }
 }

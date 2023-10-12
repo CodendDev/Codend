@@ -31,7 +31,7 @@ internal static class ValidationErrors
         {
             /// <inheritdoc />
             public PropertyNullOrEmpty(string stringName) : base("Validation.Common.StringPropertyNullOrEmpty",
-                $"Field {stringName} cannot be null or empty.")
+                $"Field {stringName} cannot be null, empty or have a default value.")
             {
             }
         }

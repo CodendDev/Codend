@@ -16,7 +16,7 @@ namespace Codend.Application.ProjectTasks.Queries.GetProjectTaskById;
 /// <param name="ProjectTaskId">Task id.</param>
 public sealed record GetProjectTaskByIdQuery
 (
-    Guid ProjectTaskId
+    ProjectTaskId ProjectTaskId
 ) : IQuery<BaseProjectTaskResponse>;
 
 /// <summary>
@@ -61,7 +61,7 @@ public class GetProjectTaskByIdQueryHandler : IQueryHandler<GetProjectTaskByIdQu
         GetProjectTaskByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var task = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId));
+        var task = await _taskRepository.GetByIdAsync(request.ProjectTaskId, cancellationToken);
         if (task is null)
         {
             return DomainNotFound.Fail<BaseProjectTask>();

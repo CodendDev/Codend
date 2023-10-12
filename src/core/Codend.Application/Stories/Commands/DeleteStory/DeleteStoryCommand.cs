@@ -11,7 +11,7 @@ namespace Codend.Application.Stories.Commands.DeleteStory;
 /// Command used for deleting user story.
 /// </summary>
 /// <param name="StoryId">Id of story which will be deleted.</param>
-public sealed record DeleteStoryCommand(Guid StoryId) : ICommand;
+public sealed record DeleteStoryCommand(StoryId StoryId) : ICommand;
 
 /// <summary>
 /// <see cref="DeleteStoryCommand"/> handler.
@@ -46,14 +46,14 @@ public class DeleteStoryCommandHandler : ICommandHandler<DeleteStoryCommand>
     /// <returns><see cref="Result"/>.Ok() or a failure with errors.</returns>
     public async Task<Result> Handle(DeleteStoryCommand request, CancellationToken cancellationToken)
     {
-        var story = await _storyRepository.GetByIdAsync(new StoryId(request.StoryId));
+        var story = await _storyRepository.GetByIdAsync(request.StoryId, cancellationToken);
 
         if (story is null)
         {
             return DomainNotFound.Fail<Story>();
         }
 
-        var storyTasks = _taskRepository.GetStoryTasks(story.Id).ToList();
+        var storyTasks = await _taskRepository.GetStoryTasksAsync(story.Id, cancellationToken);
         foreach (var task in storyTasks)
         {
             task.EditStory(null);

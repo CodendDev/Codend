@@ -1,6 +1,5 @@
 ﻿using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -13,7 +12,7 @@ namespace Codend.Application.ProjectTaskStatuses.Commands.DeleteProjectTaskStatu
 /// Command used for deleting and task status.
 /// </summary>
 /// <param name="StatusId">Id of task status which will be deleted.</param>
-public sealed record DeleteProjectTaskStatusCommand(Guid StatusId) : ICommand;
+public sealed record DeleteProjectTaskStatusCommand(ProjectTaskStatusId StatusId) : ICommand;
 
 /// <summary>
 /// <see cref="DeleteProjectTaskStatusCommand"/> handler.
@@ -22,6 +21,8 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
 {
     private readonly IProjectTaskStatusRepository _statusRepository;
     private readonly IProjectTaskRepository _taskRepository;
+    private readonly IStoryRepository _storyRepository;
+    private readonly IEpicRepository _epicRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     /// <summary>
@@ -30,18 +31,21 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
     public DeleteProjectTaskStatusCommandHandler(
         IProjectTaskStatusRepository statusRepository,
         IProjectTaskRepository taskRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IStoryRepository storyRepository,
+        IEpicRepository epicRepository)
     {
         _statusRepository = statusRepository;
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
+        _storyRepository = storyRepository;
+        _epicRepository = epicRepository;
     }
 
     /// <inheritdoc />
     public async Task<Result> Handle(DeleteProjectTaskStatusCommand request, CancellationToken cancellationToken)
     {
-        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
-        var status = await _statusRepository.GetByIdAsync(statusId, cancellationToken);
+        var status = await _statusRepository.GetByIdAsync(request.StatusId, cancellationToken);
         if (status is null)
         {
             return DomainNotFound.Fail<ProjectTaskStatus>();
@@ -52,16 +56,16 @@ public class DeleteProjectTaskStatusCommandHandler : ICommandHandler<DeleteProje
             return Result.Fail(new ProjectHasToHaveProjectTaskStatus());
         }
 
-        var defaultStatus = await _statusRepository.GetDefaultStatusInProjectAsync(status.ProjectId, cancellationToken);
-        var statusTasks = _taskRepository.GetTasksByTaskStatusId(statusId).ToList();
-        foreach (var task in statusTasks)
-        {
-            var result = task.EditStatus(defaultStatus.Id);
-            if (result.IsFailed)
-            {
-                return result.ToResult();
-            }
-        }
+        var defaultStatusId =
+            await _statusRepository.GetProjectDefaultStatusIdAsync(status.ProjectId, cancellationToken);
+
+        var statusTasks = await _taskRepository.GetTasksByStatusIdAsync(request.StatusId, cancellationToken);
+        var statusStories = await _storyRepository.GetStoriesByStatusIdAsync(request.StatusId, cancellationToken);
+        var statusEpics = await _epicRepository.GetEpicsByStatusIdAsync(request.StatusId, cancellationToken);
+
+        foreach (var task in statusTasks) task.EditStatus(defaultStatusId);
+        foreach (var story in statusStories) story.EditStatus(defaultStatusId);
+        foreach (var epic in statusEpics) epic.EditStatus(defaultStatusId);
 
         _taskRepository.UpdateRange(statusTasks);
         _statusRepository.Remove(status);

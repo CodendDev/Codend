@@ -25,12 +25,13 @@ public interface IAuthService
     /// <summary>
     /// Maximum first name length.
     /// </summary>
-    public static readonly int MaxFirstNameLength = 32;
+    public const int MaxFirstNameLength = 32;
+
     /// <summary>
     /// Maximum last name length.
     /// </summary>
-    public static readonly int MaxLastNameLength = 64;
-    
+    public const int MaxLastNameLength = 64;
+
     /// <summary>
     /// Login user with given credentials.
     /// </summary>

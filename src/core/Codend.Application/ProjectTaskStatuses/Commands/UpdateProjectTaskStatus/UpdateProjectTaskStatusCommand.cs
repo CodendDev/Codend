@@ -1,7 +1,6 @@
 ﻿using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Core.Errors;
-using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -16,7 +15,7 @@ namespace Codend.Application.ProjectTaskStatuses.Commands.UpdateProjectTaskStatu
 /// <param name="Name">New name of task status.</param>
 public sealed record UpdateProjectTaskStatusCommand
 (
-    Guid StatusId,
+    ProjectTaskStatusId StatusId,
     string Name
 ) : ICommand;
 
@@ -40,14 +39,13 @@ public class UpdateProjectTaskStatusCommandHandler : ICommandHandler<UpdateProje
     /// <inheritdoc />
     public async Task<Result> Handle(UpdateProjectTaskStatusCommand request, CancellationToken cancellationToken)
     {
-        var statusId = request.StatusId.GuidConversion<ProjectTaskStatusId>();
-        var status = await _statusRepository.GetByIdAsync(statusId, cancellationToken);
+        var status = await _statusRepository.GetByIdAsync(request.StatusId, cancellationToken);
         if (status is null)
         {
             return DomainNotFound.Fail<ProjectTaskStatus>();
         }
 
-        if (await _statusRepository.ExistsAsync(request.Name, status.ProjectId, cancellationToken))
+        if (await _statusRepository.StatusExistsWithNameAsync(request.Name, status.ProjectId, cancellationToken))
         {
             return Result.Fail(new DomainErrors.ProjectTaskStatus.ProjectTaskStatusAlreadyExists());
         }

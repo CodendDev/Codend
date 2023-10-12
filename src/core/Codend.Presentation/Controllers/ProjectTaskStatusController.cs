@@ -1,21 +1,27 @@
 ﻿using Codend.Application.ProjectTaskStatuses.Commands.CreateProjectTaskStatus;
 using Codend.Application.ProjectTaskStatuses.Commands.DeleteProjectTaskStatus;
 using Codend.Application.ProjectTaskStatuses.Commands.UpdateProjectTaskStatus;
+using Codend.Application.ProjectTaskStatuses.Queries.GetProjectTaskStatuses;
 using Codend.Contracts;
 using Codend.Contracts.Requests.ProjectTaskStatuses;
+using Codend.Contracts.Responses.ProjectTaskStatus;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
+using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
+using Codend.Presentation.Infrastructure.Authorization;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Presentation.Controllers;
 
 /// <summary>
 /// Controller for <see cref="ProjectTaskStatus"/> commands.
 /// </summary>
-[Route("api/projects/{projectId:guid}/taskStatuses")]
+[Route("api/projects/{projectId:guid}/task-statuses")]
+[Authorize(ProjectOperations.IsProjectMemberPolicy)]
 public class ProjectTaskStatusController : ApiController
 {
     /// <inheritdoc />
@@ -45,17 +51,11 @@ public class ProjectTaskStatusController : ApiController
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(
         [FromRoute] Guid projectId,
-        [FromBody] CreateProjectTaskStatusRequest request)
-    {
-        var command = new CreateProjectTaskStatusCommand(request.Name, projectId);
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        [FromBody] CreateProjectTaskStatusRequest request) =>
+        await Resolver<CreateProjectTaskStatusCommand>
+            .For(new CreateProjectTaskStatusCommand(request.Name, projectId.GuidConversion<ProjectId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Deletes project task status with given <paramref name="statusId"/>.
@@ -72,17 +72,11 @@ public class ProjectTaskStatusController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid statusId)
-    {
-        var command = new DeleteProjectTaskStatusCommand(statusId);
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        return NotFound();
-    }
+        [FromRoute] Guid statusId) =>
+        await Resolver<DeleteProjectTaskStatusCommand>
+            .For(new DeleteProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Updates task status with id <paramref name="statusId"/>.
@@ -94,7 +88,7 @@ public class ProjectTaskStatusController : ApiController
     /// Sample request:
     /// 
     ///     {
-    ///         "name": "New story name"
+    ///         "name": "New status name"
     ///     }
     /// </remarks>
     /// <returns>
@@ -110,21 +104,27 @@ public class ProjectTaskStatusController : ApiController
     public async Task<IActionResult> Update(
         [FromRoute] Guid projectId,
         [FromRoute] Guid statusId,
-        [FromBody] UpdateProjectTaskStatusRequest request)
-    {
-        var command = new UpdateProjectTaskStatusCommand(statusId, request.Name);
+        [FromBody] UpdateProjectTaskStatusRequest request) =>
+        await Resolver<UpdateProjectTaskStatusCommand>
+            .For(new UpdateProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>(), request.Name))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        if (response.HasError<DomainNotFound>())
-        {
-            return NotFound();
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+    /// <summary>
+    /// Retrieves all task statuses of the project with id <paramref name="projectId"/>.
+    /// </summary>
+    /// <param name="projectId">Id of the project to which the task status belongs.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 200 on success with list of statuses
+    /// </returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<ProjectTaskStatusResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetMany(
+        [FromRoute] Guid projectId) =>
+        await Resolver<GetProjectTaskStatusesQuery>
+            .For(new GetProjectTaskStatusesQuery(projectId.GuidConversion<ProjectId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
 }

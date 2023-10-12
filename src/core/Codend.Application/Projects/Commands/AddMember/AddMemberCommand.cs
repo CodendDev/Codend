@@ -4,6 +4,7 @@ using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
+using static Codend.Domain.Core.Errors.DomainErrors.Project;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectMember;
 
 namespace Codend.Application.Projects.Commands.AddMember;
@@ -48,6 +49,11 @@ public class AddMemberCommandHandler : ICommandHandler<AddMemberCommand>
         if (project is null)
         {
             return DomainNotFound.Fail<Project>();
+        }
+
+        if (await _projectMemberRepository.GetProjectMembersCount(request.ProjectId) >= Project.MaxMembersCount)
+        {
+            return Result.Fail(new ProjectHasMaximumNumberOfMembers());
         }
 
         if (await _projectMemberRepository.IsProjectMember(request.Userid, request.ProjectId, cancellationToken))

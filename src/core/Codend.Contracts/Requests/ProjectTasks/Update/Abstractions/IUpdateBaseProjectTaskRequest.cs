@@ -8,17 +8,17 @@ public interface IUpdateBaseProjectTaskRequest
     /// <summary>
     /// Name of the task.
     /// </summary>
-    ShouldUpdateBinder<string>? Name { get; }
+    string? Name { get; }
 
     /// <summary>
     /// Priority of the task.
     /// </summary>
-    ShouldUpdateBinder<string>? Priority { get; }
+    string? Priority { get; }
 
     /// <summary>
     /// StatusId of the task. Status and task must belong to the same project.
     /// </summary>
-    ShouldUpdateBinder<Guid>? StatusId { get; }
+    Guid? StatusId { get; }
 
     /// <summary>
     /// Description of the task.
@@ -28,7 +28,7 @@ public interface IUpdateBaseProjectTaskRequest
     /// <summary>
     /// Estimated time of the task completion.
     /// </summary>
-    ShouldUpdateBinder<EstimatedTimeRequest>? EstimatedTime { get; }
+    ShouldUpdateBinder<EstimatedTimeRequest?>? EstimatedTime { get; }
 
     /// <summary>
     /// Due date by which task has to be done.

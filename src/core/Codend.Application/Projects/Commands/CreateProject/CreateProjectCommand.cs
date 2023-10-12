@@ -26,7 +26,7 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectTaskStatusRepository _statusRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IProjectMemberRepository _projectMemberRepository;
 
     /// <summary>
@@ -35,13 +35,13 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
     public CreateProjectCommandHandler(
         IProjectRepository projectRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IProjectTaskStatusRepository statusRepository,
         IProjectMemberRepository projectMemberRepository)
     {
         _projectRepository = projectRepository;
         _unitOfWork = unitOfWork;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _statusRepository = statusRepository;
         _projectMemberRepository = projectMemberRepository;
     }
@@ -49,7 +49,7 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         var resultProject = Project.Create(userId, request.Name, request.Description);
         if (resultProject.IsFailed)
         {
@@ -67,17 +67,28 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
             return result.ToResult();
         }
 
+        // Set To-Do as first project default status.
+        var defaultStatus = resultStatuses.FirstOrDefault(status => 
+            status.Value.Name.Value == nameof(DefaultTaskStatus.ToDo))?.Value;
+        if (defaultStatus is null)
+        {
+            throw new ApplicationException("Couldn't find default status for new Project.");
+        }
+
         var resultProjectMember = ProjectMember.Create(project.Id, userId);
         if (resultProjectMember.IsFailed)
         {
             return resultProjectMember.ToResult();
         }
-
-        var statuses = resultStatuses.Select(r => r.Value);
-
-        await _statusRepository.AddRangeAsync(statuses);
+        
         _projectRepository.Add(project);
         _projectMemberRepository.Add(resultProjectMember.Value);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        // Save statuses after project to avoid circular reference in database.
+        project.EditDefaultStatus(defaultStatus.Id);
+        var statuses = resultStatuses.Select(r => r.Value);
+        await _statusRepository.AddRangeAsync(statuses);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return project.Id.Value;

@@ -1,4 +1,3 @@
-using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Entities;
@@ -12,7 +11,7 @@ namespace Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
 /// Command to delete project task with given id.
 /// </summary>
 /// <param name="ProjectTaskId">Id of the task that will be deleted.</param>
-public sealed record DeleteProjectTaskCommand(Guid ProjectTaskId) : ICommand;
+public sealed record DeleteProjectTaskCommand(ProjectTaskId ProjectTaskId) : ICommand;
 
 /// <summary>
 /// <see cref="DeleteProjectTaskCommand"/> handler.
@@ -21,36 +20,23 @@ public class DeleteProjectTaskCommandHandler : ICommandHandler<DeleteProjectTask
 {
     private readonly IProjectTaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserIdentityProvider _identityProvider;
-    private readonly IProjectMemberRepository _projectMemberRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteProjectTaskCommandHandler"/> class.
     /// </summary>
     public DeleteProjectTaskCommandHandler(
         IProjectTaskRepository taskRepository,
-        IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
-        IProjectMemberRepository projectMemberRepository)
+        IUnitOfWork unitOfWork)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
-        _identityProvider = identityProvider;
-        _projectMemberRepository = projectMemberRepository;
     }
 
     /// <inheritdoc />
     public async Task<Result> Handle(DeleteProjectTaskCommand request, CancellationToken cancellationToken)
     {
-        var projectTask = await _taskRepository.GetByIdAsync(new ProjectTaskId(request.ProjectTaskId));
+        var projectTask = await _taskRepository.GetByIdAsync(request.ProjectTaskId, cancellationToken);
         if (projectTask is null)
-        {
-            return DomainNotFound.Fail<BaseProjectTask>();
-        }
-        
-        // Validate user permission.
-        var userId = _identityProvider.UserId;
-        if (!await _projectMemberRepository.IsProjectMember(userId, projectTask.ProjectId, cancellationToken))
         {
             return DomainNotFound.Fail<BaseProjectTask>();
         }

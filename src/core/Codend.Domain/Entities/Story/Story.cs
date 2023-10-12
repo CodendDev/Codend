@@ -17,13 +17,18 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     {
     }
 
-    private Story(ProjectId projectId, StoryName name, StoryDescription description, EpicId? epicId)
-        : base(new StoryId(Guid.NewGuid()))
+    private Story(
+        ProjectId projectId,
+        StoryName name,
+        StoryDescription description,
+        EpicId? epicId,
+        ProjectTaskStatusId statusId) : base(new StoryId(Guid.NewGuid()))
     {
         ProjectId = projectId;
         Name = name;
         Description = description;
         EpicId = epicId;
+        StatusId = statusId;
     }
 
 
@@ -58,7 +63,12 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     /// <summary>
     /// EpicId which story belongs to.
     /// </summary>
-    public EpicId? EpicId { get; set; }
+    public EpicId? EpicId { get; private set; }
+
+    /// <summary>
+    /// Story status.
+    /// </summary>
+    public ProjectTaskStatusId StatusId { get; private set; }
 
     #endregion
 
@@ -72,8 +82,14 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     /// <param name="description">User story description.</param>
     /// <param name="projectId">User story project id.</param>
     /// <param name="epicId">User story epic id.</param>
+    /// <param name="statusId">Story status id.</param>
     /// <returns>Created <see cref="Story"/> or <see cref="Result"/> with errors.</returns>
-    public static Result<Story> Create(string name, string description, ProjectId projectId, EpicId? epicId)
+    public static Result<Story> Create(
+        string name,
+        string description,
+        ProjectId projectId,
+        EpicId? epicId,
+        ProjectTaskStatusId statusId)
     {
         var resultName = StoryName.Create(name);
         var resultDescription = StoryDescription.Create(description);
@@ -84,7 +100,7 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
             return result;
         }
 
-        var story = new Story(projectId, resultName.Value, resultDescription.Value, epicId);
+        var story = new Story(projectId, resultName.Value, resultDescription.Value, epicId, statusId);
 
         return Result.Ok(story);
     }
@@ -127,6 +143,18 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     {
         EpicId = epicId;
         return Result.Ok(EpicId);
+    }
+
+    /// <summary>
+    /// Changes Story status id to one of Project defined or default statuses.
+    /// </summary>
+    /// <param name="statusId">New status id.</param>
+    /// <returns>Ok result with ProjectTaskStatusId object.</returns>
+    public Result<ProjectTaskStatusId> EditStatus(ProjectTaskStatusId statusId)
+    {
+        StatusId = statusId;
+
+        return Result.Ok(statusId);
     }
 
     #endregion

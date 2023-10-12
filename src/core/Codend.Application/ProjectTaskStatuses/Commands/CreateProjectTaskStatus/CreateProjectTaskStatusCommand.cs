@@ -1,11 +1,9 @@
 ﻿using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Core.Errors;
-using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.ProjectTaskStatuses.Commands.CreateProjectTaskStatus;
 
@@ -17,7 +15,7 @@ namespace Codend.Application.ProjectTaskStatuses.Commands.CreateProjectTaskStatu
 public sealed record CreateProjectTaskStatusCommand
 (
     string Name,
-    Guid ProjectId
+    ProjectId ProjectId
 ) : ICommand<Guid>;
 
 /// <summary>
@@ -45,18 +43,12 @@ public class CreateProjectTaskStatusCommandHandler : ICommandHandler<CreateProje
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(CreateProjectTaskStatusCommand request, CancellationToken cancellationToken)
     {
-        var projectId = request.ProjectId.GuidConversion<ProjectId>();
-        if (!await _projectRepository.Exists(projectId))
-        {
-            return DomainNotFound.Fail<Project>();
-        }
-
-        if (await _statusRepository.ExistsAsync(request.Name, projectId, cancellationToken))
+        if (await _statusRepository.StatusExistsWithNameAsync(request.Name, request.ProjectId, cancellationToken))
         {
             return Result.Fail(new DomainErrors.ProjectTaskStatus.ProjectTaskStatusAlreadyExists());
         }
 
-        var status = ProjectTaskStatus.Create(projectId, request.Name);
+        var status = ProjectTaskStatus.Create(request.ProjectId, request.Name);
         if (status.IsFailed)
         {
             return status.ToResult();

@@ -1,5 +1,6 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Common;
+using Codend.Application.Core.Abstractions.Services;
 using Codend.Infrastructure.Authentication;
 using Codend.Infrastructure.Common;
 using Microsoft.Extensions.Configuration;
@@ -19,8 +20,9 @@ public static class DependencyInjection
     {
         services.AddTransient<IDateTime, MachineDateTime>();
 
-        services.AddScoped<IUserIdentityProvider, UserIdentityProvider>();
+        services.AddScoped<IHttpContextProvider, HttpContextProvider>();
         services.AddScoped<IAuthService, FusionAuthService>();
+        services.AddScoped<IUserService, FusionAuthService>();
 
         return services;
     }

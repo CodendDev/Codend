@@ -40,7 +40,7 @@ public abstract class CreateProjectTaskCommandAbstractValidator<TCreateProjectTa
             .WithError(new ProjectTask.PriorityNotDefined());
 
         RuleFor(x => x.TaskProperties.StatusId)
-            .NotEmpty()
+            .MustNotBeDefaultGuid()
             .WithError(new PropertyNullOrEmpty(nameof(IProjectTaskCreateProperties.StatusId)));
 
         RuleFor(x => x.TaskProperties.Description)

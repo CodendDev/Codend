@@ -1,5 +1,6 @@
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
 
@@ -9,10 +10,22 @@ public class StoryRepository : GenericRepository<StoryId, Guid, Story>, IStoryRe
     {
     }
 
-    public IEnumerable<Story> GetByEpicId(EpicId epicId)
+    /// <inheritdoc />
+    public Task<List<Story>> GetStoriesByEpicIdAsync(EpicId epicId, CancellationToken cancellationToken)
     {
         var stories = Context.Set<Story>()
-            .Where(story => story.EpicId == epicId);
+            .Where(story => story.EpicId == epicId)
+            .ToListAsync(cancellationToken);
+
+        return stories;
+    }
+    
+    /// <inheritdoc />
+    public Task<List<Story>> GetStoriesByStatusIdAsync(ProjectTaskStatusId statusId, CancellationToken cancellationToken)
+    {
+        var stories = Context.Set<Story>()
+            .Where(story => story.StatusId == statusId)
+            .ToListAsync(cancellationToken);
 
         return stories;
     }

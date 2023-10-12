@@ -20,4 +20,6 @@ public interface IProjectMemberRepository
     Task<ProjectMember?> GetByProjectAndMemberId(ProjectId projectId, UserId memberId, CancellationToken cancellationToken);
     
     Task<bool> IsProjectMember(UserId memberId, ProjectId projectId, CancellationToken cancellationToken);
+
+    Task<int> GetProjectMembersCount(ProjectId projectId);
 }

@@ -6,10 +6,10 @@ namespace Codend.Domain.Entities.ProjectTask.Abstractions;
 /// </summary>
 public interface IProjectTaskCreateProperties
 {
+    ProjectId ProjectId { get; }
     public string Name { get; }
     public string Priority { get; }
-    public ProjectTaskStatusId StatusId { get; }
-    ProjectId ProjectId { get; }
+    public ProjectTaskStatusId? StatusId { get; set; }
     string? Description { get; }
     TimeSpan? EstimatedTime { get; }
     DateTime? DueDate { get; }

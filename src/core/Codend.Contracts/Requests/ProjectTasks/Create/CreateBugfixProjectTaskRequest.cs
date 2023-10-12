@@ -5,8 +5,7 @@ public record CreateBugfixProjectTaskRequest
 (
     string Name,
     string Priority,
-    Guid StatusId,
-    Guid ProjectId,
+    Guid? StatusId,
     string? Description,
     EstimatedTimeRequest? EstimatedTime,
     DateTime? DueDate,

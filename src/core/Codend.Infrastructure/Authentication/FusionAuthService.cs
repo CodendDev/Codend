@@ -1,18 +1,22 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
+using Codend.Application.Core.Abstractions.Data;
+using Codend.Application.Core.Abstractions.Services;
 using Codend.Application.Exceptions;
+using Codend.Domain.Entities;
 using FluentResults;
 using io.fusionauth;
 using io.fusionauth.domain;
 using io.fusionauth.domain.api;
 using io.fusionauth.domain.api.user;
 using Microsoft.Extensions.Options;
+using UserResponse = Codend.Contracts.Responses.UserResponse;
 
 namespace Codend.Infrastructure.Authentication;
 
 /// <summary>
 /// Fusionauth implementation of <see cref="IAuthService"/>.
 /// </summary>
-public sealed class FusionAuthService : IAuthService
+public sealed class FusionAuthService : IAuthService, IUserService
 {
     private readonly IFusionAuthAsyncClient _fusionAuthClient;
     private readonly Guid _appId;
@@ -89,7 +93,7 @@ public sealed class FusionAuthService : IAuthService
         {
             return Result.Fail(new AuthErrors.Register.EmailAlreadyExists());
         }
-        
+
         // Same thing as above but for password field. 
         if (response.errorResponse.fieldErrors.Any(err => err.Value.Any(e => e.code.Contains("password"))))
         {
@@ -97,5 +101,23 @@ public sealed class FusionAuthService : IAuthService
         }
 
         throw new AuthenticationServiceException(response.ToString());
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<UserResponse>> GetUsersByIds(IEnumerable<UserId> usersIds)
+    {
+        var response = await _fusionAuthClient
+            .SearchUsersByIdsAsync(usersIds.Select(x => x.Value.ToString()).ToList());
+
+        if (!response.WasSuccessful())
+        {
+            throw new AuthenticationServiceException(response.errorResponse.ToString());
+        }
+
+        var usersResponse = response.successResponse.users
+            .Select(user => new UserResponse(user.firstName, user.lastName, user.email, user.imageUrl))
+            .AsEnumerable();
+
+        return usersResponse;
     }
 }

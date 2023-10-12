@@ -5,8 +5,8 @@ using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
 
@@ -27,13 +27,14 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     : ICommandHandler<TCommand, Guid>
     where TCommand : ICommand<Guid>, ICreateProjectTaskCommand<TProjectTaskProperties>
     where TProjectTask : BaseProjectTask, IProjectTaskCreator<TProjectTask, TProjectTaskProperties>
-    where TProjectTaskProperties : IProjectTaskCreateProperties
+    where TProjectTaskProperties : class, IProjectTaskCreateProperties
 {
     private readonly IProjectTaskRepository _projectTaskRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IStoryRepository _storyRepository;
+    private readonly IProjectTaskStatusRepository _statusRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateProjectTaskCommandAbstractHandler{TCommand,TProjectTask,TProjectTaskProperties}"/> class.
@@ -41,34 +42,26 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     protected CreateProjectTaskCommandAbstractHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IProjectMemberRepository projectMemberRepository,
-        IStoryRepository storyRepository)
+        IStoryRepository storyRepository,
+        IProjectTaskStatusRepository statusRepository)
     {
         _projectTaskRepository = projectTaskRepository;
         _unitOfWork = unitOfWork;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _projectMemberRepository = projectMemberRepository;
         _storyRepository = storyRepository;
+        _statusRepository = statusRepository;
     }
 
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(TCommand request, CancellationToken cancellationToken)
     {
-        // Validate current user and it's permissions.
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         var projectId = request.TaskProperties.ProjectId;
-        if (!await _projectMemberRepository
-                .IsProjectMember(userId, projectId, cancellationToken))
-        {
-            return DomainNotFound.Fail<Project>();
-        }
 
-        // Validate status id.
-        var statusId = request.TaskProperties.StatusId;
-        var projectStatusIsValid = _projectTaskRepository.ProjectTaskStatusIsValid(projectId, statusId);
-        var resultProjectTaskStatus =
-            projectStatusIsValid ? Result.Ok() : Result.Fail(new InvalidStatusId());
+        var resultProjectTaskStatus = await ValidateStatus(request, cancellationToken);
 
         // Validate assignee id.
         var assigneeId = request.TaskProperties.AssigneeId;
@@ -82,7 +75,7 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         var storyId = request.TaskProperties.StoryId;
         if (storyId is not null)
         {
-            var story = await _storyRepository.GetByIdAsync(storyId);
+            var story = await _storyRepository.GetByIdAsync(storyId, cancellationToken);
             if (story is null || story.ProjectId != projectId)
                 return Result.Fail(new InvalidStoryId());
         }
@@ -99,5 +92,22 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Ok(task.Id.Value);
+    }
+
+    // Validate status id, if null set defaultStatusId as statusId.
+    private async Task<Result> ValidateStatus(TCommand request, CancellationToken cancellationToken)
+    {
+        var statusId = request.TaskProperties.StatusId;
+        var projectId = request.TaskProperties.ProjectId;
+
+        if (statusId is not null)
+        {
+            var projectStatusIsValid = _projectTaskRepository.ProjectTaskStatusIsValid(projectId, statusId);
+            return projectStatusIsValid ? Result.Ok() : Result.Fail(new InvalidStatusId());
+        }
+
+        var defaultStatusId = await _statusRepository.GetProjectDefaultStatusIdAsync(projectId, cancellationToken);
+        request.TaskProperties.StatusId = defaultStatusId;
+        return Result.Ok();
     }
 }

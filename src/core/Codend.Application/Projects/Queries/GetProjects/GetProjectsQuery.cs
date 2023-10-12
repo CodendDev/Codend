@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Codend.Application.Projects.Queries.GetProjects;
 
 /// <summary>
-/// Command for retrieving all matching projects, for which user has permissions.
+/// Query for retrieving all matching projects, for which user has permissions.
 /// </summary>
 /// <param name="PageSize">Number of entries on page.</param>
 /// <param name="PageIndex">Index of the page.</param>
@@ -38,7 +38,7 @@ public sealed record GetProjectsQuery(
 public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList<ProjectResponse>>
 {
     private readonly IMapper _mapper;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IQueryableSets _queryableSets;
 
     /// <summary>
@@ -46,11 +46,11 @@ public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList
     /// </summary>
     public GetProjectsQueryHandler(
         IMapper mapper,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IQueryableSets queryableSets)
     {
         _mapper = mapper;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _queryableSets = queryableSets;
     }
 
@@ -58,7 +58,7 @@ public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList
     public async Task<Result<PagedList<ProjectResponse>>> Handle(GetProjectsQuery query,
         CancellationToken cancellationToken)
     {
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         var userProjects = _queryableSets.Queryable<ProjectMember>().GetUserProjectsIds(userId);
         var projectsQuery = _queryableSets.Queryable<Project>().GetProjectsWithIds(userProjects);
 

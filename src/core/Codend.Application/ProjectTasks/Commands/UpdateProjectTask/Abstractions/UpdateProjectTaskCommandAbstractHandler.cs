@@ -1,12 +1,13 @@
 using Codend.Application.Core;
-using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Domain.Core.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
+using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 
 namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
 
@@ -28,7 +29,6 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectMemberRepository _memberRepository;
     private readonly IStoryRepository _storyRepository;
-    private readonly IUserIdentityProvider _identityProvider;
 
     /// <summary>
     /// Constructs implementation of <see cref="UpdateProjectTaskCommandAbstractHandler{TCommand,TProjectTask}"/> with
@@ -38,19 +38,16 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     /// <param name="unitOfWork">Unit of work.</param>
     /// <param name="memberRepository">Repository for <see cref="ProjectMember"/>.</param>
     /// <param name="storyRepository">Repository for <see cref="Story"/></param>
-    /// <param name="identityProvider">Identity provider.</param>
     protected UpdateProjectTaskCommandAbstractHandler(
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
-        IStoryRepository storyRepository,
-        IUserIdentityProvider identityProvider)
+        IStoryRepository storyRepository)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
         _memberRepository = memberRepository;
         _storyRepository = storyRepository;
-        _identityProvider = identityProvider;
     }
 
     /// <summary>
@@ -62,22 +59,15 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     public async Task<Result> Handle(TCommand request, CancellationToken cancellationToken)
     {
         // Validate task id.
-        if (await _taskRepository.GetByIdAsync(request.TaskId) is not TProjectTask task)
-        {
-            return DomainNotFound.Fail<BaseProjectTask>();
-        }
-
-        // Validate current user permissions.
-        var userId = _identityProvider.UserId;
-        if (!await _memberRepository.IsProjectMember(userId, task.ProjectId, cancellationToken))
+        if (await _taskRepository.GetByIdAsync(request.TaskId, cancellationToken) is not TProjectTask task)
         {
             return DomainNotFound.Fail<BaseProjectTask>();
         }
 
         // Validate status.
-        if (request.StatusId.ShouldUpdate)
+        if (request.StatusId is not null)
         {
-            var statusExists = _taskRepository.ProjectTaskStatusIsValid(task.ProjectId, request.StatusId.Value!);
+            var statusExists = _taskRepository.ProjectTaskStatusIsValid(task.ProjectId, request.StatusId);
             if (!statusExists)
             {
                 return Result.Fail(new InvalidStatusId());
@@ -98,7 +88,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         // Validate story.
         if (request.StoryId.ShouldUpdate)
         {
-            var story = await _storyRepository.GetByIdAsync(request.StoryId.Value!);
+            var story = await _storyRepository.GetByIdAsync(request.StoryId.Value!, cancellationToken);
             if (story is null || story.ProjectId != task.ProjectId)
             {
                 return Result.Fail(new InvalidStoryId());
@@ -128,15 +118,15 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     {
         var result = Result.Merge
         (
-            request.Name.HandleUpdateWithResult(task.EditName),
+            request.Name.GetResultFromDelegate(task.EditName, Result.Ok),
             request.Description.HandleUpdateWithResult(task.EditDescription),
             request.EstimatedTime.HandleUpdate(task.EditEstimatedTime),
             request.DueDate.HandleUpdate(task.EditDueDate),
             request.StoryPoints.HandleUpdate(task.EditStoryPoints),
             request.AssigneeId.HandleUpdate(task.AssignUser),
             request.StoryId.HandleUpdate(task.EditStory),
-            request.StatusId.HandleUpdate(task.EditStatus),
-            request.Priority.HandleUpdateWithResult(task.EditPriority)
+            request.StatusId.GetResultFromDelegate(task.EditStatus, Result.Ok),
+            request.Priority.GetResultFromDelegate(task.EditPriority, Result.Ok)
         );
 
         return result;

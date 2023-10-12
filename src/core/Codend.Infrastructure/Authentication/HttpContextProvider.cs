@@ -1,28 +1,31 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
 using Codend.Application.Core.Abstractions.Authentication;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace Codend.Infrastructure.Authentication;
 
 /// <summary>
-/// Implementation of IUserIdentityProvider which uses JWT token to
+/// Implementation of IHttpContextProvider which uses JWT token to
 /// obtain required information e.g. GetUserId uses "sub" claim to retrieve id.
 /// </summary>
-public class UserIdentityProvider : IUserIdentityProvider
+public class HttpContextProvider : IHttpContextProvider
 {
     private readonly IHttpContextAccessor _contextAccessor;
 
-    public UserIdentityProvider(IHttpContextAccessor contextAccessor)
+    public HttpContextProvider(IHttpContextAccessor contextAccessor)
     {
         _contextAccessor = contextAccessor;
     }
 
-    public UserId UserId => new(GetUserGuid());
+    public UserId UserId => GetUserGuid().GuidConversion<UserId>();
 
-    /// <inheritdoc />
-    public Guid GetUserGuid()
+    public ProjectId? ProjectId => GetProjectIdFromRoute().GuidConversion<ProjectId>();
+    
+    private Guid GetUserGuid()
     {
         var jwtToken = _contextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ")
             .Last();
@@ -43,5 +46,25 @@ public class UserIdentityProvider : IUserIdentityProvider
 
         var userId = Guid.Parse(token.Claims.First(c => c.Type == "sub").Value);
         return userId;
+    }
+
+    private Guid? GetProjectIdFromRoute()
+    {
+        var projectIdString = _contextAccessor.HttpContext?.GetRouteData().Values["projectId"]?.ToString();
+        if (projectIdString is null || !Guid.TryParse(projectIdString, out var projectId))
+        {
+            return null;
+        }
+
+        return projectId;
+    }
+    
+    public void SetResponseStatusCode(int statusCode)
+    {
+        if (_contextAccessor.HttpContext is null)
+        {
+            return;
+        }
+        _contextAccessor.HttpContext!.Response.StatusCode = statusCode;
     }
 }
