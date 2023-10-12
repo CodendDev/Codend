@@ -1,4 +1,3 @@
-using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
@@ -38,13 +37,11 @@ public class UpdateBugfixProjectTaskCommandHandler :
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
-        IStoryRepository storyRepository,
-        IHttpContextProvider contextProvider)
+        IStoryRepository storyRepository)
         : base(taskRepository,
             unitOfWork,
             memberRepository,
-            storyRepository,
-            contextProvider)
+            storyRepository)
     {
     }
 }

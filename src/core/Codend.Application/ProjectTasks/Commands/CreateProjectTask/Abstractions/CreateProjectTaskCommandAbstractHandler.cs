@@ -5,7 +5,6 @@ using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 
@@ -59,14 +58,8 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(TCommand request, CancellationToken cancellationToken)
     {
-        // Validate current user and it's permissions.
         var userId = _contextProvider.UserId;
         var projectId = request.TaskProperties.ProjectId;
-        if (!await _projectMemberRepository
-                .IsProjectMember(userId, projectId, cancellationToken))
-        {
-            return DomainNotFound.Fail<Project>();
-        }
 
         var resultProjectTaskStatus = await ValidateStatus(request, cancellationToken);
 
