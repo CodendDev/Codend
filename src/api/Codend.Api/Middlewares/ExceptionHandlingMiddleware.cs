@@ -39,7 +39,7 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            if (ex is not ValidationException)
+            if (ex is not ValidationException && ex is not InvalidRequestException)
             {
                 _logger.LogError(ex, "An exception occurred: {Message}", ex.Message);
             }
@@ -77,11 +77,13 @@ public class ExceptionHandlingMiddleware
         Exception exception) =>
         exception switch
         {
-            ValidationException validationException => 
+            ValidationException validationException =>
                 (HttpStatusCode.BadRequest, validationException.Errors),
-            AuthenticationServiceException authenticationServiceException => 
-                (HttpStatusCode.InternalServerError,new[] { new DomainErrors.General.ServerError() }),
-            _ => 
+            InvalidRequestException invalidRequestException =>
+                (HttpStatusCode.BadRequest, new[] { new DomainErrors.General.UnspecifiedBadRequest() }),
+            AuthenticationServiceException authenticationServiceException =>
+                (HttpStatusCode.InternalServerError, new[] { new DomainErrors.General.ServerError() }),
+            _ =>
                 (HttpStatusCode.InternalServerError, new[] { new DomainErrors.General.ServerError() })
         };
 }
