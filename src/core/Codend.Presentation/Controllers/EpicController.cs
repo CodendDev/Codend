@@ -55,7 +55,8 @@ public class EpicController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] CreateEpicRequest request) =>
         await Resolver<CreateEpicCommand>
-            .For(new CreateEpicCommand(
+            .IfRequestNotNull(request)
+            .ResolverFor(new CreateEpicCommand(
                 request.Name,
                 request.Description,
                 projectId.GuidConversion<ProjectId>(),
@@ -115,7 +116,8 @@ public class EpicController : ApiController
         [FromRoute] Guid epicId,
         [FromBody] UpdateEpicRequest request) =>
         await Resolver<UpdateEpicCommand>
-            .For(new UpdateEpicCommand(
+            .IfRequestNotNull(request)
+            .ResolverFor(new UpdateEpicCommand(
                 epicId.GuidConversion<EpicId>(),
                 request.Name,
                 request.Description,

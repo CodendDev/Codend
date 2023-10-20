@@ -43,7 +43,8 @@ public class AuthenticationController : ApiController
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginCommand command) =>
         await Resolver<LoginCommand>
-            .For(command)
+            .IfRequestNotNull(command)
+            .ResolverFor(command)
             .Execute(req => Mediator.Send(req))
             .ResolveResponse();
 
@@ -71,7 +72,8 @@ public class AuthenticationController : ApiController
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterCommand command) =>
         await Resolver<RegisterCommand>
-            .For(command)
+            .IfRequestNotNull(command)
+            .ResolverFor(command)
             .Execute(req => Mediator.Send(req))
             .ResolveResponse();
 }

@@ -1,4 +1,5 @@
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Application.Exceptions;
 using Codend.Application.ProjectTasks.Commands.AssignUser;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
@@ -167,7 +168,8 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] CreateBaseProjectTaskRequest request) =>
         await Resolver<CreateBaseProjectTaskCommand>
-            .For(new CreateBaseProjectTaskCommand(
+            .IfRequestNotNull(request)
+            .ResolverFor(new CreateBaseProjectTaskCommand(
                 new BaseProjectTaskCreateProperties(
                     projectId.GuidConversion<ProjectId>(),
                     request.Name,
@@ -250,6 +252,11 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectTaskId,
         [FromBody] UpdateBaseProjectTaskRequest request)
     {
+        if (request is null)
+        {
+            throw new InvalidRequestException();
+        }
+
         var command = new UpdateBaseProjectTaskCommand
         (
             projectTaskId.GuidConversion<ProjectTaskId>(),
@@ -312,7 +319,8 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] CreateBugfixProjectTaskRequest request) =>
         await Resolver<CreateBugfixProjectTaskCommand>
-            .For(new CreateBugfixProjectTaskCommand(
+            .IfRequestNotNull(request)
+            .ResolverFor(new CreateBugfixProjectTaskCommand(
                 new BugfixProjectTaskCreateProperties(
                     projectId.GuidConversion<ProjectId>(),
                     request.Name,
@@ -392,6 +400,11 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectTaskId,
         [FromBody] UpdateBugfixProjectTaskRequest request)
     {
+        if (request is null)
+        {
+            throw new InvalidRequestException();
+        }
+
         var command = new UpdateBugfixProjectTaskCommand
         (
             projectTaskId.GuidConversion<ProjectTaskId>(),

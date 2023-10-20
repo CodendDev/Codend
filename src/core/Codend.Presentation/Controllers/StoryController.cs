@@ -57,7 +57,8 @@ public class StoryController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] CreateStoryRequest request) =>
         await Resolver<CreateStoryCommand>
-            .For(new CreateStoryCommand(
+            .IfRequestNotNull(request)
+            .ResolverFor(new CreateStoryCommand(
                 projectId.GuidConversion<ProjectId>(),
                 request.Name,
                 request.Description,
@@ -122,7 +123,8 @@ public class StoryController : ApiController
         [FromRoute] Guid storyId,
         [FromBody] UpdateStoryRequest request) =>
         await Resolver<UpdateStoryCommand>
-            .For(new UpdateStoryCommand(
+            .IfRequestNotNull(request)
+            .ResolverFor(new UpdateStoryCommand(
                 storyId.GuidConversion<StoryId>(),
                 request.Name,
                 request.Description,
