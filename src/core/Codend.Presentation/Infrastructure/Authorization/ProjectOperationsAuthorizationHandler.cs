@@ -1,9 +1,9 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
+using Codend.Application.Exceptions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
-using Microsoft.AspNetCore.Http;
 
 namespace Codend.Presentation.Infrastructure.Authorization;
 
@@ -39,10 +39,9 @@ internal sealed class ProjectOperationsAuthorizationHandler :
         if (projectId is null)
         {
             context.Fail();
-            _contextProvider.SetResponseStatusCode(StatusCodes.Status404NotFound);
-            return;
+            throw new AuthorizationException();
         }
-        
+
         switch (requirement.Name)
         {
             // User must be project member.
@@ -65,10 +64,12 @@ internal sealed class ProjectOperationsAuthorizationHandler :
 
                 context.Fail();
                 break;
+
             default:
                 throw new ArgumentException("Unknown permission requirement.", nameof(requirement));
         }
-        _contextProvider.SetResponseStatusCode(StatusCodes.Status404NotFound);
+
+        throw new AuthorizationException();
     }
 
     private async Task<bool> IsUserProjectMember(UserId userId, ProjectId projectId)
