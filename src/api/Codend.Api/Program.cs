@@ -48,6 +48,8 @@ builder.Services
 
 var app = builder.Build();
 
+app.UseCustomExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -58,11 +60,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCustomExceptionHandler();
 
 app.MapControllers();
 
-var database = app.MigrateDatabase();
+app.MigrateDatabase();
 
 var buildDate = builder.Configuration["BUILD_DATE"];
 var deploymentDate = DateTime.UtcNow.ToString("R");

@@ -59,7 +59,8 @@ public class ProjectController : ApiController
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateProjectRequest request) =>
         await Resolver<CreateProjectCommand>
-            .For(new CreateProjectCommand(request.Name, request.Description))
+            .IfRequestNotNull(request)
+            .ResolverFor(new CreateProjectCommand(request.Name, request.Description))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 
@@ -109,7 +110,8 @@ public class ProjectController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] UpdateProjectRequest request) =>
         await Resolver<UpdateProjectCommand>
-            .For(new UpdateProjectCommand(
+            .IfRequestNotNull(request)
+            .ResolverFor(new UpdateProjectCommand(
                 projectId.GuidConversion<ProjectId>(),
                 request.Name,
                 request.Description.HandleNull(),
@@ -147,7 +149,8 @@ public class ProjectController : ApiController
     [ProducesResponseType(typeof(PagedList<ProjectResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllForUser([FromQuery] GetProjectsRequest request) =>
         await Resolver<GetProjectsQuery>
-            .For(new GetProjectsQuery(
+            .IfRequestNotNull(request)
+            .ResolverFor(new GetProjectsQuery(
                 request.PageIndex,
                 request.PageSize,
                 request.SortColumn,
@@ -221,7 +224,8 @@ public class ProjectController : ApiController
         [FromRoute] Guid projectId,
         [FromQuery] GetMembersRequest request) =>
         await Resolver<GetMembersQuery>
-            .For(new GetMembersQuery(projectId.GuidConversion<ProjectId>(), request.Search))
+            .IfRequestNotNull(request)
+            .ResolverFor(new GetMembersQuery(projectId.GuidConversion<ProjectId>(), request.Search))
             .Execute(query => Mediator.Send(query))
             .ResolveResponse();
 
