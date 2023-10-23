@@ -14,6 +14,7 @@ public class Sprint : Entity<SprintId>, ISoftDeletableEntity
     {
     }
 
+    public SprintName Name { get; private set; }
     public SprintPeriod Period { get; private set; }
     public SprintGoal Goal { get; private set; }
     public ProjectId ProjectId { get; private set; }
@@ -23,27 +24,37 @@ public class Sprint : Entity<SprintId>, ISoftDeletableEntity
     /// <summary>
     /// Creates new Sprint.
     /// </summary>
+    /// <param name="name">Sprint name.</param>
     /// <param name="projectId">Project Id it belongs to.</param>
     /// <param name="startDate">Sprint startDate.</param>
     /// <param name="endDate">Sprint endDate.</param>
     /// <param name="goal">[Optional] Sprint goal.</param>
     /// <returns>Ok result with Sprint object or an error.</returns>
-    public static Result<Sprint> Create(ProjectId projectId, DateTime startDate, DateTime endDate, string? goal)
+    public static Result<Sprint> Create(
+        string name,
+        ProjectId projectId,
+        DateTime startDate,
+        DateTime endDate,
+        string? goal)
     {
         var sprint = new Sprint()
         {
             ProjectId = projectId
         };
 
+        var nameResult = SprintName.Create(name);
         var periodResult = SprintPeriod.Create(startDate, endDate);
         var goalResult = SprintGoal.Create(goal);
 
+        sprint.Name = nameResult.ValueOrDefault;
         sprint.Period = periodResult.ValueOrDefault;
         sprint.Goal = goalResult.ValueOrDefault;
 
         return Result.Ok(sprint)
             .MergeReasons(
+                nameResult.ToResult(),
                 periodResult.ToResult(),
-                goalResult.ToResult());
+                goalResult.ToResult()
+            );
     }
 }

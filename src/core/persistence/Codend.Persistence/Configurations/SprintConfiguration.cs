@@ -34,6 +34,13 @@ internal sealed class SprintConfiguration : IEntityTypeConfiguration<Sprint>
                         .HasPrecision(0)
                         .IsRequired();
                 });
+        
+        builder.OwnsOne(sprint => sprint.Name,
+            epicNameBuilder =>
+            {
+                epicNameBuilder.WithOwner();
+                epicNameBuilder.ConfigureStringValueObject(nameof(Sprint.Name));
+            });
 
         builder
             .OwnsOne(sprint => sprint.Goal,
