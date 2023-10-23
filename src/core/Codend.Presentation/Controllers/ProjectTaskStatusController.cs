@@ -53,7 +53,8 @@ public class ProjectTaskStatusController : ApiController
         [FromRoute] Guid projectId,
         [FromBody] CreateProjectTaskStatusRequest request) =>
         await Resolver<CreateProjectTaskStatusCommand>
-            .For(new CreateProjectTaskStatusCommand(request.Name, projectId.GuidConversion<ProjectId>()))
+            .IfRequestNotNull(request)
+            .ResolverFor(new CreateProjectTaskStatusCommand(request.Name, projectId.GuidConversion<ProjectId>()))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 
@@ -106,7 +107,8 @@ public class ProjectTaskStatusController : ApiController
         [FromRoute] Guid statusId,
         [FromBody] UpdateProjectTaskStatusRequest request) =>
         await Resolver<UpdateProjectTaskStatusCommand>
-            .For(new UpdateProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>(), request.Name))
+            .IfRequestNotNull(request)
+            .ResolverFor(new UpdateProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>(), request.Name))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 

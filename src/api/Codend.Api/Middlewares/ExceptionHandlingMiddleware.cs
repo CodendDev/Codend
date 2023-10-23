@@ -39,7 +39,7 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            if (ex is not ValidationException)
+            if (IsUnexpectedException(ex))
             {
                 _logger.LogError(ex, "An exception occurred: {Message}", ex.Message);
             }
@@ -56,11 +56,16 @@ public class ExceptionHandlingMiddleware
     /// <returns>The HTTP response that is modified based on the exception.</returns>
     private static async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
     {
-        (HttpStatusCode httpStatusCode, IReadOnlyCollection<ApiError> errors) = GetHttpStatusCodeAndErrors(exception);
+        (HttpStatusCode httpStatusCode, IReadOnlyCollection<ApiError>? errors) = GetHttpStatusCodeAndErrors(exception);
 
         httpContext.Response.ContentType = "application/json";
 
         httpContext.Response.StatusCode = (int)httpStatusCode;
+
+        if (errors is null)
+        {
+            return;
+        }
 
         var serializerOptions = new JsonSerializerOptions
         {
@@ -73,17 +78,33 @@ public class ExceptionHandlingMiddleware
         await httpContext.Response.WriteAsync(response);
     }
 
-    private static (HttpStatusCode httpStatusCode, IReadOnlyCollection<ApiError>) GetHttpStatusCodeAndErrors(
+    private static (HttpStatusCode httpStatusCode, IReadOnlyCollection<ApiError>?) GetHttpStatusCodeAndErrors(
         Exception exception) =>
         exception switch
         {
-            ValidationException validationException => 
+            ValidationException validationException =>
                 (HttpStatusCode.BadRequest, validationException.Errors),
-            AuthenticationServiceException authenticationServiceException => 
-                (HttpStatusCode.InternalServerError,new[] { new DomainErrors.General.ServerError() }),
-            _ => 
+            InvalidRequestException invalidRequestException =>
+                (HttpStatusCode.BadRequest, new[] { new DomainErrors.General.UnspecifiedBadRequest() }),
+            AuthorizationException authorizationException =>
+                (HttpStatusCode.NotFound, null),
+            AuthenticationServiceException authenticationServiceException =>
+                (HttpStatusCode.InternalServerError, new[] { new DomainErrors.General.ServerError() }),
+            _ =>
                 (HttpStatusCode.InternalServerError, new[] { new DomainErrors.General.ServerError() })
         };
+
+    private static readonly IReadOnlyList<Type> ExpectedExceptions = new List<Type>()
+    {
+        typeof(ValidationException),
+        typeof(InvalidRequestException),
+        typeof(AuthorizationException)
+    };
+
+    private static bool IsUnexpectedException(Exception ex)
+    {
+        return ExpectedExceptions.All(exType => !exType.IsInstanceOfType(ex));
+    }
 }
 
 /// <summary>
