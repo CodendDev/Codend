@@ -27,7 +27,7 @@ namespace Codend.Presentation.Controllers;
 /// <summary>
 /// Controller containing endpoints associated with <see cref="BaseProjectTask"/> and it's derived entities management.
 /// </summary>
-[Route("api/projects/{projectId:guid}/task")]
+[Route("api/projects/{projectId:guid}/tasks")]
 [Authorize(ProjectOperations.IsProjectMemberPolicy)]
 public class ProjectTaskController : ApiController
 {
@@ -161,7 +161,7 @@ public class ProjectTaskController : ApiController
     /// - 200 on success with newly created base project task id
     /// - 400 on failure with error response
     /// </returns>
-    [HttpPost]
+    [HttpPost("base")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateBaseTask(
@@ -243,7 +243,7 @@ public class ProjectTaskController : ApiController
     /// - 400 on failure with error response
     /// - 404 on failure
     /// </returns>
-    [HttpPut("{projectTaskId:guid}")]
+    [HttpPut("base/{projectTaskId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
