@@ -1,15 +1,17 @@
 using Codend.Application.Sprints.Commands.CreateSprint;
+using Codend.Application.Sprints.Commands.UpdateSprint;
 using Codend.Contracts;
+using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.Sprint;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
-using Codend.Presentation.Infrastructure.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static Codend.Presentation.Infrastructure.Authorization.ProjectOperations;
 
 namespace Codend.Presentation.Controllers;
 
@@ -17,7 +19,7 @@ namespace Codend.Presentation.Controllers;
 /// Controller for <see cref="Sprint"/> commands.
 /// </summary>
 [Route("api/projects/{projectId:guid}/sprints")]
-[Authorize(ProjectOperations.IsProjectMemberPolicy)]
+[Authorize(IsProjectMemberPolicy)]
 public class SprintController : ApiController
 {
     /// <inheritdoc />
@@ -59,6 +61,50 @@ public class SprintController : ApiController
                 request.StartDate,
                 request.EndDate,
                 request.Goal
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Updates sprint with id <paramref name="sprintId"/>.
+    /// </summary>
+    /// <param name="projectId">Id of the project to which the sprint belongs.</param>
+    /// <param name="sprintId">Id of the sprint that will be updated.</param>
+    /// <param name="request">Request with name, start date, end date and goal.</param>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     {
+    ///         "name": "string",
+    ///         "startDate": "2023-9-24T08:24:03.557Z",
+    ///         "endDate": "2023-10-24T08:24:03.557Z",
+    ///         "goal": {
+    ///         "shouldUpdate": true,
+    ///         "value": "string"
+    ///     }
+    /// </remarks>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 204 on success
+    /// - 400 with errors on failure
+    /// - 404 on failure
+    /// </returns>
+    [HttpPut("{sprintId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid sprintId,
+        [FromBody] UpdateSprintRequest request) =>
+        await Resolver<UpdateSprintCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new UpdateSprintCommand(
+                sprintId.GuidConversion<SprintId>(),
+                request.Name,
+                request.StartDate,
+                request.EndDate,
+                request.Goal.HandleNull()
             ))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
