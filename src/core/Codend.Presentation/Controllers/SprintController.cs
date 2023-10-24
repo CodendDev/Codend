@@ -1,4 +1,5 @@
 using Codend.Application.Sprints.Commands.CreateSprint;
+using Codend.Application.Sprints.Commands.DeleteSprint;
 using Codend.Application.Sprints.Commands.UpdateSprint;
 using Codend.Contracts;
 using Codend.Contracts.Requests;
@@ -106,6 +107,27 @@ public class SprintController : ApiController
                 request.EndDate,
                 request.Goal.HandleNull()
             ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Deletes sprint with given <paramref name="sprintId"/>.
+    /// </summary>
+    /// <param name="projectId">Id of the project to which the sprint belongs.</param>
+    /// <param name="sprintId">Id of the sprint that will be deleted.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 204 on success
+    /// - 404 on failure
+    /// </returns>
+    [HttpDelete("{sprintId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid sprintId) =>
+        await Resolver<DeleteSprintCommand>
+            .For(new DeleteSprintCommand(sprintId.GuidConversion<SprintId>()))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 }
