@@ -2,7 +2,6 @@ using Codend.Application.Core;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Contracts.Requests;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
@@ -49,7 +48,7 @@ public class UpdateSprintCommandHandler : ICommandHandler<UpdateSprintCommand>
     /// <inheritdoc />
     public async Task<Result> Handle(UpdateSprintCommand request, CancellationToken cancellationToken)
     {
-        var sprint = await _sprintRepository.GetByIdAsync(request.SprintId);
+        var sprint = await _sprintRepository.GetByIdAsync(request.SprintId, cancellationToken);
         if (sprint is null)
         {
             return DomainNotFound.Fail<Sprint>();
