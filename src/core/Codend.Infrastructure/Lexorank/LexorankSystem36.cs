@@ -13,12 +13,16 @@ public class LexorankSystem36 : ILexorankSystem
     public char GetMinChar() => '0';
     public char GetMidChar() => 'i';
     public char GetMaxChar() => 'z';
+    public char StartOfAlphabet() => '/';
+    public char EndOfAlphabet() => '|';
 
-    public int DiffBetweenChars(char ch1, char ch2) => int.Abs(ToDigit(ch1) - ToDigit(ch2));
+    public int DiffBetweenChars(char ch1, char ch2) => ToDigit(ch2) - ToDigit(ch1);
 
     /// <inheritdoc />
     public int ToDigit(char ch)
     {
+        if (ch == StartOfAlphabet()) ch = GetMinChar();
+        if (ch == EndOfAlphabet()) ch = GetMaxChar();
         return ch switch
         {
             >= '0' and <= '9' => ch - 48,

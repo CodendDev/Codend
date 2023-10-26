@@ -16,6 +16,27 @@ public interface ILexorankSystem
 
     public char GetMaxChar();
 
+    /// <summary>
+    /// Char not included in alphabet, which will 'mark' the start of the alphabet.
+    /// </summary>
+    public char StartOfAlphabet();
+
+    /// <summary>
+    /// Char not included in alphabet, which will 'mark' the end of the alphabet.
+    /// </summary>
+    public char EndOfAlphabet();
+
+    /// <summary>
+    /// Checks how far apart <paramref name="ch1"/> is from <paramref name="ch2"/> in an alphabet.
+    /// </summary>
+    /// <param name="ch1">'From' char position.</param>
+    /// <param name="ch2">'To' char position.</param>
+    /// <remarks>
+    /// Less than 0 - ch1 is this many places after ch2 |
+    /// 0 - it's the same char |
+    /// More than 1 - ch1 is this many places before ch1.
+    /// </remarks>
+    /// <returns><see cref="int"/> number of indexes splitting char 1 from char 2.</returns>
     public int DiffBetweenChars(char ch1, char ch2);
 
     /// <summary>
