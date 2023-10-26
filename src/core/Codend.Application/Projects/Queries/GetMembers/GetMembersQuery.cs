@@ -1,14 +1,11 @@
-using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
 using Codend.Application.Core.Abstractions.Querying;
 using Codend.Application.Core.Abstractions.Services;
-using Codend.Application.Extensions;
 using Codend.Contracts.Responses;
 using Codend.Domain.Entities;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.Projects.Queries.GetMembers;
 
@@ -58,6 +55,6 @@ public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, IEnumerable
             usersResponse = usersResponse.Where(user => user.ToString().Contains(query.Search)).ToList();
         }
 
-        return Result.Ok(usersResponse);
+        return Result.Ok(usersResponse.AsEnumerable());
     }
 }

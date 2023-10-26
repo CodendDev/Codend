@@ -1,5 +1,4 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
-using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Services;
 using Codend.Application.Exceptions;
 using Codend.Domain.Entities;
@@ -104,8 +103,13 @@ public sealed class FusionAuthService : IAuthService, IUserService
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<UserResponse>> GetUsersByIds(IEnumerable<UserId> usersIds)
+    public async Task<List<UserResponse>> GetUsersByIds(List<UserId> usersIds)
     {
+        if (!usersIds.Any())
+        {
+            return new List<UserResponse>();
+        }
+
         var response = await _fusionAuthClient
             .SearchUsersByIdsAsync(usersIds.Select(x => x.Value.ToString()).ToList());
 
@@ -115,8 +119,8 @@ public sealed class FusionAuthService : IAuthService, IUserService
         }
 
         var usersResponse = response.successResponse.users
-            .Select(user => new UserResponse(user.firstName, user.lastName, user.email, user.imageUrl))
-            .AsEnumerable();
+            .Select(user => new UserResponse((Guid)user.id!, user.firstName, user.lastName, user.email, user.imageUrl))
+            .ToList();
 
         return usersResponse;
     }
