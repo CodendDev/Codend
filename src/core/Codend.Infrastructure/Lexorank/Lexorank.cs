@@ -2,7 +2,7 @@ namespace Codend.Infrastructure.Lexorank;
 
 public class Lexorank : IComparable<Lexorank>, IComparable, IEquatable<Lexorank>
 {
-    protected static readonly ILexorankSystem LexorankSystem = new LexorankSystem36();
+    public static readonly ILexorankSystem LexorankSystem = new LexorankSystem36();
 
     public string Value { get; }
 
@@ -11,7 +11,7 @@ public class Lexorank : IComparable<Lexorank>, IComparable, IEquatable<Lexorank>
     public static Lexorank FromString(string value) => new(value);
 
     /// <summary>
-    /// Calculates and returns middle position between two ranks.
+    /// Calculates and returns middle position between two lexoranks.
     /// </summary>
     /// <param name="prev">First position.</param>
     /// <param name="next">Second position.</param>
@@ -55,6 +55,8 @@ public class Lexorank : IComparable<Lexorank>, IComparable, IEquatable<Lexorank>
         return other is not null && Value.Equals(other.Value);
     }
 
+    public override string ToString() => Value;
+
     private static string CalculateMiddle(string prevString, string nextString, ILexorankSystem lexorankSystem)
     {
         char prevChar = '_', nextChar = '_';
@@ -80,7 +82,7 @@ public class Lexorank : IComparable<Lexorank>, IComparable, IEquatable<Lexorank>
             while (nextChar == minChar) // Equalize with minChar.
             {
                 nextChar = currPos < nextString.Length ? nextString[currPos++] : endChar;
-                resultStr += lexorankSystem.ToChar(minChar);
+                resultStr += minChar;
             }
 
             if (nextChar == lexorankSystem.ToChar(1)) // In case of 'second minChar ('b' or '1')', insert minChar.
