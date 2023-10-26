@@ -1,3 +1,4 @@
+using Codend.Application.Sprints.Commands.AssignTasks;
 using Codend.Application.Sprints.Commands.CreateSprint;
 using Codend.Application.Sprints.Commands.DeleteSprint;
 using Codend.Application.Sprints.Commands.UpdateSprint;
@@ -128,6 +129,29 @@ public class SprintController : ApiController
         [FromRoute] Guid sprintId) =>
         await Resolver<DeleteSprintCommand>
             .For(new DeleteSprintCommand(sprintId.GuidConversion<SprintId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Assigns tasks to sprint with given <paramref name="sprintId"/>
+    /// </summary>
+    /// <param name="projectId">Id of the project to which the sprint belongs.</param>
+    /// <param name="sprintId">Id of the sprint to which tasks will be assigned.</param>
+    /// <param name="request">Request with list of tasks ids.</param>
+    /// <returns></returns>
+    [HttpPost("{sprintId:guid}/tasks")]
+    public async Task<IActionResult> AssignTasks(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid sprintId,
+        [FromBody] SprintTasksRequest request) =>
+        await Resolver<SprintAssignTasksCommand>
+            .For(
+                new SprintAssignTasksCommand
+                (
+                    sprintId.GuidConversion<SprintId>(),
+                    request.TasksIds.Select(id => id.GuidConversion<ProjectTaskId>())
+                )
+            )
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 }
