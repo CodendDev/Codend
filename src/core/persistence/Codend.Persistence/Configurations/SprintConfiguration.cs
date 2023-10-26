@@ -45,10 +45,5 @@ internal sealed class SprintConfiguration : IEntityTypeConfiguration<Sprint>
         builder
             .OwnsOne(sprint => sprint.Goal,
                 sprintGoal => sprintGoal.ConfigureNullableStringValueObject(nameof(Sprint.Goal)));
-
-        builder
-            .HasMany<BaseProjectTask>()
-            .WithMany()
-            .UsingEntity("SprintProjectTask");
     }
 }
