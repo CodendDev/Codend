@@ -121,5 +121,14 @@ public class Sprint : Entity<SprintId>, ISoftDeletableEntity
         return sprintPeriod;
     }
 
+    public Result<IEnumerable<SprintProjectTask>> AssignTasks(IEnumerable<ProjectTaskId> taskIds)
+    {
+        var results = taskIds
+            .Select(taskId => SprintProjectTask.Create(Id, taskId))
+            .Select(r => r.ValueOrDefault);
+
+        return Result.Ok(results);
+    }
+
     #endregion
 }
