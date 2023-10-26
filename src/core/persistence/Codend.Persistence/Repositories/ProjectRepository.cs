@@ -17,4 +17,16 @@ public class ProjectRepository : GenericRepository<ProjectId, Guid, Project>, IP
 
         return contains;
     }
+
+    public async Task<bool> TasksInProjectAsync(ProjectId projectId, IEnumerable<ProjectTaskId> taskIds,
+        CancellationToken token)
+    {
+        var dbTasks =
+            Context
+                .Set<BaseProjectTask>()
+                .Where(t => taskIds.Any(id => id == t.Id) && t.ProjectId == projectId);
+        var dbTasksCount = await dbTasks.CountAsync(token);
+        
+        return dbTasksCount == taskIds.Count();
+    }
 }

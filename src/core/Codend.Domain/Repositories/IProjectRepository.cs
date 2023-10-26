@@ -15,4 +15,6 @@ public interface IProjectRepository
     Task<bool> Exists(ProjectId projectId);
 
     Task<bool> ProjectContainsEpic(ProjectId projectId, EpicId epicId);
+
+    Task<bool> TasksInProjectAsync(ProjectId projectId, IEnumerable<ProjectTaskId> taskIds, CancellationToken token);
 }
