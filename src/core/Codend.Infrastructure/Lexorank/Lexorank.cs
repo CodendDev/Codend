@@ -2,27 +2,41 @@ namespace Codend.Infrastructure.Lexorank;
 
 public class Lexorank : IComparable<Lexorank>, IComparable, IEquatable<Lexorank>
 {
-    private static readonly ILexorankSystem System = new LexorankSystem36();
-    private static readonly LexorankString MinStringValue = LexorankString.FromString("000000");
-    private static readonly LexorankString MidStringValue = LexorankString.FromString("iiiiii");
-    private static readonly LexorankString MaxStringValue = LexorankString.FromString("zzzzzz");
+    protected static readonly ILexorankSystem LexorankSystem = new LexorankSystem36();
+    protected static readonly int MinLength = 6;
+    private static readonly Lexorank MinValue = new Lexorank(new string(LexorankSystem.GetMinChar(), MinLength));
+    private static readonly Lexorank MidValue = new Lexorank(new string(LexorankSystem.GetMidChar(), MinLength));
+    private static readonly Lexorank MaxValue = new Lexorank(new string(LexorankSystem.GetMidChar(), MinLength));
 
     public string Value { get; }
 
-    public LexorankBucket Bucket { get; }
+    private Lexorank(string value) => Value = value;
 
-    public LexorankString RankString { get; }
+    public static Lexorank FromString(string value) => new(value);
 
-    private Lexorank(string value)
+    /// <summary>
+    /// Calculates and returns middle position between two ranks.
+    /// </summary>
+    /// <param name="prev">First position.</param>
+    /// <param name="next">Second position.</param>
+    /// <returns><see cref="Lexorank"/> instance that is between two given lexoranks.</returns>
+    public static Lexorank GetMiddle(Lexorank? prev = null, Lexorank? next = null)
     {
-        Value = value;
-        var lexorankParts = Value.Split('|');
-        if (lexorankParts.Length != 2)
-            throw new LexorankException($"Invalid string: {value}. It must look like '0|abcd1'");
-        Bucket = LexorankBucket.FromString(lexorankParts[0]);
-        RankString = LexorankString.FromString(lexorankParts[1]);
-    }
+        // Handle edge cases.
+        if (prev is null && next is null) return MidValue;
+        if (prev is null) prev = MinValue;
+        else if (next is null) next = MaxValue;
 
+        var cmp = prev.CompareTo(next);
+
+        // Check if positions are the same.
+        if (cmp == 0) throw new LexorankException($"Prev and next parameters cannot be same position! Pos: {prev}");
+
+        // Check if positions are in proper order and correct if necessary.
+        if (cmp > 0) (prev, next) = (next, prev);
+
+        return new Lexorank(CalculateMiddle(prev!.Value, next!.Value, LexorankSystem));
+    }
 
     public int CompareTo(object? obj)
     {
@@ -43,5 +57,54 @@ public class Lexorank : IComparable<Lexorank>, IComparable, IEquatable<Lexorank>
     public bool Equals(Lexorank? other)
     {
         return other is not null && Value.Equals(other.Value);
+    }
+
+    private static string CalculateMiddle(string prevString, string nextString, ILexorankSystem lexorankSystem)
+    {
+        char prevChar = '_', nextChar = '_';
+        int currPos;
+        string resultStr;
+
+        var startChar = lexorankSystem.StartOfAlphabet();
+        var endChar = lexorankSystem.EndOfAlphabet();
+
+        // Find leftmost non-matching character, or non-alphabetic char if string ended.
+        for (currPos = 0; prevChar == nextChar; currPos++)
+        {
+            prevChar = currPos < prevString.Length ? prevString[currPos] : startChar;
+            nextChar = currPos < nextString.Length ? nextString[currPos] : endChar;
+        }
+
+        resultStr = prevString.Substring(0, currPos - 1); // Copy identical part of strings.
+        var minChar = lexorankSystem.GetMinChar();
+        var maxChar = lexorankSystem.GetMaxChar();
+
+        if (prevChar == startChar) // When prev string is shorter, equalize length with minChar eg. '0' or 'a'.
+        {
+            while (nextChar == minChar) // Equalize with minChar.
+            {
+                nextChar = currPos < nextString.Length ? nextString[currPos++] : endChar;
+                resultStr += lexorankSystem.ToChar(minChar);
+            }
+
+            if (nextChar == lexorankSystem.ToChar(1)) // In case of 'second minChar ('b' or '1')', insert minChar.
+            {
+                resultStr += minChar;
+                nextChar = endChar;
+            }
+        }
+        else if (lexorankSystem.DiffBetweenChars(prevChar, nextChar) == 1) // found consecutive chars eg. 'c' && 'd'
+        {
+            resultStr += prevChar;
+            nextChar = endChar;
+            while ((prevChar = currPos < prevString.Length ? prevString[currPos++] : minChar) == maxChar)
+            {
+                // Equalize maxChars if needed.
+                resultStr += maxChar;
+            }
+        }
+
+        int prevDigit = lexorankSystem.ToDigit(prevChar), nextDigit = lexorankSystem.ToDigit(nextChar);
+        return resultStr + lexorankSystem.ToChar((int)Math.Ceiling((prevDigit + nextDigit) / 2D));
     }
 }
