@@ -31,6 +31,10 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
         StatusId = statusId;
     }
 
+    /// <summary>
+    /// String representation of task type. 
+    /// </summary>
+    public string TaskType => nameof(Story);
 
     #region ISoftDeletableEntity properties
 
