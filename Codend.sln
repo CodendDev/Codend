@@ -42,6 +42,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{643F16
 		kickstart\kickstart.json = kickstart\kickstart.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{C0000305-E9D7-4876-841D-AAD8EC10EEEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codend.Shared.Infrastructure", "src\shared\Codend.Shared.Infrastructure\Codend.Shared.Infrastructure.csproj", "{F6586A5B-B26A-4B06-BFA1-CFB35CF25BF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +66,8 @@ Global
 		{491A8A5B-A7C7-4324-ACEA-E4F201311C7A} = {A2675A39-ADE3-424A-9132-0A775247C29B}
 		{44856A3D-867E-400B-8E06-8D7207733631} = {5F854B30-5C9E-484E-AD59-6EB15CEE2C79}
 		{1DAC7ED1-91B5-47AF-91A0-42F070687178} = {5F854B30-5C9E-484E-AD59-6EB15CEE2C79}
+		{C0000305-E9D7-4876-841D-AAD8EC10EEEF} = {D9C5A8BF-6B39-467C-8AE7-413F7C10B044}
+		{F6586A5B-B26A-4B06-BFA1-CFB35CF25BF0} = {C0000305-E9D7-4876-841D-AAD8EC10EEEF}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E79B0EEC-5CA0-4B8D-8E88-580F62C1AF14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -108,5 +114,9 @@ Global
 		{1DAC7ED1-91B5-47AF-91A0-42F070687178}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DAC7ED1-91B5-47AF-91A0-42F070687178}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DAC7ED1-91B5-47AF-91A0-42F070687178}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6586A5B-B26A-4B06-BFA1-CFB35CF25BF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6586A5B-B26A-4B06-BFA1-CFB35CF25BF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6586A5B-B26A-4B06-BFA1-CFB35CF25BF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6586A5B-B26A-4B06-BFA1-CFB35CF25BF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
