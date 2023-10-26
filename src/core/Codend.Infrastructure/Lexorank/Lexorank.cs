@@ -3,10 +3,6 @@ namespace Codend.Infrastructure.Lexorank;
 public class Lexorank : IComparable<Lexorank>, IComparable, IEquatable<Lexorank>
 {
     protected static readonly ILexorankSystem LexorankSystem = new LexorankSystem36();
-    protected static readonly int MinLength = 6;
-    private static readonly Lexorank MinValue = new Lexorank(new string(LexorankSystem.GetMinChar(), MinLength));
-    private static readonly Lexorank MidValue = new Lexorank(new string(LexorankSystem.GetMidChar(), MinLength));
-    private static readonly Lexorank MaxValue = new Lexorank(new string(LexorankSystem.GetMidChar(), MinLength));
 
     public string Value { get; }
 
@@ -23,9 +19,9 @@ public class Lexorank : IComparable<Lexorank>, IComparable, IEquatable<Lexorank>
     public static Lexorank GetMiddle(Lexorank? prev = null, Lexorank? next = null)
     {
         // Handle edge cases.
-        if (prev is null && next is null) return MidValue;
-        if (prev is null) prev = MinValue;
-        else if (next is null) next = MaxValue;
+        if (prev is null && next is null) return new Lexorank(LexorankSystem.GetMidChar().ToString());
+        if (prev is null) prev = new Lexorank(LexorankSystem.GetMinChar().ToString());
+        else if (next is null) next = new Lexorank(LexorankSystem.GetMaxChar().ToString());
 
         var cmp = prev.CompareTo(next);
 
