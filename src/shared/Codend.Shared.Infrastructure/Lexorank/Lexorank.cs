@@ -1,12 +1,14 @@
-namespace Codend.Infrastructure.Lexorank;
+namespace Codend.Shared.Infrastructure.Lexorank;
 
-public class Lexorank : IComparable<Lexorank>, IComparable, IEquatable<Lexorank>
+public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
 {
     public static readonly ILexorankSystem LexorankSystem = new LexorankSystem36();
 
     public string Value { get; }
+    
+    private Lexorank(){}
 
-    private Lexorank(string value) => Value = value;
+    public Lexorank(string value) => Value = value;
 
     public static Lexorank FromString(string value) => new(value);
 

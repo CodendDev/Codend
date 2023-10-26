@@ -1,4 +1,4 @@
-using Codend.Infrastructure.Lexorank;
+using Codend.Shared.Infrastructure.Lexorank;
 using FluentAssertions;
 
 namespace Codend.UnitTests.Infrastructure;
@@ -17,8 +17,8 @@ public class LexorankTests
         string expected)
     {
         // arrange
-        var lex1 = Lexorank.FromString(value1);
-        var lex2 = Lexorank.FromString(value2);
+        var lex1 = new Lexorank(value1);
+        var lex2 = new Lexorank(value2);
 
         // act
         var result = Lexorank.GetMiddle(lex1, lex2);
@@ -44,7 +44,7 @@ public class LexorankTests
     {
         // arrange
         var expectedValue = "r";
-        var prev = Lexorank.FromString("i");
+        var prev = new Lexorank("i");
         // act
         var result = Lexorank.GetMiddle(prev);
         // assert
@@ -56,7 +56,7 @@ public class LexorankTests
     {
         // arrange
         var expectedValue = "9";
-        var next = Lexorank.FromString("i");
+        var next = new Lexorank("i");
         // act
         var result = Lexorank.GetMiddle(null, next);
         // assert

@@ -1,4 +1,4 @@
-namespace Codend.Infrastructure.Lexorank;
+namespace Codend.Shared.Infrastructure.Lexorank;
 
 public class LexorankException : Exception
 {

@@ -28,7 +28,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\core\Codend.Application\Codend.Application.csproj"/>
         <ProjectReference Include="..\..\src\core\Codend.Domain\Codend.Domain.csproj"/>
-        <ProjectReference Include="..\..\src\core\Codend.Infrastructure\Codend.Infrastructure.csproj"/>
+        <ProjectReference Include="..\..\src\shared\Codend.Shared.Infrastructure\Codend.Shared.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
