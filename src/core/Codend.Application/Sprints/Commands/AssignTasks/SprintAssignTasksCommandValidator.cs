@@ -21,9 +21,5 @@ public class SprintAssignTasksCommandValidator : AbstractValidator<SprintAssignT
         RuleFor(x => x.TasksIds)
             .NotEmpty()
             .WithError(new PropertyNullOrEmpty(nameof(SprintAssignTasksCommand.TasksIds)));
-
-        RuleForEach(x => x.TasksIds)
-            .NotEmpty()
-            .WithError(new PropertyNullOrEmpty("Task id with index of {CollectionIndex} is required"));
     }
 }
