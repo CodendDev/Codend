@@ -64,4 +64,6 @@ public abstract class GenericRepository<TKey, TKeyPrimitive, TEntity>
         return Context.Set<TEntity>()
             .AnyAsync(e => Equals(e.Id, key));
     }
+
+    public void RemoveRange(IEnumerable<TEntity> sprintProjectTasks) => Context.RemoveRange(sprintProjectTasks);
 }
