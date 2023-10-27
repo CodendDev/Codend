@@ -2,6 +2,7 @@ using Codend.Application.Projects.Commands.AddMember;
 using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
 using Codend.Application.Projects.Commands.RemoveMember;
+using Codend.Application.Projects.Commands.UpdateIsFavouriteFlag;
 using Codend.Application.Projects.Commands.UpdateProject;
 using Codend.Application.Projects.Queries.GetBoard;
 using Codend.Application.Projects.Queries.GetMembers;
@@ -246,6 +247,33 @@ public class ProjectController : ApiController
         [FromRoute] Guid projectId) =>
         await Resolver<GetBoardQuery>
             .For(new GetBoardQuery(projectId.GuidConversion<ProjectId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Updates IsFavourite flag for user for chosen project.
+    /// </summary>
+    /// <param name="projectId">The id of the project which IsFavourite flag will be updated.</param>
+    /// <param name="request">Request containing new IsFavourite flag value.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 204 - on success.
+    /// 400 - on failure.
+    /// 404 - when project was not found.
+    /// </returns>
+    [HttpPut("{projectId:guid}/favourite")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
+    public async Task<IActionResult> UpdateProjectIsFavouriteFlag(
+        [FromRoute] Guid projectId,
+        [FromBody] UpdateProjectIsFavouriteFlagRequest request) =>
+        await Resolver<UpdateProjectIsFavouriteFlagCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new UpdateProjectIsFavouriteFlagCommand(
+                projectId.GuidConversion<ProjectId>(),
+                request.IsFavourite))
             .Execute(query => Mediator.Send(query))
             .ResolveResponse();
 }
