@@ -13,5 +13,5 @@ public interface IUserService
     /// </summary>
     /// <param name="usersIds">Ids of the users whose info will be retrieved.</param>
     /// <returns>List of users info.</returns>
-    public Task<List<UserResponse>> GetUsersByIds(List<UserId> usersIds);
+    public Task<List<UserResponse>> GetUsersByIdsAsync(List<UserId> usersIds);
 }

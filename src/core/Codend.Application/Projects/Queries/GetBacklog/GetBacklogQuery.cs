@@ -78,7 +78,7 @@ public class GetBacklogQueryHandler : IQueryHandler<GetBacklogQuery, BacklogResp
             .Where(x => x.AssigneeId is not null)
             .Select(x => x.AssigneeId!).ToList();
 
-        var users = await _userService.GetUsersByIds(userIds);
+        var users = await _userService.GetUsersByIdsAsync(userIds);
 
         return projectTasks.Select(x => new BacklogTaskResponse(
             x.Id,

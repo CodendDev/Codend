@@ -48,7 +48,7 @@ public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, IEnumerable
             .Select(x => x.MemberId)
             .ToListAsync(cancellationToken);
 
-        var usersResponse = await _userService.GetUsersByIds(usersIds);
+        var usersResponse = await _userService.GetUsersByIdsAsync(usersIds);
 
         if (query.Search != null)
         {

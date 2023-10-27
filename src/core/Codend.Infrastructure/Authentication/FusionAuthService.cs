@@ -103,7 +103,7 @@ public sealed class FusionAuthService : IAuthService, IUserService
     }
 
     /// <inheritdoc />
-    public async Task<List<UserResponse>> GetUsersByIds(List<UserId> usersIds)
+    public async Task<List<UserResponse>> GetUsersByIdsAsync(List<UserId> usersIds)
     {
         if (!usersIds.Any())
         {
