@@ -13,6 +13,11 @@ public class Epic : Entity<EpicId>, ISoftDeletableEntity
     {
     }
 
+    /// <summary>
+    /// String representation of task type. 
+    /// </summary>
+    public string TaskType => nameof(Epic);
+
     #region ISoftDeletableEntityProperties
 
     public DateTime DeletedOnUtc { get; }
@@ -54,7 +59,8 @@ public class Epic : Entity<EpicId>, ISoftDeletableEntity
     /// <param name="projectId">Epic project id.</param>
     /// <param name="statusId">Epic status id.</param>
     /// <returns>Created <see cref="Epic"/> or <see cref="Result"/> with errors.</returns>
-    public static Result<Epic> Create(string name, string description, ProjectId projectId, ProjectTaskStatusId statusId)
+    public static Result<Epic> Create(string name, string description, ProjectId projectId,
+        ProjectTaskStatusId statusId)
     {
         var resultName = EpicName.Create(name);
         var resultDescription = EpicDescription.Create(description);

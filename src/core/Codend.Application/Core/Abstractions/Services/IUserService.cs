@@ -4,7 +4,7 @@ using Codend.Domain.Entities;
 namespace Codend.Application.Core.Abstractions.Services;
 
 /// <summary>
-/// Interface for user managment.
+/// Interface for user management.
 /// </summary>
 public interface IUserService
 {
@@ -13,5 +13,5 @@ public interface IUserService
     /// </summary>
     /// <param name="usersIds">Ids of the users whose info will be retrieved.</param>
     /// <returns>List of users info.</returns>
-    public Task<IEnumerable<UserResponse>> GetUsersByIds(IEnumerable<UserId> usersIds);
+    public Task<List<UserResponse>> GetUsersByIdsAsync(List<UserId> usersIds);
 }
