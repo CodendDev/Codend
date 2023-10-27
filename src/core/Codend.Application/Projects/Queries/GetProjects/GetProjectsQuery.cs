@@ -57,7 +57,7 @@ public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList
         var projectsQuery = _queryableSets.Queryable<Project>();
 
         var projectsResponseQuery = _queryableSets.Queryable<ProjectMember>()
-            .GetForUser(userId)
+            .GetProjectsForUser(userId)
             .Join(
                 projectsQuery,
                 projectMember => projectMember.ProjectId,
