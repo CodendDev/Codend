@@ -144,13 +144,14 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
     /// <summary>
     /// Creates new sprint.
     /// </summary>
-    /// <param name="startDate">Sprint startDane.</param>
+    /// <param name="name">Sprint name.</param>
+    /// <param name="startDate">Sprint startDate.</param>
     /// <param name="endDate">Sprint endDate.</param>
     /// <param name="goal">Sprint goal.</param>
     /// <returns>Ok result with Sprint object or an error.</returns>
-    public Result<Sprint> CreateSprint(DateTime startDate, DateTime endDate, string? goal)
+    public Result<Sprint> CreateSprint(string name, DateTime startDate, DateTime endDate, string? goal)
     {
-        var result = Sprint.Create(Id, startDate, endDate, goal);
+        var result = Sprint.Create(name, Id, startDate, endDate, goal);
         if (result.IsFailed)
         {
             return result;
