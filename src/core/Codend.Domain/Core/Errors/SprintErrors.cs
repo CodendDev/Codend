@@ -23,7 +23,15 @@ public static partial class DomainErrors
         public class TaskDoesntExistInProject : DomainError
         {
             public TaskDoesntExistInProject()
-                : base("Sprint.TaskDoesntExistInProject", $"Task doesn't exist in project.")
+                : base("Sprint.TaskDoesntExistInProject", "Task doesn't exist in project.")
+            {
+            }
+        }
+
+        public class TaskIsNotAssignedToSprint : DomainError
+        {
+            public TaskIsNotAssignedToSprint()
+                : base("Sprint.TaskIsNotAssignedToSprint", "Task is not assigned to sprint.")
             {
             }
         }
