@@ -1,6 +1,7 @@
 using Codend.Application.Sprints.Commands.AssignTasks;
 using Codend.Application.Sprints.Commands.CreateSprint;
 using Codend.Application.Sprints.Commands.DeleteSprint;
+using Codend.Application.Sprints.Commands.RemoveTasks;
 using Codend.Application.Sprints.Commands.UpdateSprint;
 using Codend.Contracts;
 using Codend.Contracts.Requests;
@@ -135,6 +136,16 @@ public class SprintController : ApiController
     /// <summary>
     /// Assigns tasks to sprint with given <paramref name="sprintId"/>
     /// </summary>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     {
+    ///         "tasksIds": [
+    ///             "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///             "758ab11c-74b9-11ee-b962-0242ac120002"
+    ///         ]
+    ///     }
+    /// </remarks>
     /// <param name="projectId">Id of the project to which the sprint belongs.</param>
     /// <param name="sprintId">Id of the sprint to which tasks will be assigned.</param>
     /// <param name="request">Request with list of tasks ids.</param>
@@ -145,8 +156,43 @@ public class SprintController : ApiController
         [FromRoute] Guid sprintId,
         [FromBody] SprintTasksRequest request) =>
         await Resolver<SprintAssignTasksCommand>
-            .For(
+            .IfRequestNotNull(request)
+            .ResolverFor(
                 new SprintAssignTasksCommand
+                (
+                    sprintId.GuidConversion<SprintId>(),
+                    request.TasksIds.Select(id => id.GuidConversion<ProjectTaskId>())
+                )
+            )
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Removes tasks to sprint with given <paramref name="sprintId"/>
+    /// </summary>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     {
+    ///         "tasksIds": [
+    ///             "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///             "758ab11c-74b9-11ee-b962-0242ac120002"
+    ///         ]
+    ///     }
+    /// </remarks>
+    /// <param name="projectId">Id of the project to which the sprint belongs.</param>
+    /// <param name="sprintId">Id of the sprint from which tasks will be removed.</param>
+    /// <param name="request">Request with list of tasks ids.</param>
+    /// <returns></returns>
+    [HttpDelete("{sprintId:guid}/tasks")]
+    public async Task<IActionResult> RemoveTasks(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid sprintId,
+        [FromBody] SprintTasksRequest request) =>
+        await Resolver<SprintRemoveTasksCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(
+                new SprintRemoveTasksCommand
                 (
                     sprintId.GuidConversion<SprintId>(),
                     request.TasksIds.Select(id => id.GuidConversion<ProjectTaskId>())
