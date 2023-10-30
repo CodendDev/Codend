@@ -52,6 +52,10 @@ public partial class RegisterCommandValidator : AbstractValidator<RegisterComman
             .WithError(new PropertyNullOrEmpty(nameof(RegisterCommand.LastName)))
             .MaximumLength(IAuthService.MaxLastNameLength)
             .WithError(new StringPropertyTooLong(nameof(RegisterCommand.LastName), IAuthService.MaxLastNameLength));
+
+        RuleFor(x => x.ImageUrl)
+            .NotEmpty()
+            .WithError(new PropertyNullOrEmpty(nameof(RegisterCommand.ImageUrl)));
     }
 
     private static bool ContainLowercaseLetter(string password)
