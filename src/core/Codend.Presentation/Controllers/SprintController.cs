@@ -6,6 +6,7 @@ using Codend.Application.Sprints.Commands.UpdateSprint;
 using Codend.Contracts;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.Sprint;
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Extensions;
@@ -161,7 +162,7 @@ public class SprintController : ApiController
                 new SprintAssignTasksCommand
                 (
                     sprintId.GuidConversion<SprintId>(),
-                    request.TasksIds.Select(id => id.GuidConversion<ProjectTaskId>())
+                    request.Tasks.Select<SprintTaskRequest, ISprintTaskId>(task => task.MapToSprintTaskId())
                 )
             )
             .Execute(command => Mediator.Send(command))
@@ -195,7 +196,7 @@ public class SprintController : ApiController
                 new SprintRemoveTasksCommand
                 (
                     sprintId.GuidConversion<SprintId>(),
-                    request.TasksIds.Select(id => id.GuidConversion<ProjectTaskId>())
+                    request.Tasks.Select<SprintTaskRequest, ISprintTaskId>(task => task.MapToSprintTaskId())
                 )
             )
             .Execute(command => Mediator.Send(command))

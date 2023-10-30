@@ -1,10 +1,10 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
 using static Codend.Domain.Core.Errors.DomainErrors;
-using static Codend.Domain.Core.Errors.DomainErrors.Sprint;
 using Sprint = Codend.Domain.Entities.Sprint;
 
 namespace Codend.Application.Sprints.Commands.RemoveTasks;
@@ -17,7 +17,7 @@ namespace Codend.Application.Sprints.Commands.RemoveTasks;
 public sealed record SprintRemoveTasksCommand
 (
     SprintId SprintId,
-    IEnumerable<ProjectTaskId> TasksIds
+    IEnumerable<ISprintTaskId> TasksIds
 ) : ICommand;
 
 /// <summary>
@@ -51,16 +51,16 @@ public class SprintRemoveTasksCommandHandler : ICommandHandler<SprintRemoveTasks
             return General.DomainNotFound.Fail<Sprint>();
         }
 
-        var sprintProjectTasks = await _sprintProjectTaskRepository
-            .GetRangeBySprintIdAndProjectTaskIds(request.SprintId, request.TasksIds);
+        // var sprintProjectTasks = await _sprintProjectTaskRepository
+        // .GetRangeBySprintIdAndProjectTaskIds(request.SprintId, request.TasksIds);
 
-        if (sprintProjectTasks.Count != request.TasksIds.Count())
-        {
-            return Result.Fail(new TaskIsNotAssignedToSprint());
-        }
+        // if (sprintProjectTasks.Count != request.TasksIds.Count())
+        // {
+        // return Result.Fail(new TaskIsNotAssignedToSprint());
+        // }
 
-        _sprintProjectTaskRepository.RemoveRange(sprintProjectTasks);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        // _sprintProjectTaskRepository.RemoveRange(sprintProjectTasks);
+        // await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Ok();
     }

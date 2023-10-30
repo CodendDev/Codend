@@ -1,6 +1,6 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
-using Codend.Domain.Core.Errors;
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -17,7 +17,7 @@ namespace Codend.Application.Sprints.Commands.AssignTasks;
 public sealed record SprintAssignTasksCommand
 (
     SprintId SprintId,
-    IEnumerable<ProjectTaskId> TasksIds
+    IEnumerable<ISprintTaskId> TasksIds
 ) : ICommand;
 
 /// <summary>
@@ -51,21 +51,21 @@ public class SprintAssignTasksCommandHandler : ICommandHandler<SprintAssignTasks
             return General.DomainNotFound.Fail<Sprint>();
         }
 
-        var projectId = sprint.ProjectId;
-        var validTasks = await _projectRepository.TasksInProjectAsync(projectId, request.TasksIds, cancellationToken);
-        if (!validTasks)
-        {
-            return Result.Fail(new DomainErrors.Sprint.TaskDoesntExistInProject());
-        }
+        // var projectId = sprint.ProjectId;
+        // var validTasks = await _projectRepository.TasksInProjectAsync(projectId, request.TasksIds, cancellationToken);
+        // if (!validTasks)
+        // {
+        // return Result.Fail(new DomainErrors.Sprint.TaskDoesntExistInProject());
+        // }
 
-        var sprintTasks = sprint.AssignTasks(request.TasksIds);
-        if (sprintTasks.IsFailed)
-        {
-            return sprintTasks.ToResult();
-        }
+        // var sprintTasks = sprint.AssignTasks(request.TasksIds);
+        // if (sprintTasks.IsFailed)
+        // {
+        // return sprintTasks.ToResult();
+        // }
 
-        await _sprintProjectTaskRepository.AddRangeAsync(sprintTasks.Value, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        // await _sprintProjectTaskRepository.AddRangeAsync(sprintTasks.Value, cancellationToken);
+        // await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Ok();
     }
