@@ -139,13 +139,24 @@ public class SprintController : ApiController
     /// </summary>
     /// <remarks>
     /// Sample request:
-    ///
+    /// 
     ///     {
-    ///         "tasksIds": [
-    ///             "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    ///             "758ab11c-74b9-11ee-b962-0242ac120002"
+    ///         "tasks": [
+    ///             {
+    ///                 "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///                 "type": "task"
+    ///             },
+    ///             {
+    ///                 "id": "28b1b31e-7738-11ee-b962-0242ac120002",
+    ///                 "type": "story"
+    ///             },
+    ///             {
+    ///                 "id": "2d23f326-7738-11ee-b962-0242ac120002",
+    ///                 "type": "epic"
+    ///             }
     ///         ]
     ///     }
+    /// 
     /// </remarks>
     /// <param name="projectId">Id of the project to which the sprint belongs.</param>
     /// <param name="sprintId">Id of the sprint to which tasks will be assigned.</param>
@@ -173,13 +184,24 @@ public class SprintController : ApiController
     /// </summary>
     /// <remarks>
     /// Sample request:
-    ///
+    /// 
     ///     {
-    ///         "tasksIds": [
-    ///             "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    ///             "758ab11c-74b9-11ee-b962-0242ac120002"
+    ///         "tasks": [
+    ///             {
+    ///                 "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///                 "type": "task"
+    ///             },
+    ///             {
+    ///                 "id": "28b1b31e-7738-11ee-b962-0242ac120002",
+    ///                 "type": "story"
+    ///             },
+    ///             {
+    ///                 "id": "2d23f326-7738-11ee-b962-0242ac120002",
+    ///                 "type": "epic"
+    ///             }
     ///         ]
     ///     }
+    /// 
     /// </remarks>
     /// <param name="projectId">Id of the project to which the sprint belongs.</param>
     /// <param name="sprintId">Id of the sprint from which tasks will be removed.</param>
