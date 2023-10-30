@@ -55,7 +55,12 @@ public sealed class FusionAuthService : IAuthService, IUserService
     }
 
     /// <inheritdoc />
-    public async Task<Result<string>> RegisterAsync(string email, string password, string firstName, string lastName)
+    public async Task<Result<string>> RegisterAsync(
+        string email,
+        string password,
+        string firstName,
+        string lastName,
+        string imageUrl)
     {
         var newUser = new User()
         {
@@ -63,7 +68,8 @@ public sealed class FusionAuthService : IAuthService, IUserService
             email = email,
             password = password,
             firstName = firstName,
-            lastName = lastName
+            lastName = lastName,
+            imageUrl = imageUrl
         };
         var userRegistration = new UserRegistration()
         {

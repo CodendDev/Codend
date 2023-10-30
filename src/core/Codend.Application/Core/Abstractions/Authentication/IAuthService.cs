@@ -47,6 +47,12 @@ public interface IAuthService
     /// <param name="password">User password.</param>
     /// <param name="firstName">User first name</param>
     /// <param name="lastName">User last name.</param>
+    /// <param name="imageUrl">User avatar url.</param>
     /// <returns>JWT access token string or an error.</returns>
-    public Task<Result<string>> RegisterAsync(string email, string password, string firstName, string lastName);
+    public Task<Result<string>> RegisterAsync(
+        string email,
+        string password,
+        string firstName,
+        string lastName,
+        string imageUrl);
 }
