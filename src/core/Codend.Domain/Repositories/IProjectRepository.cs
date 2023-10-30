@@ -1,3 +1,4 @@
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 
 namespace Codend.Domain.Repositories;
@@ -16,5 +17,11 @@ public interface IProjectRepository
 
     Task<bool> ProjectContainsEpic(ProjectId projectId, EpicId epicId);
 
-    Task<bool> TasksInProjectAsync(ProjectId projectId, IEnumerable<ProjectTaskId> taskIds, CancellationToken token);
+    Task<int> CountSprintTasksInProjectAsync<TEntity, TKey>(
+        ProjectId projectId,
+        IEnumerable<ISprintTaskId> taskIds,
+        CancellationToken token
+    )
+        where TKey : ISprintTaskId
+        where TEntity : class, IProjectOwnedEntity, IEntity<TKey>;
 }

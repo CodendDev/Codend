@@ -1,3 +1,4 @@
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -18,15 +19,19 @@ public class ProjectRepository : GenericRepository<ProjectId, Guid, Project>, IP
         return contains;
     }
 
-    public async Task<bool> TasksInProjectAsync(ProjectId projectId, IEnumerable<ProjectTaskId> taskIds,
-        CancellationToken token)
+    public async Task<int> CountSprintTasksInProjectAsync<TEntity, TKey>(
+        ProjectId projectId,
+        IEnumerable<ISprintTaskId> taskIds,
+        CancellationToken token
+    )
+        where TKey : ISprintTaskId
+        where TEntity : class, IProjectOwnedEntity, IEntity<TKey>
     {
-        var dbTasks =
-            Context
-                .Set<BaseProjectTask>()
-                .Where(t => taskIds.Any(id => id == t.Id) && t.ProjectId == projectId);
-        var dbTasksCount = await dbTasks.CountAsync(token);
-        
-        return dbTasksCount == taskIds.Count();
+        var tasks = await Context
+            .Set<TEntity>()
+            .Where(t => t.ProjectId == projectId)
+            .ToListAsync(token);
+
+        return tasks.Count(t => taskIds.Any(id => id.Value == t.Id.Value));
     }
 }
