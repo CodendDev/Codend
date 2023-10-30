@@ -2,7 +2,9 @@ using Codend.Application.Projects.Commands.AddMember;
 using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
 using Codend.Application.Projects.Commands.RemoveMember;
+using Codend.Application.Projects.Commands.UpdateIsFavouriteFlag;
 using Codend.Application.Projects.Commands.UpdateProject;
+using Codend.Application.Projects.Queries.GetBacklog;
 using Codend.Application.Projects.Queries.GetBoard;
 using Codend.Application.Projects.Queries.GetMembers;
 using Codend.Application.Projects.Queries.GetProjectById;
@@ -12,6 +14,7 @@ using Codend.Contracts.Common;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.Project;
 using Codend.Contracts.Responses;
+using Codend.Contracts.Responses.Backlog;
 using Codend.Contracts.Responses.Board;
 using Codend.Contracts.Responses.Project;
 using Codend.Domain.Core.Primitives;
@@ -246,6 +249,53 @@ public class ProjectController : ApiController
         [FromRoute] Guid projectId) =>
         await Resolver<GetBoardQuery>
             .For(new GetBoardQuery(projectId.GuidConversion<ProjectId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Retrieves all project tasks, stories and epics within one sorted (onCreated criteria) list as compact tasks.
+    /// </summary>
+    /// <param name="projectId">The id of the project whose elements will be returned.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 200 - on success with backlog response.
+    /// 404 - when project was not found.
+    /// </returns>
+    [HttpGet("{projectId:guid}/backlog")]
+    [ProducesResponseType(typeof(BacklogResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
+    public async Task<IActionResult> GetBacklog(
+        [FromRoute] Guid projectId) =>
+        await Resolver<GetBacklogQuery>
+            .For(new GetBacklogQuery(projectId.GuidConversion<ProjectId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Updates IsFavourite flag for user for chosen project.
+    /// </summary>
+    /// <param name="projectId">The id of the project which IsFavourite flag will be updated.</param>
+    /// <param name="request">Request containing new IsFavourite flag value.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 204 - on success.
+    /// 400 - on failure.
+    /// 404 - when project was not found.
+    /// </returns>
+    [HttpPut("{projectId:guid}/favourite")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
+    public async Task<IActionResult> UpdateProjectIsFavouriteFlag(
+        [FromRoute] Guid projectId,
+        [FromBody] UpdateProjectIsFavouriteFlagRequest request) =>
+        await Resolver<UpdateProjectIsFavouriteFlagCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new UpdateProjectIsFavouriteFlagCommand(
+                projectId.GuidConversion<ProjectId>(),
+                request.IsFavourite))
             .Execute(query => Mediator.Send(query))
             .ResolveResponse();
 }

@@ -60,7 +60,8 @@ public class AuthenticationController : ApiController
     ///         "email": "test@test.com",
     ///         "password": "password",
     ///         "firstName": "Jan",
-    ///         "lastName": "Kowalski"
+    ///         "lastName": "Kowalski",
+    ///         "imageUrl": "https://picsum.photos/400"
     ///     }
     /// </remarks>
     /// <returns>

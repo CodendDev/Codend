@@ -3,12 +3,14 @@
 /// <summary>
 /// Represents default user response.
 /// </summary>
+/// <param name="Id">User id.</param>
 /// <param name="FirstName">User first name.</param>
 /// <param name="LastName">User last name.</param>
 /// <param name="Email">User email.</param>
 /// <param name="ImageUrl">The URL that points to an image file that is user's profile image.</param>
 public record UserResponse
 (
+    Guid Id,
     string FirstName,
     string LastName,
     string Email,

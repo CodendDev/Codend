@@ -14,36 +14,112 @@ public class Sprint : Entity<SprintId>, ISoftDeletableEntity
     {
     }
 
+    #region Sprint properties
+
+    public SprintName Name { get; private set; }
     public SprintPeriod Period { get; private set; }
     public SprintGoal Goal { get; private set; }
     public ProjectId ProjectId { get; private set; }
+
+    #endregion
+
+    #region ISoftDeletableEntity properties
+
     public DateTime DeletedOnUtc { get; private set; }
     public bool Deleted { get; }
+
+    #endregion
+
+    #region Domain methods
 
     /// <summary>
     /// Creates new Sprint.
     /// </summary>
+    /// <param name="name">Sprint name.</param>
     /// <param name="projectId">Project Id it belongs to.</param>
     /// <param name="startDate">Sprint startDate.</param>
     /// <param name="endDate">Sprint endDate.</param>
     /// <param name="goal">[Optional] Sprint goal.</param>
     /// <returns>Ok result with Sprint object or an error.</returns>
-    public static Result<Sprint> Create(ProjectId projectId, DateTime startDate, DateTime endDate, string? goal)
+    public static Result<Sprint> Create(
+        string name,
+        ProjectId projectId,
+        DateTime startDate,
+        DateTime endDate,
+        string? goal)
     {
         var sprint = new Sprint()
         {
             ProjectId = projectId
         };
 
+        var nameResult = SprintName.Create(name);
         var periodResult = SprintPeriod.Create(startDate, endDate);
         var goalResult = SprintGoal.Create(goal);
 
+        sprint.Name = nameResult.ValueOrDefault;
         sprint.Period = periodResult.ValueOrDefault;
         sprint.Goal = goalResult.ValueOrDefault;
 
         return Result.Ok(sprint)
             .MergeReasons(
+                nameResult.ToResult(),
                 periodResult.ToResult(),
-                goalResult.ToResult());
+                goalResult.ToResult()
+            );
     }
+
+    /// <summary>
+    /// Edits sprint name.
+    /// </summary>
+    /// <param name="name">New name.</param>
+    /// <returns>Ok <see cref="Result"/> with new name or failure with errors.</returns>
+    public Result<SprintName> EditName(string name)
+    {
+        var resultName = SprintName.Create(name);
+        if (resultName.IsFailed)
+        {
+            return resultName;
+        }
+
+        Name = resultName.Value;
+        return resultName;
+    }
+
+    /// <summary>
+    /// Edits sprint goal.
+    /// </summary>
+    /// <param name="goal">New goal.</param>
+    /// <returns>Ok <see cref="Result"/> with new goal or failure with errors.</returns>
+    public Result<SprintGoal> EditGoal(string? goal)
+    {
+        var sprintGoal = SprintGoal.Create(goal);
+        if (sprintGoal.IsFailed)
+        {
+            return sprintGoal;
+        }
+
+        Goal = sprintGoal.Value;
+        return sprintGoal;
+    }
+
+    /// <summary>
+    /// Edits sprint period.
+    /// </summary>
+    /// <param name="startDate">Sprint start date.</param>
+    /// <param name="endDate">Sprint end date.</param>
+    /// <returns>Ok <see cref="Result"/> with new period or failure with errors.</returns>
+    public Result<SprintPeriod> EditPeriod(DateTime startDate, DateTime endDate)
+    {
+        var sprintPeriod = SprintPeriod.Create(startDate, endDate);
+        if (sprintPeriod.IsFailed)
+        {
+            return sprintPeriod;
+        }
+
+        Period = sprintPeriod.Value;
+        return sprintPeriod;
+    }
+
+    #endregion
 }
