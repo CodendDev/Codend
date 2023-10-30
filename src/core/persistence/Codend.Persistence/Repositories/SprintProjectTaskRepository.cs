@@ -1,3 +1,4 @@
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -12,17 +13,22 @@ public class SprintProjectTaskRepository
     {
     }
 
-    public Task<List<SprintProjectTask>> GetRangeBySprintIdAndProjectTaskIds(
+    public async Task<List<SprintProjectTask>> GetRangeBySprintIdAndProjectTaskIdsAsync(
         SprintId sprintId,
-        IEnumerable<ProjectTaskId> taskIds)
+        IEnumerable<ISprintTaskId> taskIds
+    )
     {
-        var sprintProjectTasks = Context
+        var sprintTasks = await Context
             .Set<SprintProjectTask>()
-            .Where(sprintProjectTask =>
-                sprintProjectTask.SprintId == sprintId &&
-                taskIds.Any(id => sprintProjectTask.TaskId == id))
+            .Where(sprintProjectTask => sprintProjectTask.SprintId == sprintId)
             .ToListAsync();
 
-        return sprintProjectTasks;
+        var sprintProjectTasks = sprintTasks.Where(st =>
+            taskIds.Any(id =>
+                (st.TaskId != null && id.Value == st.TaskId.Value) ||
+                (st.StoryId != null && id.Value == st.StoryId.Value) ||
+                (st.EpicId != null && id.Value == st.EpicId.Value)));
+
+        return sprintProjectTasks.ToList();
     }
 }

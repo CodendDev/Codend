@@ -1,12 +1,13 @@
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 
 namespace Codend.Domain.Repositories;
 
 public interface ISprintProjectTaskRepository
 {
-    Task<List<SprintProjectTask>> GetRangeBySprintIdAndProjectTaskIds(
+    Task<List<SprintProjectTask>> GetRangeBySprintIdAndProjectTaskIdsAsync(
         SprintId sprintId,
-        IEnumerable<ProjectTaskId> taskIds
+        IEnumerable<ISprintTaskId> taskIds
     );
 
     Task AddRangeAsync(IEnumerable<SprintProjectTask> sprintProjectTasks, CancellationToken cancellationToken);
