@@ -1,6 +1,7 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -51,16 +52,16 @@ public class SprintRemoveTasksCommandHandler : ICommandHandler<SprintRemoveTasks
             return General.DomainNotFound.Fail<Sprint>();
         }
 
-        // var sprintProjectTasks = await _sprintProjectTaskRepository
-        // .GetRangeBySprintIdAndProjectTaskIds(request.SprintId, request.TasksIds);
+        var sprintProjectTasks = await _sprintProjectTaskRepository
+            .GetRangeBySprintIdAndProjectTaskIdsAsync(request.SprintId, request.TasksIds);
 
-        // if (sprintProjectTasks.Count != request.TasksIds.Count())
-        // {
-        // return Result.Fail(new TaskIsNotAssignedToSprint());
-        // }
+        if (sprintProjectTasks.Count != request.TasksIds.Count())
+        {
+            return Result.Fail(new DomainErrors.Sprint.TaskIsNotAssignedToSprint());
+        }
 
-        // _sprintProjectTaskRepository.RemoveRange(sprintProjectTasks);
-        // await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _sprintProjectTaskRepository.RemoveRange(sprintProjectTasks);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Ok();
     }
