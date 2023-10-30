@@ -1,6 +1,7 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -42,6 +43,44 @@ public class SprintAssignTasksCommandHandler : ICommandHandler<SprintAssignTasks
         _sprintProjectTaskRepository = sprintProjectTaskRepository;
     }
 
+    private async Task<bool> ValidateTasks<TEntity, TKey>(
+        SprintAssignTasksCommand request,
+        ProjectId projectId,
+        CancellationToken cancellationToken)
+        where TEntity : class, IProjectOwnedEntity, IEntity<TKey>
+        where TKey : ISprintTaskId
+    {
+        var tasks = request.TasksIds.Where(t => t is TKey).ToList();
+        var count = await _projectRepository.CountSprintTasksInProjectAsync<TEntity, TKey>(
+            projectId,
+            tasks,
+            cancellationToken);
+        return tasks.Count == count;
+    }
+
+    private async Task<Result> ValidateTasks(
+        SprintAssignTasksCommand request,
+        ProjectId projectId,
+        CancellationToken cancellationToken)
+    {
+        if (!await ValidateTasks<BaseProjectTask, ProjectTaskId>(request, projectId, cancellationToken))
+        {
+            return Result.Fail(new DomainErrors.Sprint.TaskDoesntExistInProject());
+        }
+
+        if (!await ValidateTasks<Story, StoryId>(request, projectId, cancellationToken))
+        {
+            return Result.Fail(new DomainErrors.Sprint.TaskDoesntExistInProject());
+        }
+
+        if (!await ValidateTasks<Epic, EpicId>(request, projectId, cancellationToken))
+        {
+            return Result.Fail(new DomainErrors.Sprint.TaskDoesntExistInProject());
+        }
+
+        return Result.Ok();
+    }
+
     /// <inheritdoc />
     public async Task<Result> Handle(SprintAssignTasksCommand request, CancellationToken cancellationToken)
     {
@@ -51,21 +90,31 @@ public class SprintAssignTasksCommandHandler : ICommandHandler<SprintAssignTasks
             return General.DomainNotFound.Fail<Sprint>();
         }
 
-        // var projectId = sprint.ProjectId;
-        // var validTasks = await _projectRepository.TasksInProjectAsync(projectId, request.TasksIds, cancellationToken);
-        // if (!validTasks)
-        // {
-        // return Result.Fail(new DomainErrors.Sprint.TaskDoesntExistInProject());
-        // }
+        var projectId = sprint.ProjectId;
 
-        // var sprintTasks = sprint.AssignTasks(request.TasksIds);
-        // if (sprintTasks.IsFailed)
-        // {
-        // return sprintTasks.ToResult();
-        // }
+        // validate if tasks are owned by project
+        var validTasks = await ValidateTasks(request, projectId, cancellationToken);
+        if (validTasks.IsFailed)
+        {
+            return validTasks;
+        }
 
-        // await _sprintProjectTaskRepository.AddRangeAsync(sprintTasks.Value, cancellationToken);
-        // await _unitOfWork.SaveChangesAsync(cancellationToken);
+        // validate if task already exist
+        if (await _sprintRepository.SprintTasksExistsInSprintAsync(request.SprintId, request.TasksIds,
+                cancellationToken))
+        {
+            return Result.Fail(new DomainErrors.Sprint.TaskIsAlreadyAssignedToSprint());
+        }
+
+        // assign tasks to sprint
+        var sprintTasks = sprint.AssignTasks(request.TasksIds);
+        if (sprintTasks.IsFailed)
+        {
+            return sprintTasks.ToResult();
+        }
+
+        await _sprintProjectTaskRepository.AddRangeAsync(sprintTasks.Value, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Ok();
     }

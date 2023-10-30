@@ -35,5 +35,13 @@ public static partial class DomainErrors
             {
             }
         }
+
+        public class TaskIsAlreadyAssignedToSprint : DomainError
+        {
+            public TaskIsAlreadyAssignedToSprint()
+                : base("Sprint.TaskIsAlreadyAssignedToSprint", "Task is already assigned to sprint.")
+            {
+            }
+        }
     }
 }
