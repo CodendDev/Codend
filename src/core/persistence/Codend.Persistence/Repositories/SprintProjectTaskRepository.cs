@@ -1,5 +1,6 @@
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
 
@@ -11,7 +12,7 @@ public class SprintProjectTaskRepository
     {
     }
 
-    public IEnumerable<SprintProjectTask> GetRangeBySprintIdAndProjectTaskIds(
+    public Task<List<SprintProjectTask>> GetRangeBySprintIdAndProjectTaskIds(
         SprintId sprintId,
         IEnumerable<ProjectTaskId> taskIds)
     {
@@ -19,7 +20,8 @@ public class SprintProjectTaskRepository
             .Set<SprintProjectTask>()
             .Where(sprintProjectTask =>
                 sprintProjectTask.SprintId == sprintId &&
-                taskIds.Any(id => sprintProjectTask.TaskId == id));
+                taskIds.Any(id => sprintProjectTask.TaskId == id))
+            .ToListAsync();
 
         return sprintProjectTasks;
     }

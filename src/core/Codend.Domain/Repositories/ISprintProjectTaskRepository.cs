@@ -4,7 +4,7 @@ namespace Codend.Domain.Repositories;
 
 public interface ISprintProjectTaskRepository
 {
-    IEnumerable<SprintProjectTask> GetRangeBySprintIdAndProjectTaskIds(
+    Task<List<SprintProjectTask>> GetRangeBySprintIdAndProjectTaskIds(
         SprintId sprintId,
         IEnumerable<ProjectTaskId> taskIds
     );

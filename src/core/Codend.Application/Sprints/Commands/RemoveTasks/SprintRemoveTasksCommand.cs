@@ -51,9 +51,8 @@ public class SprintRemoveTasksCommandHandler : ICommandHandler<SprintRemoveTasks
             return General.DomainNotFound.Fail<Sprint>();
         }
 
-        var sprintProjectTasks = _sprintProjectTaskRepository
-            .GetRangeBySprintIdAndProjectTaskIds(request.SprintId, request.TasksIds)
-            .ToList();
+        var sprintProjectTasks = await _sprintProjectTaskRepository
+            .GetRangeBySprintIdAndProjectTaskIds(request.SprintId, request.TasksIds);
 
         if (sprintProjectTasks.Count != request.TasksIds.Count())
         {
