@@ -21,6 +21,11 @@ public abstract class GenericRepository<TKey, TKeyPrimitive, TEntity>
         Context.Add(entity);
     }
 
+    public Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
+    {
+        return Context.AddRangeAsync(entities, cancellationToken);
+    }
+
     public Task<TEntity?> GetByIdAsync(TKey entityId, CancellationToken cancellationToken)
     {
         var entity = Context
@@ -59,4 +64,6 @@ public abstract class GenericRepository<TKey, TKeyPrimitive, TEntity>
         return Context.Set<TEntity>()
             .AnyAsync(e => Equals(e.Id, key));
     }
+
+    public void RemoveRange(IEnumerable<TEntity> sprintProjectTasks) => Context.RemoveRange(sprintProjectTasks);
 }

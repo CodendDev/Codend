@@ -3,7 +3,7 @@ using Codend.Domain.Core.Primitives;
 
 namespace Codend.Domain.Entities;
 
-public sealed record EpicId : EntityId<Guid>
+public sealed record EpicId : EntityId<Guid>, ISprintTaskId
 {
     public EpicId()
     {

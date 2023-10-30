@@ -3,6 +3,7 @@ using System;
 using Codend.Persistence.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Codend.Persistence.Postgres.Migrations
 {
     [DbContext(typeof(PostgresCodendDbContext))]
-    partial class PostgresCodendDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231026174757_Sprint-ProjectTask-Relation")]
+    partial class SprintProjectTaskRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,7 +259,7 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.ToTable("Sprint");
                 });
 
-            modelBuilder.Entity("Codend.Domain.Entities.SprintProjectTask", b =>
+            modelBuilder.Entity("Codend.Domain.Entities.SprintProjectTask.SprintProjectTask", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -265,25 +268,15 @@ namespace Codend.Persistence.Postgres.Migrations
                         .HasPrecision(0)
                         .HasColumnType("timestamp(0) with time zone");
 
-                    b.Property<Guid?>("EpicId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("SprintId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("StoryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("TaskId")
+                    b.Property<Guid>("TaskId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EpicId");
-
                     b.HasIndex("SprintId");
-
-                    b.HasIndex("StoryId");
 
                     b.HasIndex("TaskId");
 
@@ -699,28 +692,19 @@ namespace Codend.Persistence.Postgres.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Codend.Domain.Entities.SprintProjectTask", b =>
+            modelBuilder.Entity("Codend.Domain.Entities.SprintProjectTask.SprintProjectTask", b =>
                 {
-                    b.HasOne("Codend.Domain.Entities.Epic", null)
-                        .WithMany()
-                        .HasForeignKey("EpicId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("Codend.Domain.Entities.Sprint", null)
                         .WithMany()
                         .HasForeignKey("SprintId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Codend.Domain.Entities.Story", null)
-                        .WithMany()
-                        .HasForeignKey("StoryId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("Codend.Domain.Entities.BaseProjectTask", null)
                         .WithMany()
                         .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codend.Domain.Entities.Story", b =>
