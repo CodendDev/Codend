@@ -12,12 +12,28 @@ public class SprintProjectTask : Entity<SprintProjectTaskId>
     }
 
     public SprintId SprintId { get; private set; }
-    public ProjectTaskId TaskId { get; private set; }
+    public ProjectTaskId? TaskId { get; private set; }
+    public StoryId? StoryId { get; private set; }
+    public EpicId? EpicId { get; private set; }
 
     public static Result<SprintProjectTask> Create(SprintId sprintId, ProjectTaskId taskId) =>
         Result.Ok(new SprintProjectTask()
         {
             SprintId = sprintId,
             TaskId = taskId,
+        });
+
+    public static Result<SprintProjectTask> Create(SprintId sprintId, StoryId storyId) =>
+        Result.Ok(new SprintProjectTask()
+        {
+            SprintId = sprintId,
+            StoryId = storyId,
+        });
+
+    public static Result<SprintProjectTask> Create(SprintId sprintId, EpicId epicId) =>
+        Result.Ok(new SprintProjectTask()
+        {
+            SprintId = sprintId,
+            EpicId = epicId,
         });
 }

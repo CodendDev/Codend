@@ -16,6 +16,21 @@ public class SprintProjectTaskConfiguration : IEntityTypeConfiguration<SprintPro
             .HasOne<BaseProjectTask>()
             .WithMany()
             .HasForeignKey(sprintTask => sprintTask.TaskId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder
+            .HasOne<Epic>()
+            .WithMany()
+            .HasForeignKey(sprintTask => sprintTask.EpicId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder
+            .HasOne<Story>()
+            .WithMany()
+            .HasForeignKey(sprintTask => sprintTask.StoryId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.NoAction);
 
         builder
