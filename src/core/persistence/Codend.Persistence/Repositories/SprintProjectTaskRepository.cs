@@ -33,6 +33,19 @@ public class SprintProjectTaskRepository
         return sprintProjectTasks.ToList();
     }
 
+    public Task<SprintProjectTask?> GetByTaskIdAsync(ISprintTaskId entityId, CancellationToken cancellationToken)
+    {
+        var sprintTasks = Context.Set<SprintProjectTask>();
+        var sprintProjectTask = entityId switch
+        {
+            ProjectTaskId id => sprintTasks.SingleOrDefaultAsync(task => task.TaskId == id, cancellationToken),
+            StoryId id => sprintTasks.SingleOrDefaultAsync(task => task.SprintId == id, cancellationToken),
+            EpicId id => sprintTasks.SingleOrDefaultAsync(task => task.EpicId == id, cancellationToken),
+            _ => throw new ArgumentException("SprintProjectTaskId is not any of supported types")
+        };
+        return sprintProjectTask;
+    }
+
     public Task<Lexorank?> GetHighestTaskInSprintPosition(SprintId sprintId)
     {
         var highestPosition = Context.Set<SprintProjectTask>().AsNoTracking()
