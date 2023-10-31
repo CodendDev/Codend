@@ -4,6 +4,7 @@ using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
+using Codend.Shared.Infrastructure.Lexorank;
 using FluentResults;
 using static Codend.Domain.Core.Errors.DomainErrors;
 using Sprint = Codend.Domain.Entities.Sprint;
@@ -84,7 +85,7 @@ public class SprintAssignTasksCommandHandler : ICommandHandler<SprintAssignTasks
     /// <inheritdoc />
     public async Task<Result> Handle(SprintAssignTasksCommand request, CancellationToken cancellationToken)
     {
-       var sprint = await _sprintRepository.GetByIdAsync(request.SprintId, cancellationToken);
+        var sprint = await _sprintRepository.GetByIdAsync(request.SprintId, cancellationToken);
         if (sprint is null)
         {
             return General.DomainNotFound.Fail<Sprint>();
@@ -106,14 +107,25 @@ public class SprintAssignTasksCommandHandler : ICommandHandler<SprintAssignTasks
             return Result.Fail(new DomainErrors.Sprint.TaskIsAlreadyAssignedToSprint());
         }
 
+        // get highest task position to create position for new tasks
+        var highestPos = await _sprintProjectTaskRepository.GetHighestTaskInSprintPosition(request.SprintId);
+        var positions = Lexorank.GetSpacedOutValuesBetween(request.TasksIds.Count(), null, highestPos);
+
         // assign tasks to sprint
-        var sprintTasks = sprint.AssignTasks(request.TasksIds);
-        if (sprintTasks.IsFailed)
+        var sprintTasksResult = sprint.AssignTasks(request.TasksIds);
+        if (sprintTasksResult.IsFailed)
         {
-            return sprintTasks.ToResult();
+            return sprintTasksResult.ToResult();
         }
 
-        await _sprintProjectTaskRepository.AddRangeAsync(sprintTasks.Value, cancellationToken);
+        // edit new tasks positions.
+        var sprintTasks = sprintTasksResult.Value.ToList();
+        for (var i = 0; i < sprintTasks.Count; i++)
+        {
+            sprintTasks[i].EditPosition(positions[i]);
+        }
+
+        await _sprintProjectTaskRepository.AddRangeAsync(sprintTasks, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Ok();
