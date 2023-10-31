@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Codend.Shared.Infrastructure.Lexorank;
 
 public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
@@ -5,8 +7,10 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
     public static readonly ILexorankSystem LexorankSystem = new LexorankSystem36();
 
     public string Value { get; }
-    
-    private Lexorank(){}
+
+    private Lexorank()
+    {
+    }
 
     public Lexorank(string value) => Value = value;
 
@@ -34,6 +38,48 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
         if (cmp > 0) (prev, next) = (next, prev);
 
         return new Lexorank(CalculateMiddle(prev!.Value, next!.Value, LexorankSystem));
+    }
+
+    /// <summary>
+    /// Calculates and returns list of somewhat evenly spaced values between 2 given lexoranks.
+    /// </summary>
+    /// <param name="amount">Amount of values to calculate.</param>
+    /// <param name="from">From lexorank, first alphabet char if null.</param>
+    /// <param name="to">To lexorank, last alphabet char if null.</param>
+    /// <returns>List of evenly spaced <see cref="Lexorank"/> objects.</returns>
+    public static List<Lexorank> GetSpacedOutValuesBetween(int amount, Lexorank? from = null, Lexorank? to = null)
+    {
+        var spacedValues = new List<Lexorank>();
+
+        from ??= new Lexorank(LexorankSystem.GetMinChar().ToString());
+        to ??= new Lexorank(LexorankSystem.GetMaxChar().ToString());
+
+        var cmp = from.CompareTo(to);
+        if (cmp == 0) throw new LexorankException($"From and to parameters cannot be same position! Pos: {from}");
+        if (cmp > 0) (from, to) = (to, from);
+
+        if (amount < 1) throw new LexorankException("Amount cannot be less than 1");
+        if (amount == 1)
+        {
+            spacedValues.Add(GetMiddle(from, to));
+            return spacedValues;
+        }
+
+        var (neededChars, step) = CalculateNeededCharsAndStep(amount);
+        var middleLexorank = GetMiddle(from, to);
+        var prevLexorank = new Lexorank(middleLexorank.Value +
+                                        new string(LexorankSystem.GetMinChar(), neededChars) +
+                                        LexorankSystem.GetMidChar());
+        spacedValues.Add(prevLexorank);
+        var expectedLength = prevLexorank.Value.Length - 1;
+
+        for (var i = 0; i < amount-1; i++)
+        {
+            prevLexorank = CalculateNextLexorank(prevLexorank, step, expectedLength);
+            spacedValues.Add(prevLexorank);
+        }
+
+        return spacedValues;
     }
 
     public int CompareTo(object? obj)
@@ -106,5 +152,53 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
 
         int prevDigit = lexorankSystem.ToDigit(prevChar), nextDigit = lexorankSystem.ToDigit(nextChar);
         return resultStr + lexorankSystem.ToChar((int)Math.Ceiling((prevDigit + nextDigit) / 2D));
+    }
+
+    private static (int, int) CalculateNeededCharsAndStep(int amount)
+    {
+        var neededChars = 1;
+        var freeSpaces = LexorankSystem.GetBase();
+        var pow = 2;
+        while (amount > freeSpaces)
+        {
+            freeSpaces = (int)Math.Pow(LexorankSystem.GetBase(), pow++);
+            neededChars++;
+        }
+
+        return (neededChars, freeSpaces / amount);
+    }
+
+    private static Lexorank CalculateNextLexorank(Lexorank prev, int step, int expectedLength)
+    {
+        var newStrBuilder = new StringBuilder(prev.Value);
+        if (newStrBuilder.Length > expectedLength)
+        {
+            newStrBuilder.Remove(newStrBuilder.Length - 1, 1);
+        }
+        var systemBase = LexorankSystem.GetBase();
+
+        var levelChars = new List<int>();
+        var level = 1;
+        var currLevelCharDigitWithStep = LexorankSystem.ToDigit(newStrBuilder[^level]) + step;
+        levelChars.Add(currLevelCharDigitWithStep % systemBase);
+        while (currLevelCharDigitWithStep >= systemBase)
+        {
+            level++;
+            currLevelCharDigitWithStep /= systemBase;
+            currLevelCharDigitWithStep = LexorankSystem.ToDigit(newStrBuilder[^level]) + currLevelCharDigitWithStep;
+            levelChars.Add(currLevelCharDigitWithStep % systemBase);
+        }
+
+        for (var i = levelChars.Count - 1; i >= 0; i--)
+        {
+            newStrBuilder[^(i + 1)] = LexorankSystem.ToChar(levelChars[i]);
+        }
+
+        if (newStrBuilder[^1] == LexorankSystem.GetMinChar() || newStrBuilder[^1] == LexorankSystem.GetMaxChar())
+        {
+            newStrBuilder.Append(LexorankSystem.GetMidChar());
+        }
+
+        return new Lexorank(newStrBuilder.ToString());
     }
 }

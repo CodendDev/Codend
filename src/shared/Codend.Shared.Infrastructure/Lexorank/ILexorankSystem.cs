@@ -34,7 +34,7 @@ public interface ILexorankSystem
     /// <remarks>
     /// Less than 0 - ch1 is this many places after ch2 |
     /// 0 - it's the same char |
-    /// More than 1 - ch1 is this many places before ch1.
+    /// More than 0 - ch1 is this many places before ch1.
     /// </remarks>
     /// <returns><see cref="int"/> number of indexes splitting char 1 from char 2.</returns>
     public int DiffBetweenChars(char ch1, char ch2);
