@@ -1,4 +1,6 @@
+using Codend.Application.Core.Errors;
 using Codend.Application.Extensions;
+using Codend.Domain.Core.Abstractions;
 using FluentValidation;
 using static Codend.Application.Core.Errors.ValidationErrors.Common;
 
@@ -20,6 +22,14 @@ public class SprintAssignTasksCommandValidator : AbstractValidator<SprintAssignT
 
         RuleFor(x => x.TasksIds)
             .NotEmpty()
-            .WithError(new PropertyNullOrEmpty(nameof(SprintAssignTasksCommand.TasksIds)));
+            .WithError(new PropertyNullOrEmpty(nameof(SprintAssignTasksCommand.TasksIds)))
+            .Must(AllElementsAreUnique)
+            .WithError(new ValidationErrors.SprintProjectTask.AllTasksMustBeUnique());
+    }
+
+    private static bool AllElementsAreUnique(IEnumerable<ISprintTaskId> tasksIds)
+    {
+        var sprintTaskIds = tasksIds.ToList();
+        return sprintTaskIds.Distinct().Count() == sprintTaskIds.Count;
     }
 }
