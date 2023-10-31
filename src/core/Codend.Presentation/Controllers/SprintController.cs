@@ -189,7 +189,7 @@ public class SprintController : ApiController
     ///         "tasks": [
     ///             {
     ///                 "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    ///                 "type": "task"
+    ///                 "type": "base"
     ///             },
     ///             {
     ///                 "id": "28b1b31e-7738-11ee-b962-0242ac120002",
