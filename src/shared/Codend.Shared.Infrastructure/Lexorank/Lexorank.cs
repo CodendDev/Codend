@@ -67,13 +67,10 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
 
         var (neededChars, step) = CalculateNeededCharsAndStep(amount);
         var middleLexorank = GetMiddle(from, to);
-        var prevLexorank = new Lexorank(middleLexorank.Value +
-                                        new string(LexorankSystem.GetMinChar(), neededChars) +
-                                        LexorankSystem.GetMidChar());
-        spacedValues.Add(prevLexorank);
-        var expectedLength = prevLexorank.Value.Length - 1;
+        var prevLexorank = new Lexorank(middleLexorank.Value + new string(LexorankSystem.GetMinChar(), neededChars));
+        var expectedLength = prevLexorank.Value.Length;
 
-        for (var i = 0; i < amount-1; i++)
+        for (var i = 0; i < amount; i++)
         {
             prevLexorank = CalculateNextLexorank(prevLexorank, step, expectedLength);
             spacedValues.Add(prevLexorank);
@@ -159,6 +156,7 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
         var neededChars = 1;
         var freeSpaces = LexorankSystem.GetBase();
         var pow = 2;
+        amount += 1; // To have same distance between start and end 
         while (amount > freeSpaces)
         {
             freeSpaces = (int)Math.Pow(LexorankSystem.GetBase(), pow++);
@@ -171,17 +169,18 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
     private static Lexorank CalculateNextLexorank(Lexorank prev, int step, int expectedLength)
     {
         var newStrBuilder = new StringBuilder(prev.Value);
-        if (newStrBuilder.Length > expectedLength)
+        if (newStrBuilder.Length > expectedLength) // Used to avoid added midChars in borderline cases.
         {
             newStrBuilder.Remove(newStrBuilder.Length - 1, 1);
         }
+
         var systemBase = LexorankSystem.GetBase();
 
-        var levelChars = new List<int>();
-        var level = 1;
+        var levelChars = new List<int>(); // List containing char values for each 'level'
+        var level = 1; // Level is string deepness. 1 - last char of string, 2 - second last etc.
         var currLevelCharDigitWithStep = LexorankSystem.ToDigit(newStrBuilder[^level]) + step;
         levelChars.Add(currLevelCharDigitWithStep % systemBase);
-        while (currLevelCharDigitWithStep >= systemBase)
+        while (currLevelCharDigitWithStep >= systemBase) // Loop used for moving between levels (b->c) -> (abz -> ace)
         {
             level++;
             currLevelCharDigitWithStep /= systemBase;
@@ -189,11 +188,12 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
             levelChars.Add(currLevelCharDigitWithStep % systemBase);
         }
 
-        for (var i = levelChars.Count - 1; i >= 0; i--)
+        for (var i = levelChars.Count - 1; i >= 0; i--) // Overwriting previous lexorank values with new ones
         {
             newStrBuilder[^(i + 1)] = LexorankSystem.ToChar(levelChars[i]);
         }
 
+        // In borderline cases (minChar, and maxChar as last char) midChar have to be added.
         if (newStrBuilder[^1] == LexorankSystem.GetMinChar() || newStrBuilder[^1] == LexorankSystem.GetMaxChar())
         {
             newStrBuilder.Append(LexorankSystem.GetMidChar());

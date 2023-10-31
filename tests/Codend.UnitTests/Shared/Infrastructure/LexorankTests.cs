@@ -1,7 +1,7 @@
 using Codend.Shared.Infrastructure.Lexorank;
 using FluentAssertions;
 
-namespace Codend.UnitTests.Infrastructure;
+namespace Codend.UnitTests.Shared.Infrastructure;
 
 public class LexorankTests
 {
@@ -38,7 +38,7 @@ public class LexorankTests
         // assert
         result.Value.Should().BeEquivalentTo(alphabetMiddleValue);
     }
-    
+
     [Fact]
     public void GetMiddle_WhenOnlyPreviousValuePassed_ShouldReturnMiddleValueBetweenPassedValueAndLastAlphabetChar()
     {
@@ -50,7 +50,7 @@ public class LexorankTests
         // assert
         result.Value.Should().BeEquivalentTo(expectedValue);
     }
-    
+
     [Fact]
     public void GetMiddle_WhenOnlyNextValuePassed_ShouldReturnMiddleValueBetweenFirstAlphabetCharAndNextValue()
     {
@@ -62,7 +62,7 @@ public class LexorankTests
         // assert
         result.Value.Should().BeEquivalentTo(expectedValue);
     }
-    
+
     /// <summary>
     /// Checks one of the worst scenarios, which is adding many elements to the beginning.
     /// </summary>
@@ -71,18 +71,18 @@ public class LexorankTests
     {
         // arrange
         var lexorankList = new List<Lexorank> { Lexorank.GetMiddle() };
-        
+
         // act
         for (var i = 0; i < 100; i++)
         {
             var mid = Lexorank.GetMiddle(null, lexorankList[0]);
             lexorankList.Insert(0, mid);
         }
-        
+
         // assert
-        lexorankList.Should().BeInAscendingOrder(x=>x.Value);
+        lexorankList.Should().BeInAscendingOrder(x => x.Value);
     }
-    
+
     /// <summary>
     /// Checks one of the worst scenarios, which is adding many elements to the end.
     /// </summary>
@@ -91,15 +91,40 @@ public class LexorankTests
     {
         // arrange
         var lexorankList = new List<Lexorank> { Lexorank.GetMiddle() };
-        
+
         // act
         for (var i = 0; i < 100; i++)
         {
             var mid = Lexorank.GetMiddle(lexorankList.Last());
             lexorankList.Add(mid);
         }
-        
+
         // assert
-        lexorankList.Should().BeInAscendingOrder(x=>x.Value);
+        lexorankList.Should().BeInAscendingOrder(x => x.Value);
+    }
+
+    [Theory]
+    [InlineData("abcde", "abce", 33, "abcdp1", "abcdpx")]
+    [InlineData("dwaef", "nwadasewa", 1300, "i00zi", "iz3w")]
+    [InlineData("0", "z", 3, "i9", "ir")]
+    [InlineData("0", "z", 50000, "i000x", "izd5c")]
+    public void GetSpacedOutValuesBetween_WhenValidValuePassed_ShouldReturnSpacedLexoranksList(
+        string from,
+        string to,
+        int amount,
+        string expectedStart,
+        string expectedEnd)
+    {
+        // arrange
+        var lexFrom = new Lexorank(from);
+        var lexTo = new Lexorank(to);
+
+        // act
+        var result = Lexorank.GetSpacedOutValuesBetween(amount, lexFrom, lexTo);
+
+        // assert
+        result.Count.Should().Be(amount);
+        result[0].Value.Should().Be(expectedStart);
+        result[^1].Value.Should().Be(expectedEnd);
     }
 }
