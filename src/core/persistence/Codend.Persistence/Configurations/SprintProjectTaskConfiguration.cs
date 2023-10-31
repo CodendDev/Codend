@@ -1,5 +1,6 @@
 using Codend.Domain.Entities;
 using Codend.Persistence.Extensions;
+using Codend.Shared.Infrastructure.Lexorank;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -38,5 +39,11 @@ public class SprintProjectTaskConfiguration : IEntityTypeConfiguration<SprintPro
             .WithMany()
             .HasForeignKey(sprintTask => sprintTask.SprintId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder
+            .Property(sprintProjectTask => sprintProjectTask.Position)
+            .HasConversion(
+                position => position.Value,
+                value => new Lexorank(value));
     }
 }
