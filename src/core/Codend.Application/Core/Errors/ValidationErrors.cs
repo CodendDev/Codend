@@ -212,4 +212,19 @@ internal static class ValidationErrors
             }
         }
     }
+
+    /// <summary>
+    /// SprintProjectTask validation errors class.
+    /// </summary>
+    public static class SprintProjectTask
+    {
+        /// <inheritdoc />
+        internal class AllTasksMustBeUnique : ValidationError
+        {
+            public AllTasksMustBeUnique() : base("Validation.SprintProjectTask.AllTasksMustBeUnique",
+                "No duplicates are allowed in tasks list.")
+            {
+            }
+        }
+    }
 }
