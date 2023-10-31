@@ -43,7 +43,7 @@ public class LexorankTests
     public void GetMiddle_WhenOnlyPreviousValuePassed_ShouldReturnMiddleValueBetweenPassedValueAndLastAlphabetChar()
     {
         // arrange
-        var expectedValue = "r";
+        const string expectedValue = "r";
         var prev = new Lexorank("i");
         // act
         var result = Lexorank.GetMiddle(prev);
@@ -55,7 +55,7 @@ public class LexorankTests
     public void GetMiddle_WhenOnlyNextValuePassed_ShouldReturnMiddleValueBetweenFirstAlphabetCharAndNextValue()
     {
         // arrange
-        var expectedValue = "9";
+        const string expectedValue = "9";
         var next = new Lexorank("i");
         // act
         var result = Lexorank.GetMiddle(null, next);
@@ -121,6 +121,25 @@ public class LexorankTests
 
         // act
         var result = Lexorank.GetSpacedOutValuesBetween(amount, lexFrom, lexTo);
+
+        // assert
+        result.Count.Should().Be(amount);
+        result[0].Value.Should().Be(expectedStart);
+        result[^1].Value.Should().Be(expectedEnd);
+    }
+
+    [Fact]
+    public void
+        GetSpacedOutValuesBetween_WhenNullAndValidValuePassed_ShouldReturnSpacedLexoranksListBetweenMinAndGiven()
+    {
+        // arrange
+        const int amount = 132;
+        const string expectedStart = "0509";
+        const string expectedEnd = "05x0i";
+        var lexTo = new Lexorank("0abc");
+
+        // act
+        var result = Lexorank.GetSpacedOutValuesBetween(amount, null, lexTo);
 
         // assert
         result.Count.Should().Be(amount);
