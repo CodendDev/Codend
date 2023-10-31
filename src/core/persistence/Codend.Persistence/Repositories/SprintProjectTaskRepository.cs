@@ -1,6 +1,7 @@
 using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
+using Codend.Shared.Infrastructure.Lexorank;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
@@ -30,5 +31,14 @@ public class SprintProjectTaskRepository
                 (st.EpicId != null && id.Value == st.EpicId.Value)));
 
         return sprintProjectTasks.ToList();
+    }
+
+    public Task<Lexorank?> GetHighestTaskInSprintPosition(SprintId sprintId)
+    {
+        var highestPosition = Context.Set<SprintProjectTask>().AsNoTracking()
+            .Where(sprintProjectTask => sprintProjectTask.Position != null)
+            .MinAsync(sprintProjectTask => sprintProjectTask.Position);
+
+        return highestPosition;
     }
 }
