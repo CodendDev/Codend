@@ -1,4 +1,5 @@
 using Codend.Domain.Core.Primitives;
+using Codend.Shared.Infrastructure.Lexorank;
 using FluentResults;
 
 namespace Codend.Domain.Entities;
@@ -15,6 +16,7 @@ public class SprintProjectTask : Entity<SprintProjectTaskId>
     public ProjectTaskId? TaskId { get; private set; }
     public StoryId? StoryId { get; private set; }
     public EpicId? EpicId { get; private set; }
+    public Lexorank? Position { get; private set; }
 
     public static Result<SprintProjectTask> Create(SprintId sprintId, ProjectTaskId taskId) =>
         Result.Ok(new SprintProjectTask()
@@ -36,4 +38,10 @@ public class SprintProjectTask : Entity<SprintProjectTaskId>
             SprintId = sprintId,
             EpicId = epicId,
         });
+
+    public Result<SprintProjectTask> EditPosition(Lexorank position)
+    {
+        Position = position;
+        return Result.Ok(this);
+    }
 }
