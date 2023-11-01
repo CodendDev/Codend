@@ -23,6 +23,7 @@ public interface ISprintProjectTaskRepository
     /// Searches for and returns task with highest position, where highest mean lowest lexicographical ranking.
     /// </summary>
     /// <param name="sprintId">Sprint for which tasks will be considered.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns><see cref="Lexorank"/> position of highest task or null if no matches.</returns>
-    Task<Lexorank?> GetHighestTaskInSprintPosition(SprintId sprintId);
+    Task<Lexorank?> GetHighestTaskInSprintPositionAsync(SprintId sprintId, CancellationToken cancellationToken);
 }

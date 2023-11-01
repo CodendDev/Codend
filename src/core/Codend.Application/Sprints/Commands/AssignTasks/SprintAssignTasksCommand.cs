@@ -108,7 +108,8 @@ public class SprintAssignTasksCommandHandler : ICommandHandler<SprintAssignTasks
         }
 
         // get highest task position to create position for new tasks
-        var highestPos = await _sprintProjectTaskRepository.GetHighestTaskInSprintPosition(request.SprintId);
+        var highestPos =
+            await _sprintProjectTaskRepository.GetHighestTaskInSprintPositionAsync(request.SprintId, cancellationToken);
         var positions = Lexorank.GetSpacedOutValuesBetween(request.TasksIds.Count(), null, highestPos);
 
         // assign tasks to sprint

@@ -46,11 +46,11 @@ public class SprintProjectTaskRepository
         return sprintProjectTask;
     }
 
-    public Task<Lexorank?> GetHighestTaskInSprintPosition(SprintId sprintId)
+    public Task<Lexorank?> GetHighestTaskInSprintPositionAsync(SprintId sprintId, CancellationToken cancellationToken)
     {
         var highestPosition = Context.Set<SprintProjectTask>().AsNoTracking()
             .Where(sprintProjectTask => sprintProjectTask.Position != null)
-            .MinAsync(sprintProjectTask => sprintProjectTask.Position);
+            .MinAsync(sprintProjectTask => sprintProjectTask.Position, cancellationToken);
 
         return highestPosition;
     }
