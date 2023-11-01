@@ -5,8 +5,10 @@
 /// </summary>
 /// <param name="Id">Id of the status.</param>
 /// <param name="Name">Name of the status.</param>
+/// <param name="Position">Position of the status.</param>
 public sealed record ProjectTaskStatusResponse
 (
     Guid Id,
-    string Name
+    string Name,
+    string? Position
 );
