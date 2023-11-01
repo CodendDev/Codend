@@ -3,6 +3,7 @@ using Codend.Domain.Core.Events;
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.ValueObjects;
+using Codend.Shared.Infrastructure.Lexorank;
 using FluentResults;
 
 namespace Codend.Domain.Entities;
@@ -77,7 +78,7 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
 
         return result;
     }
-    
+
     /// <summary>
     /// Edits description of the Project, and validates new description.
     /// </summary>
@@ -92,7 +93,7 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
         }
 
         Description = result.Value;
-        
+
         var evt = new ProjectEditedEvent(this);
         Raise(evt);
 
@@ -187,9 +188,10 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
     /// Creates and adds projectTask status to project
     /// </summary>
     /// <param name="statusName">Name for the new status.</param>
-    public Result<ProjectTaskStatus> AddProjectTaskStatusToProject(string statusName)
+    /// <param name="position">Position for the new status.</param>
+    public Result<ProjectTaskStatus> AddProjectTaskStatusToProject(string statusName, Lexorank? position)
     {
-        var result = ProjectTaskStatus.Create(Id, statusName);
+        var result = ProjectTaskStatus.Create(Id, statusName, position);
 
         if (result.IsFailed)
         {
