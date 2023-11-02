@@ -14,8 +14,6 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
 
     public Lexorank(string value) => Value = value;
 
-    public static Lexorank FromString(string value) => new(value);
-
     /// <summary>
     /// Calculates and returns middle position between two lexoranks.
     /// </summary>
@@ -25,9 +23,9 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
     public static Lexorank GetMiddle(Lexorank? prev = null, Lexorank? next = null)
     {
         // Handle edge cases.
-        if (prev is null && next is null) return new Lexorank(LexorankSystem.GetMidChar().ToString());
-        if (prev is null) prev = new Lexorank(LexorankSystem.GetMinChar().ToString());
-        else if (next is null) next = new Lexorank(LexorankSystem.GetMaxChar().ToString());
+        if (prev is null && next is null) return new Lexorank(LexorankSystem.MidChar.ToString());
+        if (prev is null) prev = new Lexorank(LexorankSystem.MinChar.ToString());
+        else if (next is null) next = new Lexorank(LexorankSystem.MaxChar.ToString());
 
         var cmp = prev.CompareTo(next);
 
@@ -51,8 +49,8 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
     {
         var spacedValues = new List<Lexorank>();
 
-        from ??= new Lexorank(LexorankSystem.GetMinChar().ToString());
-        to ??= new Lexorank(LexorankSystem.GetMaxChar().ToString());
+        from ??= new Lexorank(LexorankSystem.MinChar.ToString());
+        to ??= new Lexorank(LexorankSystem.MaxChar.ToString());
 
         var cmp = from.CompareTo(to);
         if (cmp == 0) throw new LexorankException($"From and to parameters cannot be same position! Pos: {from}");
@@ -67,7 +65,7 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
 
         var (neededChars, step) = CalculateNeededCharsAndStep(amount);
         var middleLexorank = GetMiddle(from, to);
-        var prevLexorank = new Lexorank(middleLexorank.Value + new string(LexorankSystem.GetMinChar(), neededChars));
+        var prevLexorank = new Lexorank(middleLexorank.Value + new string(LexorankSystem.MinChar, neededChars));
         var expectedLength = prevLexorank.Value.Length;
 
         for (var i = 0; i < amount; i++)
@@ -108,8 +106,8 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
         int currPos;
         string resultStr;
 
-        var startChar = lexorankSystem.StartOfAlphabet();
-        var endChar = lexorankSystem.EndOfAlphabet();
+        var startChar = lexorankSystem.StartOfAlphabet;
+        var endChar = lexorankSystem.EndOfAlphabet;
 
         // Find leftmost non-matching character, or non-alphabetic char if string ended.
         for (currPos = 0; prevChar == nextChar; currPos++)
@@ -119,8 +117,8 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
         }
 
         resultStr = prevString.Substring(0, currPos - 1); // Copy identical part of strings.
-        var minChar = lexorankSystem.GetMinChar();
-        var maxChar = lexorankSystem.GetMaxChar();
+        var minChar = lexorankSystem.MinChar;
+        var maxChar = lexorankSystem.MaxChar;
 
         if (prevChar == startChar) // When prev string is shorter, equalize length with minChar eg. '0' or 'a'.
         {
@@ -154,12 +152,12 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
     private static (int, int) CalculateNeededCharsAndStep(int amount)
     {
         var neededChars = 1;
-        var freeSpaces = LexorankSystem.GetBase();
+        var freeSpaces = LexorankSystem.Base;
         var pow = 2;
         amount += 1; // To have same distance between start and end 
         while (amount > freeSpaces)
         {
-            freeSpaces = (int)Math.Pow(LexorankSystem.GetBase(), pow++);
+            freeSpaces = (int)Math.Pow(LexorankSystem.Base, pow++);
             neededChars++;
         }
 
@@ -174,7 +172,7 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
             newStrBuilder.Remove(newStrBuilder.Length - 1, 1);
         }
 
-        var systemBase = LexorankSystem.GetBase();
+        var systemBase = LexorankSystem.Base;
 
         var levelChars = new List<int>(); // List containing char values for each 'level'
         var level = 1; // Level is string deepness. 1 - last char of string, 2 - second last etc.
@@ -194,9 +192,9 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
         }
 
         // In borderline cases (minChar, and maxChar as last char) midChar have to be added.
-        if (newStrBuilder[^1] == LexorankSystem.GetMinChar() || newStrBuilder[^1] == LexorankSystem.GetMaxChar())
+        if (newStrBuilder[^1] == LexorankSystem.MinChar || newStrBuilder[^1] == LexorankSystem.MaxChar)
         {
-            newStrBuilder.Append(LexorankSystem.GetMidChar());
+            newStrBuilder.Append(LexorankSystem.MidChar);
         }
 
         return new Lexorank(newStrBuilder.ToString());

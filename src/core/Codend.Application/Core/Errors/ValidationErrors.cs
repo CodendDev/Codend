@@ -222,7 +222,7 @@ internal static class ValidationErrors
         internal class AllTasksMustBeUnique : ValidationError
         {
             public AllTasksMustBeUnique() : base("Validation.SprintProjectTask.AllTasksMustBeUnique",
-                "No duplicates are allowed in tasks list.")
+                "Duplicates are not allowed.")
             {
             }
         }

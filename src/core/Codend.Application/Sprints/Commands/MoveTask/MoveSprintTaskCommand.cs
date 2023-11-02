@@ -40,7 +40,7 @@ public class MoveSprintTaskCommandHandler : ICommandHandler<MoveSprintTaskComman
     /// <inheritdoc />
     public async Task<Result> Handle(MoveSprintTaskCommand request, CancellationToken cancellationToken)
     {
-        var task = await _sprintProjectTaskRepository.GetByTaskIdAsync(request.TaskId, cancellationToken);
+        var task = await _sprintProjectTaskRepository.GetBySprintTaskIdAsync(request.TaskId, cancellationToken);
 
         if (task is null)
         {

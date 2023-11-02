@@ -11,7 +11,7 @@ public interface ISprintProjectTaskRepository
         IEnumerable<ISprintTaskId> taskIds
     );
 
-    public Task<SprintProjectTask?> GetByTaskIdAsync(ISprintTaskId entityId, CancellationToken cancellationToken);
+    public Task<SprintProjectTask?> GetBySprintTaskIdAsync(ISprintTaskId entityId, CancellationToken cancellationToken);
 
     Task AddRangeAsync(IEnumerable<SprintProjectTask> sprintProjectTasks, CancellationToken cancellationToken);
 
@@ -20,7 +20,7 @@ public interface ISprintProjectTaskRepository
     public void Update(SprintProjectTask sprintProjectTask);
 
     /// <summary>
-    /// Searches for and returns task with highest position, where highest mean lowest lexicographical ranking.
+    /// Searches for and returns task with highest position, where highest means lowest lexicographical ranking.
     /// </summary>
     /// <param name="sprintId">Sprint for which tasks will be considered.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

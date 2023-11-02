@@ -33,7 +33,7 @@ public class SprintProjectTaskRepository
         return sprintProjectTasks.ToList();
     }
 
-    public Task<SprintProjectTask?> GetByTaskIdAsync(ISprintTaskId entityId, CancellationToken cancellationToken)
+    public Task<SprintProjectTask?> GetBySprintTaskIdAsync(ISprintTaskId entityId, CancellationToken cancellationToken)
     {
         var sprintTasks = Context.Set<SprintProjectTask>();
         var sprintProjectTask = entityId switch

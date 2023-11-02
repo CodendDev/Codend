@@ -32,7 +32,7 @@ public class LexorankTests
     public void GetMiddle_WhenTwoNullsPassed_ShouldReturnMiddleAlphabetChar()
     {
         // arrange
-        var alphabetMiddleValue = Lexorank.LexorankSystem.GetMidChar().ToString();
+        var alphabetMiddleValue = Lexorank.LexorankSystem.MidChar.ToString();
         // act
         var result = Lexorank.GetMiddle();
         // assert
