@@ -8,10 +8,6 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
 
     public string Value { get; }
 
-    private Lexorank()
-    {
-    }
-
     public Lexorank(string value) => Value = value;
 
     /// <summary>
