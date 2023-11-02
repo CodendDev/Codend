@@ -21,8 +21,11 @@ public interface IProjectTaskStatusRepository
 
     Task<bool> StatusExistsWithNameAsync(string name, ProjectId projectId, CancellationToken cancellationToken);
 
-    Task<bool> StatusExistsWithStatusIdAsync(ProjectTaskStatusId statusId, ProjectId projectId,
-        CancellationToken cancellationToken);
+    Task<bool> StatusExistsWithStatusIdAsync(
+        ProjectTaskStatusId statusId,
+        ProjectId projectId,
+        CancellationToken cancellationToken
+    );
 
     /// <summary>
     /// Searches for and returns projectTaskStatus with lowest position, where lowest mean highest lexicographical ranking (last status).

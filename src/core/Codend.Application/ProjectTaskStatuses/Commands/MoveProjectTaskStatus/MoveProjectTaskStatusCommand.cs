@@ -11,10 +11,10 @@ using static Codend.Domain.Core.Errors.DomainErrors.General;
 namespace Codend.Application.ProjectTaskStatuses.Commands.MoveProjectTaskStatus;
 
 /// <summary>
-/// Command used for moving sprint task to other position.
+/// Command used for moving task status to other position.
 /// </summary>
 /// <param name="ProjectId">Id of the project to which status belongs to.</param>
-/// <param name="StatusId">If of the status that will be moved.</param>
+/// <param name="StatusId">Id of the status that will be moved.</param>
 /// <param name="Prev">Lexorank position after which status will be inserted.</param>
 /// <param name="Next">Lexorank position before which status will be inserted.</param>
 public record MoveProjectTaskStatusCommand(

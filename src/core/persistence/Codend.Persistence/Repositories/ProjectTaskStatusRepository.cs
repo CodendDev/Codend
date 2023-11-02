@@ -28,8 +28,10 @@ public class ProjectTaskStatusRepository
         return count;
     }
 
-    public Task<ProjectTaskStatusId> GetProjectDefaultStatusIdAsync(ProjectId projectId,
-        CancellationToken cancellationToken)
+    public Task<ProjectTaskStatusId> GetProjectDefaultStatusIdAsync(
+        ProjectId projectId,
+        CancellationToken cancellationToken
+    )
     {
         var defaultStatusId = Context.Set<Project>()
             .Where(project => project.Id == projectId)
@@ -50,8 +52,11 @@ public class ProjectTaskStatusRepository
         return exists;
     }
 
-    public Task<bool> StatusExistsWithStatusIdAsync(ProjectTaskStatusId statusId, ProjectId projectId,
-        CancellationToken cancellationToken)
+    public Task<bool> StatusExistsWithStatusIdAsync(
+        ProjectTaskStatusId statusId,
+        ProjectId projectId,
+        CancellationToken cancellationToken
+    )
     {
         var exists =
             Context.Set<ProjectTaskStatus>()
@@ -61,8 +66,10 @@ public class ProjectTaskStatusRepository
         return exists;
     }
 
-    public Task<Lexorank?> GetLowestStatusInProjectPositionAsync(ProjectId projectId,
-        CancellationToken cancellationToken)
+    public Task<Lexorank?> GetLowestStatusInProjectPositionAsync(
+        ProjectId projectId,
+        CancellationToken cancellationToken
+    )
     {
         var lowestPosition = Context.Set<ProjectTaskStatus>().AsNoTracking()
             .Where(projectTaskStatus => projectTaskStatus.Position != null)

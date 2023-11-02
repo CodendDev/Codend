@@ -109,8 +109,12 @@ public class ProjectTaskStatusController : ApiController
         [FromBody] UpdateProjectTaskStatusRequest request) =>
         await Resolver<UpdateProjectTaskStatusCommand>
             .IfRequestNotNull(request)
-            .ResolverFor(new UpdateProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>(),
-                request.Name))
+            .ResolverFor(
+                new UpdateProjectTaskStatusCommand(
+                    statusId.GuidConversion<ProjectTaskStatusId>(),
+                    request.Name
+                )
+            )
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 
@@ -135,7 +139,7 @@ public class ProjectTaskStatusController : ApiController
     /// <summary>
     /// Moves status position between two given lexorank positions.
     /// </summary>
-    /// <param name="projectId">Id of the project status belongs to.</param>
+    /// <param name="projectId">Id of the project to which status belongs to.</param>
     /// <param name="statusId">Id of the status that will be moved.</param>
     /// <param name="request">Request containing prev and next lexorank values.</param>
     /// <remarks>
@@ -163,11 +167,14 @@ public class ProjectTaskStatusController : ApiController
         [FromBody] MoveProjectTaskStatusRequest request) =>
         await Resolver<MoveProjectTaskStatusCommand>
             .IfRequestNotNull(request)
-            .ResolverFor(new MoveProjectTaskStatusCommand(
-                projectId.GuidConversion<ProjectId>(),
-                statusId.GuidConversion<ProjectTaskStatusId>(),
-                request.Prev,
-                request.Next))
+            .ResolverFor(
+                new MoveProjectTaskStatusCommand(
+                    projectId.GuidConversion<ProjectId>(),
+                    statusId.GuidConversion<ProjectTaskStatusId>(),
+                    request.Prev,
+                    request.Next
+                )
+            )
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 }
