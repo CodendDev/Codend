@@ -1,6 +1,7 @@
 using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
+using Codend.Shared.Infrastructure.Lexorank;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
@@ -30,5 +31,27 @@ public class SprintProjectTaskRepository
                 (st.EpicId != null && id.Value == st.EpicId.Value)));
 
         return sprintProjectTasks.ToList();
+    }
+
+    public Task<SprintProjectTask?> GetBySprintTaskIdAsync(ISprintTaskId entityId, CancellationToken cancellationToken)
+    {
+        var sprintTasks = Context.Set<SprintProjectTask>();
+        var sprintProjectTask = entityId switch
+        {
+            ProjectTaskId id => sprintTasks.SingleOrDefaultAsync(task => task.TaskId == id, cancellationToken),
+            StoryId id => sprintTasks.SingleOrDefaultAsync(task => task.SprintId == id, cancellationToken),
+            EpicId id => sprintTasks.SingleOrDefaultAsync(task => task.EpicId == id, cancellationToken),
+            _ => throw new ArgumentException("SprintProjectTaskId is not any of supported types")
+        };
+        return sprintProjectTask;
+    }
+
+    public Task<Lexorank?> GetHighestTaskInSprintPositionAsync(SprintId sprintId, CancellationToken cancellationToken)
+    {
+        var highestPosition = Context.Set<SprintProjectTask>().AsNoTracking()
+            .Where(sprintProjectTask => sprintProjectTask.Position != null)
+            .MinAsync(sprintProjectTask => sprintProjectTask.Position, cancellationToken);
+
+        return highestPosition;
     }
 }

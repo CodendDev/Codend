@@ -24,7 +24,8 @@ public record SprintTaskRequest
     {
         return Type.ToLower() switch
         {
-            "task" => Id.GuidConversion<ProjectTaskId>(),
+            "base" => Id.GuidConversion<ProjectTaskId>(),
+            "bugfix" => Id.GuidConversion<ProjectTaskId>(),
             "story" => Id.GuidConversion<StoryId>(),
             "epic" => Id.GuidConversion<EpicId>(),
             _ => throw new Exception(),
