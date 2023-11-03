@@ -20,7 +20,8 @@ public interface ISprintProjectTaskRepository
     public void Update(SprintProjectTask sprintProjectTask);
 
     /// <summary>
-    /// Searches for and returns task with highest position, where highest means lowest lexicographical ranking.
+    /// Searches for task with highest position, where highest means lowest lexicographical ranking.
+    /// Then it returns its lexorank position.
     /// </summary>
     /// <param name="sprintId">Sprint for which tasks will be considered.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

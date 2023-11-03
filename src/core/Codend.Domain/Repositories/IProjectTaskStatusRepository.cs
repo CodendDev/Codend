@@ -28,7 +28,8 @@ public interface IProjectTaskStatusRepository
     );
 
     /// <summary>
-    /// Searches for and returns projectTaskStatus with lowest position, where lowest mean highest lexicographical ranking (last status).
+    /// Searches for projectTaskStatus with lowest position, where lowest mean highest lexicographical ranking (last status).
+    /// Then it returns its lexorank position.
     /// </summary>
     /// <param name="projectId">Project for which statuses will be considered.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

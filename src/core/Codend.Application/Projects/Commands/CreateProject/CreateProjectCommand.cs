@@ -62,9 +62,8 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
         // Create default statuses with positions.
         var defaultStatusesList = DefaultTaskStatus.SortedList;
         var statusesPositions = Lexorank.GetSpacedOutValuesBetween(defaultStatusesList.Count);
-        var i = 0;
         var resultStatuses = defaultStatusesList
-            .Select(status => ProjectTaskStatus.Create(project.Id, status.Name, statusesPositions[i++]))
+            .Select((status, i) => ProjectTaskStatus.Create(project.Id, status.Name, statusesPositions[i]))
             .ToList();
         var result = resultStatuses.Merge();
         if (result.IsFailed)
