@@ -1,4 +1,5 @@
 using Codend.Domain.Entities;
+using Codend.Shared.Infrastructure.Lexorank;
 
 namespace Codend.Domain.Repositories;
 
@@ -18,7 +19,20 @@ public interface IProjectTaskStatusRepository
 
     Task<ProjectTaskStatusId> GetProjectDefaultStatusIdAsync(ProjectId projectId, CancellationToken cancellationToken);
 
-    public Task<bool> StatusExistsWithNameAsync(string name, ProjectId projectId, CancellationToken cancellationToken);
-    
-    public Task<bool> StatusExistsWithStatusIdAsync(ProjectTaskStatusId statusId, ProjectId projectId, CancellationToken cancellationToken);
+    Task<bool> StatusExistsWithNameAsync(string name, ProjectId projectId, CancellationToken cancellationToken);
+
+    Task<bool> StatusExistsWithStatusIdAsync(
+        ProjectTaskStatusId statusId,
+        ProjectId projectId,
+        CancellationToken cancellationToken
+    );
+
+    /// <summary>
+    /// Searches for projectTaskStatus with lowest position, where lowest mean highest lexicographical ranking (last status).
+    /// Then it returns its lexorank position.
+    /// </summary>
+    /// <param name="projectId">Project for which statuses will be considered.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns><see cref="Lexorank"/> position of lowest status or null if no matches.</returns>
+    Task<Lexorank?> GetLowestStatusInProjectPositionAsync(ProjectId projectId, CancellationToken cancellationToken);
 }

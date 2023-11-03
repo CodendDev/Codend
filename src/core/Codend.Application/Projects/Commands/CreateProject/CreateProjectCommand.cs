@@ -4,6 +4,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Core.Enums;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
+using Codend.Shared.Infrastructure.Lexorank;
 using FluentResults;
 
 namespace Codend.Application.Projects.Commands.CreateProject;
@@ -58,8 +59,11 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
 
         var project = resultProject.Value;
 
-        var resultStatuses = DefaultTaskStatus.List
-            .Select(status => ProjectTaskStatus.Create(project.Id, status.Name))
+        // Create default statuses with positions.
+        var defaultStatusesList = DefaultTaskStatus.SortedList;
+        var statusesPositions = Lexorank.GetSpacedOutValuesBetween(defaultStatusesList.Count);
+        var resultStatuses = defaultStatusesList
+            .Select((status, i) => ProjectTaskStatus.Create(project.Id, status.Name, statusesPositions[i]))
             .ToList();
         var result = resultStatuses.Merge();
         if (result.IsFailed)
@@ -67,9 +71,9 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
             return result.ToResult();
         }
 
-        // Set To-Do as first project default status.
-        var defaultStatus = resultStatuses.FirstOrDefault(status => 
-            status.Value.Name.Value == nameof(DefaultTaskStatus.ToDo))?.Value;
+        // Set To-Do as project default status.
+        var statuses = resultStatuses.Select(r => r.Value).ToList();
+        var defaultStatus = statuses.FirstOrDefault(status => status.Name.Value == DefaultTaskStatus.ToDo.Name);
         if (defaultStatus is null)
         {
             throw new ApplicationException("Couldn't find default status for new Project.");
@@ -80,14 +84,13 @@ public class CreateProjectCommandHandler : ICommandHandler<CreateProjectCommand,
         {
             return resultProjectMember.ToResult();
         }
-        
+
         _projectRepository.Add(project);
         _projectMemberRepository.Add(resultProjectMember.Value);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         // Save statuses after project to avoid circular reference in database.
         project.EditDefaultStatus(defaultStatus.Id);
-        var statuses = resultStatuses.Select(r => r.Value);
         await _statusRepository.AddRangeAsync(statuses);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
