@@ -28,6 +28,8 @@ namespace Codend.Application.Projects.Queries.GetBoard;
 /// Query for retrieving all board information for project, including tasks, epic and stories.
 /// </summary>
 /// <param name="ProjectId">Id of the project for which board will be returned.</param>
+/// <param name="SprintId">Id of the sprint for which board will be returned.</param>
+/// <param name="AssigneeId">Id of the assignee for which board will be returned.</param>
 public sealed record GetBoardQuery
 (
     ProjectId ProjectId,
@@ -57,21 +59,39 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
         _queryableSets = queryableSets;
         _userService = userService;
     }
+    
+    /// <inheritdoc />
+    public async Task<Result<BoardResponse>> Handle(GetBoardQuery query, CancellationToken cancellationToken)
+    {
+        var sprintTasksQuery = _queryableSets
+            .Queryable<SprintProjectTask>()
+            .Where(task => task.SprintId == query.SprintId);
 
-    private async Task<Result<BoardResponse>> HandleAssigneeNotNull(
+        var projectTasks = await HandleProjectTasks(sprintTasksQuery, query, cancellationToken);
+
+        if (query.AssigneeId is not null)
+        {
+            return Result.Ok(new BoardResponse(projectTasks));
+        }
+
+        var storyTasks = await HandleStories(sprintTasksQuery, query, cancellationToken);
+        var epicTasks = await HandleEpics(sprintTasksQuery, query, cancellationToken);
+        var merged = projectTasks.Union(storyTasks).Union(epicTasks);
+
+        return Result.Ok(new BoardResponse(merged));
+    }
+
+    private async Task<IEnumerable<BoardTaskResponse>> HandleProjectTasks(
+        IEnumerable<SprintProjectTask> sprintTasksQuery,
         GetBoardQuery query,
         CancellationToken cancellationToken
     )
     {
-        var sprintTasksQuery =
-            _queryableSets.Queryable<SprintProjectTask>()
-                .Where(task => task.SprintId == query.SprintId);
-
         var projectTasksQuery = await
             _queryableSets.Queryable<BaseProjectTask>()
                 .Where(baseProjectTask =>
-                    baseProjectTask.ProjectId == query.ProjectId &&
-                    baseProjectTask.AssigneeId == query.AssigneeId
+                    baseProjectTask.ProjectId != query.ProjectId ||
+                    query.AssigneeId == null || baseProjectTask.AssigneeId == query.AssigneeId
                 )
                 .Join(sprintTasksQuery,
                     projectTask => projectTask.Id,
@@ -86,7 +106,8 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                         Position = sprintProjectTask.Position,
                         AssigneeId = projectTask.AssigneeId
                     }
-                ).ToListAsync(cancellationToken);
+                )
+                .ToListAsync(cancellationToken);
 
 #pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
         var userIds = projectTasksQuery
@@ -94,9 +115,9 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
             .Select(boardTask => boardTask.AssigneeId)
             .ToList();
         var users = await _userService.GetUsersByIdsAsync(userIds);
-#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types. 
 
-        var projectTasks = projectTasksQuery
+        return projectTasksQuery
             .Select(task =>
                 new BoardTaskResponse
                 (
@@ -109,51 +130,14 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                     task.Position?.Value
                 )
             );
-
-        return Result.Ok(new BoardResponse(projectTasks));
     }
 
-    /// <inheritdoc />
-    public async Task<Result<BoardResponse>> Handle(
+    private async Task<IEnumerable<BoardTaskResponse>> HandleStories(
+        IEnumerable<SprintProjectTask> sprintTasksQuery,
         GetBoardQuery query,
         CancellationToken cancellationToken
     )
     {
-        if (query.AssigneeId is not null)
-        {
-            return await HandleAssigneeNotNull(query, cancellationToken);
-        }
-
-        var sprintTasksQuery =
-            _queryableSets.Queryable<SprintProjectTask>()
-                .Where(task => task.SprintId == query.SprintId);
-
-        var projectTasksQuery = await
-            _queryableSets.Queryable<BaseProjectTask>()
-            .Where(baseProjectTask => baseProjectTask.ProjectId == query.ProjectId)
-            .Join(sprintTasksQuery,
-                projectTask => projectTask.Id,
-                sprintProjectTask => sprintProjectTask.TaskId,
-                (projectTask, sprintProjectTask) => new
-                {
-                    Id = projectTask.Id,
-                    Name = projectTask.Name,
-                    StatusId = projectTask.StatusId,
-                    StoryId = projectTask.StoryId,
-                    Priority = projectTask.Priority,
-                    Position = sprintProjectTask.Position,
-                    AssigneeId = projectTask.AssigneeId
-                }
-            ).ToListAsync(cancellationToken);
-
-#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
-        var userIds = projectTasksQuery
-            .Where(boardTask => boardTask.AssigneeId is not null)
-            .Select(boardTask => boardTask.AssigneeId)
-            .ToList();
-        var users = await _userService.GetUsersByIdsAsync(userIds);
-#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
-
         var storiesQuery = await _queryableSets.Queryable<Story>()
             .Where(story => story.ProjectId == query.ProjectId)
             .Join(sprintTasksQuery,
@@ -170,6 +154,27 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
             )
             .ToListAsync(cancellationToken);
 
+        return storiesQuery
+            .Select(story =>
+                new BoardTaskResponse
+                (
+                    story.Id.Value,
+                    story.Name.Value,
+                    story.StatusId.Value,
+                    story.EpicId?.Value,
+                    null,
+                    null,
+                    story.Position?.Value
+                )
+            );
+    }
+
+    private async Task<IEnumerable<BoardTaskResponse>> HandleEpics(
+        IEnumerable<SprintProjectTask> sprintTasksQuery,
+        GetBoardQuery query,
+        CancellationToken cancellationToken
+    )
+    {
         var epicsQuery = await _queryableSets.Queryable<Epic>()
             .Where(epic => epic.ProjectId == query.ProjectId)
             .Join(sprintTasksQuery,
@@ -185,33 +190,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
             )
             .ToListAsync(cancellationToken);
 
-        var projectTasks = projectTasksQuery
-            .Select(task =>
-                new BoardTaskResponse
-                (
-                    task.Id.Value,
-                    task.Name.Value,
-                    task.StatusId.Value,
-                    task.StoryId?.Value,
-                    task.Priority.Name,
-                    task.AssigneeId is not null ? users.Single(u => u.Id == task.AssigneeId?.Value).ImageUrl : null,
-                    task.Position?.Value
-                )
-            );
-        var storyTasks = storiesQuery
-            .Select(story =>
-                new BoardTaskResponse
-                (
-                    story.Id.Value,
-                    story.Name.Value,
-                    story.StatusId.Value,
-                    story.EpicId?.Value,
-                    null,
-                    null,
-                    story.Position?.Value
-                )
-            );
-        var epicTasks = epicsQuery
+        return epicsQuery
             .Select(epic =>
                 new BoardTaskResponse
                 (
@@ -224,8 +203,5 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                     epic.Position?.Value
                 )
             );
-        var merged = projectTasks.Union(storyTasks).Union(epicTasks);
-
-        return Result.Ok(new BoardResponse(merged));
     }
 }
