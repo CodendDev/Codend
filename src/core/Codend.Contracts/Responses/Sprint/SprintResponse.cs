@@ -1,4 +1,4 @@
-using Codend.Contracts.Responses.Backlog;
+using Codend.Contracts.Responses.Board;
 
 namespace Codend.Contracts.Responses.Sprint;
 
@@ -18,5 +18,5 @@ public record SprintResponse
     DateTime StartDate,
     DateTime EndDate,
     string? Goal,
-    BacklogResponse SprintTasks
+    BoardResponse SprintTasks
 );
