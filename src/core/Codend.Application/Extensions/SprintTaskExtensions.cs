@@ -1,3 +1,4 @@
+using System.Collections;
 using Codend.Contracts.Responses.Board;
 using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
@@ -18,4 +19,22 @@ internal static class SprintTaskExtensions
             null,
             projectTask.Position?.Value
         );
+
+    internal static BoardTaskResponse ToBoardTaskResponseWithAvatar(this BoardTaskResponse task, string? avatarUrl) =>
+        task with { AssigneeAvatar = avatarUrl };
+
+    internal static IEnumerable<BoardTaskResponse> JoinSprintTaskWith<T>(
+        this IEnumerable<SprintProjectTask> sprintTasksQuery,
+        IEnumerable<T> tasks
+    )
+        where T : class, ISprintTask
+    {
+        return tasks
+            .Join(
+                sprintTasksQuery,
+                projectTask => projectTask.SprintTaskId,
+                sprintProjectTask => sprintProjectTask.SprintTaskId,
+                (task, sprintProjectTask) => task.ToBoardTaskResponse(sprintProjectTask)
+            );
+    }
 }

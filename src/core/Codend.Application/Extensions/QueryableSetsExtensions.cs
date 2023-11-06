@@ -1,5 +1,6 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Contracts.Responses.Board;
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,42 +25,36 @@ internal static class QueryableSetsExtensions
         return sets.GetBoardTasksBySprintTasksAsync(sprintTasks, cancellationToken);
     }
 
-    internal static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksBySprintTasksAsync(
+    private static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksBySprintTasksAsync(
         this IQueryableSets sets,
         IQueryable<SprintProjectTask> sprintTasks,
         CancellationToken cancellationToken
     )
     {
-        var boardProjectTasks = await sets
-            .Queryable<BaseProjectTask>()
-            .Join(
-                sprintTasks,
-                task => task.Id,
-                sprintTask => sprintTask.TaskId,
-                (task, sprintTask) => task.ToBoardTaskResponse(sprintTask)
-            )
-            .ToListAsync(cancellationToken);
-
-        var boardStories = await sets
-            .Queryable<Story>()
-            .Join(
-                sprintTasks,
-                task => task.Id,
-                sprintTask => sprintTask.StoryId,
-                (story, sprintTask) => story.ToBoardTaskResponse(sprintTask)
-            )
-            .ToListAsync(cancellationToken);
-
-        var boardEpics = await sets
-            .Queryable<Epic>()
-            .Join(
-                sprintTasks,
-                epic => epic.Id,
-                sprintTask => sprintTask.EpicId,
-                (epic, sprintTask) => epic.ToBoardTaskResponse(sprintTask)
-            )
-            .ToListAsync(cancellationToken);
+        var boardProjectTasks =
+            await sets.GetBoardTasksBySprintTasksAsync<BaseProjectTask>(sprintTasks, cancellationToken);
+        var boardStories = await sets.GetBoardTasksBySprintTasksAsync<Story>(sprintTasks, cancellationToken);
+        var boardEpics = await sets.GetBoardTasksBySprintTasksAsync<Epic>(sprintTasks, cancellationToken);
 
         return boardProjectTasks.Union(boardStories).Union(boardEpics);
+    }
+
+    internal static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksBySprintTasksAsync<T>(
+        this IQueryableSets sets,
+        IEnumerable<SprintProjectTask> sprintTasks,
+        CancellationToken cancellationToken
+    ) where T : class, ISprintTask, IEntity
+    {
+        var set = await sets
+            .Queryable<T>()
+            .ToListAsync(cancellationToken);
+
+        return set
+            .Join(
+                sprintTasks,
+                task => task.SprintTaskId,
+                sprintTask => sprintTask.SprintTaskId,
+                (task, sprintTask) => task.ToBoardTaskResponse(sprintTask)
+            );
     }
 }

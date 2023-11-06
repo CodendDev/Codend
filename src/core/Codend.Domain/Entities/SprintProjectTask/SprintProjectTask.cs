@@ -18,6 +18,29 @@ public class SprintProjectTask : Entity<SprintProjectTaskId>
     public EpicId? EpicId { get; private set; }
     public Lexorank? Position { get; private set; }
 
+    public Guid SprintTaskId
+    {
+        get
+        {
+            if (TaskId is not null)
+            {
+                return TaskId.Value;
+            }
+
+            if (StoryId is not null)
+            {
+                return StoryId.Value;
+            }
+
+            if (EpicId is not null)
+            {
+                return EpicId.Value;
+            }
+
+            throw new InvalidOperationException();
+        }
+    }
+
     public static Result<SprintProjectTask> Create(SprintId sprintId, ProjectTaskId taskId) =>
         Result.Ok(new SprintProjectTask()
         {
