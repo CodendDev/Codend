@@ -4,10 +4,12 @@ using Codend.Application.Sprints.Commands.DeleteSprint;
 using Codend.Application.Sprints.Commands.MoveTask;
 using Codend.Application.Sprints.Commands.RemoveTasks;
 using Codend.Application.Sprints.Commands.UpdateSprint;
+using Codend.Application.Sprints.Queries.GetActiveSprints;
 using Codend.Application.Sprints.Queries.GetSprints;
 using Codend.Contracts;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.Sprint;
+using Codend.Contracts.Responses.Sprint;
 using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
@@ -295,10 +297,29 @@ public class SprintController : ApiController
     /// 404 - when project was not found.
     /// </returns>
     [HttpGet]
+    [ProducesResponseType(typeof(SprintsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetSprints([FromRoute] Guid projectId) =>
         await Resolver<GetSprintsQuery>
             .For(new GetSprintsQuery(projectId.GuidConversion<ProjectId>()))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 
+    /// <summary>
+    /// Retrieves all active project sprints info.
+    /// </summary>
+    /// <param name="projectId">The id of the project.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 200 - on success.
+    /// 404 - when project was not found.
+    /// </returns>
+    [HttpGet("active")]
+    [ProducesResponseType(typeof(IEnumerable<SprintInfoResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetActiveSprintsInfo([FromRoute] Guid projectId) =>
+        await Resolver<GetActiveSprintsQuery>
+            .For(new GetActiveSprintsQuery(projectId.GuidConversion<ProjectId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 }
