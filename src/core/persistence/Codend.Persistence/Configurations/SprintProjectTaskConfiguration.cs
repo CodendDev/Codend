@@ -43,7 +43,9 @@ public class SprintProjectTaskConfiguration : IEntityTypeConfiguration<SprintPro
         builder
             .Property(sprintProjectTask => sprintProjectTask.Position)
             .HasConversion(
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 position => position.Value,
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 value => new Lexorank(value));
     }
 }

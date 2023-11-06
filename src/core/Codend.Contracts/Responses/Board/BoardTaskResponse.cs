@@ -4,6 +4,7 @@ namespace Codend.Contracts.Responses.Board;
 /// Represents board task response.
 /// </summary>
 /// <param name="Id">Id of the board task.</param>
+/// <param name="TaskType">Type of the board task (Base, Bugfix, Story, Epic).</param>
 /// <param name="Name">Name of the board task.</param>
 /// <param name="StatusId">StatusId of the board task.</param>
 /// <param name="RelatedTaskId">RelatedTaskId of the board task.</param>
@@ -13,6 +14,7 @@ namespace Codend.Contracts.Responses.Board;
 public record BoardTaskResponse
 (
     Guid Id,
+    string TaskType,
     string Name,
     Guid StatusId,
     Guid? RelatedTaskId,

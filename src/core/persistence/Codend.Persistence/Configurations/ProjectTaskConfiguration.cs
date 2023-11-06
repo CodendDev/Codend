@@ -59,7 +59,9 @@ internal sealed class ProjectTaskConfiguration : IEntityTypeConfiguration<BasePr
             .HasUserIdProperty(projectTask => projectTask.OwnerId);
 
         builder
+#pragma warning disable CS8603 // Possible null reference return.
             .HasUserIdProperty(projectTask => projectTask.AssigneeId);
+#pragma warning restore CS8603 // Possible null reference return.
 
         builder
             .Property(projectTask => projectTask.EstimatedTime)
