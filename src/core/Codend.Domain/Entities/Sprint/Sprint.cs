@@ -136,5 +136,10 @@ public class Sprint : Entity<SprintId>, ISoftDeletableEntity
         return Result.Ok(results);
     }
 
+    public bool IsSprintActiveThisDay(DateTime day)
+    {
+        return Period.StartDate < day && Period.EndDate > day;
+    }
+
     #endregion
 }
