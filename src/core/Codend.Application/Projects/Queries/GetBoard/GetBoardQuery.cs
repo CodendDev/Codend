@@ -134,7 +134,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                 (story, sprintProjectTask) => new
                 {
                     Id = story.Id,
-                    TaskType = story.TaskType,
+                    TaskType = story.SprintTaskType,
                     Name = story.Name,
                     StatusId = story.StatusId,
                     EpicId = story.EpicId,
@@ -173,7 +173,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                 (epic, sprintProjectTask) => new
                 {
                     Id = epic.Id,
-                    TaskType = epic.TaskType,
+                    TaskType = epic.SprintTaskType,
                     Name = epic.Name,
                     StatusId = epic.StatusId,
                     Position = sprintProjectTask.Position

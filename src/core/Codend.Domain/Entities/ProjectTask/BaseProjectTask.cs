@@ -16,7 +16,8 @@ public class BaseProjectTask :
     DomainEventsAggregate<ProjectTaskId>,
     ISoftDeletableEntity,
     IProjectTaskCreator<BaseProjectTask, BaseProjectTaskCreateProperties>,
-    IProjectOwnedEntity
+    IProjectOwnedEntity,
+    ISprintTask
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected BaseProjectTask() : base(new ProjectTaskId(Guid.NewGuid()))
@@ -28,6 +29,17 @@ public class BaseProjectTask :
     /// String representation of task type. 
     /// </summary>
     public string TaskType => GetType().Name.Replace("ProjectTask", "");
+
+    #region ISprintTask properties
+
+    public Guid SprintTaskId => Id.Value;
+    public string SprintTaskType => TaskType;
+    public string SprintTaskName => Name.Value;
+    public Guid SprintTaskStatusId => StatusId.Value;
+    public string? SprintTaskPriority => Priority.Name;
+    public Guid? SprintTaskRelatedTaskId => StoryId?.Value;
+
+    #endregion
 
     #region ISoftDeletableEntity properties
 
