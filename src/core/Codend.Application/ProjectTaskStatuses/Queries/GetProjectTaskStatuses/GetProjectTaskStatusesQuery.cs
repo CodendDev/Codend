@@ -42,6 +42,7 @@ public class GetProjectTaskStatusesQueryHandler
     {
         var statuses = await _context.Queryable<ProjectTaskStatus>()
             .Where(status => status.ProjectId == request.ProjectId)
+            .OrderBy(status => status.Position)
             .ProjectTo<ProjectTaskStatusResponse>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 

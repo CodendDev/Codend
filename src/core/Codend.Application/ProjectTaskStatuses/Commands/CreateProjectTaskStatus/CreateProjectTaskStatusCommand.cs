@@ -3,6 +3,7 @@ using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Domain.Core.Errors;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
+using Codend.Shared.Infrastructure.Lexorank;
 using FluentResults;
 
 namespace Codend.Application.ProjectTaskStatuses.Commands.CreateProjectTaskStatus;
@@ -48,7 +49,10 @@ public class CreateProjectTaskStatusCommandHandler : ICommandHandler<CreateProje
             return Result.Fail(new DomainErrors.ProjectTaskStatus.ProjectTaskStatusAlreadyExists());
         }
 
-        var status = ProjectTaskStatus.Create(request.ProjectId, request.Name);
+        var lowestStatusPosition =
+            await _statusRepository.GetLowestStatusInProjectPositionAsync(request.ProjectId, cancellationToken);
+        var calculatedPosition = Lexorank.GetMiddle(lowestStatusPosition);
+        var status = ProjectTaskStatus.Create(request.ProjectId, request.Name, calculatedPosition);
         if (status.IsFailed)
         {
             return status.ToResult();

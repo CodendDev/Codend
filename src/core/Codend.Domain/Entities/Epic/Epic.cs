@@ -5,7 +5,7 @@ using FluentResults;
 
 namespace Codend.Domain.Entities;
 
-public class Epic : Entity<EpicId>, ISoftDeletableEntity
+public class Epic : Entity<EpicId>, ISoftDeletableEntity, IProjectOwnedEntity
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Epic() : base(new EpicId(Guid.NewGuid()))

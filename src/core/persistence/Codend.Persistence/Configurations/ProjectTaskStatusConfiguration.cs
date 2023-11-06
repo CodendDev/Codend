@@ -1,6 +1,6 @@
 ﻿using Codend.Domain.Entities;
-using Codend.Domain.ValueObjects;
 using Codend.Persistence.Extensions;
+using Codend.Shared.Infrastructure.Lexorank;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,5 +22,11 @@ internal sealed class ProjectTaskStatusConfiguration : IEntityTypeConfiguration<
                 projectTaskStatusNameBuilder.WithOwner();
                 projectTaskStatusNameBuilder.ConfigureStringValueObject(nameof(ProjectTaskStatus.Name));
             });
+
+        builder
+            .Property(projectTaskStatus => projectTaskStatus.Position)
+            .HasConversion(
+                position => position.Value,
+                value => new Lexorank(value));
     }
 }

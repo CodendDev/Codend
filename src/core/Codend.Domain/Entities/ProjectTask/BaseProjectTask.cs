@@ -15,7 +15,8 @@ namespace Codend.Domain.Entities;
 public class BaseProjectTask :
     DomainEventsAggregate<ProjectTaskId>,
     ISoftDeletableEntity,
-    IProjectTaskCreator<BaseProjectTask, BaseProjectTaskCreateProperties>
+    IProjectTaskCreator<BaseProjectTask, BaseProjectTaskCreateProperties>,
+    IProjectOwnedEntity
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected BaseProjectTask() : base(new ProjectTaskId(Guid.NewGuid()))

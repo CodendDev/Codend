@@ -1,5 +1,6 @@
 ﻿using Codend.Application.ProjectTaskStatuses.Commands.CreateProjectTaskStatus;
 using Codend.Application.ProjectTaskStatuses.Commands.DeleteProjectTaskStatus;
+using Codend.Application.ProjectTaskStatuses.Commands.MoveProjectTaskStatus;
 using Codend.Application.ProjectTaskStatuses.Commands.UpdateProjectTaskStatus;
 using Codend.Application.ProjectTaskStatuses.Queries.GetProjectTaskStatuses;
 using Codend.Contracts;
@@ -108,7 +109,12 @@ public class ProjectTaskStatusController : ApiController
         [FromBody] UpdateProjectTaskStatusRequest request) =>
         await Resolver<UpdateProjectTaskStatusCommand>
             .IfRequestNotNull(request)
-            .ResolverFor(new UpdateProjectTaskStatusCommand(statusId.GuidConversion<ProjectTaskStatusId>(), request.Name))
+            .ResolverFor(
+                new UpdateProjectTaskStatusCommand(
+                    statusId.GuidConversion<ProjectTaskStatusId>(),
+                    request.Name
+                )
+            )
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 
@@ -128,5 +134,47 @@ public class ProjectTaskStatusController : ApiController
         await Resolver<GetProjectTaskStatusesQuery>
             .For(new GetProjectTaskStatusesQuery(projectId.GuidConversion<ProjectId>()))
             .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Moves status position between two given lexorank positions.
+    /// </summary>
+    /// <param name="projectId">Id of the project to which status belongs to.</param>
+    /// <param name="statusId">Id of the status that will be moved.</param>
+    /// <param name="request">Request containing prev and next lexorank values.</param>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     {
+    ///         "prev": "ie",
+    ///         "next": "ik"
+    ///     }
+    /// 
+    /// </remarks>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 204 on success
+    /// - 400 on failure
+    /// - 404 on failure
+    /// </returns>
+    [HttpPost("{statusId:guid}/move")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> MoveTask(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid statusId,
+        [FromBody] MoveProjectTaskStatusRequest request) =>
+        await Resolver<MoveProjectTaskStatusCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(
+                new MoveProjectTaskStatusCommand(
+                    projectId.GuidConversion<ProjectId>(),
+                    statusId.GuidConversion<ProjectTaskStatusId>(),
+                    request.Prev,
+                    request.Next
+                )
+            )
+            .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 }

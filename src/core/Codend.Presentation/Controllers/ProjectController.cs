@@ -235,20 +235,31 @@ public class ProjectController : ApiController
     /// <summary>
     /// Retrieves all project tasks, stories and epics within one object.
     /// </summary>
-    /// <param name="projectId">The id of the project whose elements will be returned.</param>
+    /// <param name="projectId">The id of the project which elements will be returned.</param>
+    /// <param name="sprintId">The id of the sprint which elements will be returned.</param>
+    /// <param name="assigneeId">The id of the user whose elements will be returned</param>
     /// <returns>
     /// HTTP response with status code:
     /// 200 - on success with board response.
     /// 404 - when project was not found.
     /// </returns>
-    [HttpGet("{projectId:guid}/board")]
+    [HttpGet("{projectId:guid}/board/{sprintId:guid}")]
     [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> GetBoard(
-        [FromRoute] Guid projectId) =>
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid sprintId,
+        [FromQuery] Guid? assigneeId
+    ) =>
         await Resolver<GetBoardQuery>
-            .For(new GetBoardQuery(projectId.GuidConversion<ProjectId>()))
+            .For(
+                new GetBoardQuery(
+                    projectId.GuidConversion<ProjectId>(),
+                    sprintId.GuidConversion<SprintId>(),
+                    assigneeId.GuidConversion<UserId>()
+                )
+            )
             .Execute(query => Mediator.Send(query))
             .ResolveResponse();
 

@@ -8,7 +8,7 @@ namespace Codend.Domain.Entities;
 /// <summary>
 /// User story domain model for scrum.
 /// </summary>
-public class Story : Entity<StoryId>, ISoftDeletableEntity
+public class Story : Entity<StoryId>, ISoftDeletableEntity, IProjectOwnedEntity
 {
     [Obsolete("Public for 1 unit test 👍🤑🤓", true)]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

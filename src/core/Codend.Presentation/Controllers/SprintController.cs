@@ -1,9 +1,13 @@
+using Codend.Application.Sprints.Commands.AssignTasks;
 using Codend.Application.Sprints.Commands.CreateSprint;
 using Codend.Application.Sprints.Commands.DeleteSprint;
+using Codend.Application.Sprints.Commands.MoveTask;
+using Codend.Application.Sprints.Commands.RemoveTasks;
 using Codend.Application.Sprints.Commands.UpdateSprint;
 using Codend.Contracts;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.Sprint;
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Presentation.Extensions;
@@ -128,6 +132,155 @@ public class SprintController : ApiController
         [FromRoute] Guid sprintId) =>
         await Resolver<DeleteSprintCommand>
             .For(new DeleteSprintCommand(sprintId.GuidConversion<SprintId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Assigns tasks to sprint with given <paramref name="sprintId"/>
+    /// </summary>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     {
+    ///         "tasks": [
+    ///             {
+    ///                 "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///                 "type": "task"
+    ///             },
+    ///             {
+    ///                 "id": "28b1b31e-7738-11ee-b962-0242ac120002",
+    ///                 "type": "story"
+    ///             },
+    ///             {
+    ///                 "id": "2d23f326-7738-11ee-b962-0242ac120002",
+    ///                 "type": "epic"
+    ///             }
+    ///         ]
+    ///     }
+    /// 
+    /// </remarks>
+    /// <param name="projectId">Id of the project to which the sprint belongs.</param>
+    /// <param name="sprintId">Id of the sprint to which tasks will be assigned.</param>
+    /// <param name="request">Request with list of tasks ids.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 204 on success
+    /// - 400 on failure
+    /// - 404 on failure
+    /// </returns>
+    [HttpPost("{sprintId:guid}/tasks")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AssignTasks(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid sprintId,
+        [FromBody] SprintTasksRequest request) =>
+        await Resolver<SprintAssignTasksCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(
+                new SprintAssignTasksCommand
+                (
+                    sprintId.GuidConversion<SprintId>(),
+                    request.Tasks.Select<SprintTaskRequest, ISprintTaskId>(task => task.MapToSprintTaskId())
+                )
+            )
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Removes tasks to sprint with given <paramref name="sprintId"/>
+    /// </summary>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     {
+    ///         "tasks": [
+    ///             {
+    ///                 "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///                 "type": "base"
+    ///             },
+    ///             {
+    ///                 "id": "28b1b31e-7738-11ee-b962-0242ac120002",
+    ///                 "type": "story"
+    ///             },
+    ///             {
+    ///                 "id": "2d23f326-7738-11ee-b962-0242ac120002",
+    ///                 "type": "epic"
+    ///             }
+    ///         ]
+    ///     }
+    /// 
+    /// </remarks>
+    /// <param name="projectId">Id of the project to which the sprint belongs.</param>
+    /// <param name="sprintId">Id of the sprint from which tasks will be removed.</param>
+    /// <param name="request">Request with list of tasks ids.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 204 on success
+    /// - 400 on failure
+    /// - 404 on failure
+    /// </returns>
+    [HttpDelete("{sprintId:guid}/tasks")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveTasks(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid sprintId,
+        [FromBody] SprintTasksRequest request) =>
+        await Resolver<SprintRemoveTasksCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(
+                new SprintRemoveTasksCommand
+                (
+                    sprintId.GuidConversion<SprintId>(),
+                    request.Tasks.Select<SprintTaskRequest, ISprintTaskId>(task => task.MapToSprintTaskId())
+                )
+            )
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Moves task position between two given lexorank positions.
+    /// </summary>
+    /// <param name="projectId">Id of the project task belongs to.</param>
+    /// <param name="sprintId">Id of the sprint task belongs to.</param>
+    /// <param name="request">Request containing prev and next lexorank values, and taskId with taskType.</param>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     {
+    ///         "prev": "ie",
+    ///         "next": "ik",
+    ///         "taskRequest": {
+    ///             "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///             "type": "base"
+    ///         }
+    ///     }
+    /// 
+    /// </remarks>
+    /// <returns>
+    /// HTTP response with status code:
+    /// - 204 on success
+    /// - 400 on failure
+    /// - 404 on failure
+    /// </returns>
+    [HttpPost("{sprintId:guid}/tasks/move")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> MoveTask(
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid sprintId,
+        [FromBody] MoveSprintTaskRequest request) =>
+        await Resolver<MoveSprintTaskCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new MoveSprintTaskCommand(
+                sprintId.GuidConversion<SprintId>(),
+                request.TaskRequest.MapToSprintTaskId(),
+                request.Prev,
+                request.Next))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 }

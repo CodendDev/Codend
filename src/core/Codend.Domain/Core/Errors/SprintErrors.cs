@@ -1,4 +1,6 @@
-﻿namespace Codend.Domain.Core.Errors;
+﻿using Codend.Domain.Entities;
+
+namespace Codend.Domain.Core.Errors;
 
 public static partial class DomainErrors
 {
@@ -11,6 +13,33 @@ public static partial class DomainErrors
         {
             public StartDateAfterEndDate()
                 : base("SprintPeriod.StartDateAfterEndDate", "Start date must be before end date.")
+            {
+            }
+        }
+    }
+
+    public static class Sprint
+    {
+        public class TaskDoesntExistInProject : DomainError
+        {
+            public TaskDoesntExistInProject()
+                : base("Sprint.TaskDoesntExistInProject", "Task doesn't exist in project.")
+            {
+            }
+        }
+
+        public class TaskIsNotAssignedToSprint : DomainError
+        {
+            public TaskIsNotAssignedToSprint()
+                : base("Sprint.TaskIsNotAssignedToSprint", "Task is not assigned to sprint.")
+            {
+            }
+        }
+
+        public class TaskIsAlreadyAssignedToSprint : DomainError
+        {
+            public TaskIsAlreadyAssignedToSprint()
+                : base("Sprint.TaskIsAlreadyAssignedToSprint", "Task is already assigned to sprint.")
             {
             }
         }

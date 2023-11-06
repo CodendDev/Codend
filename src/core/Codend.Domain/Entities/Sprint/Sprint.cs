@@ -121,5 +121,20 @@ public class Sprint : Entity<SprintId>, ISoftDeletableEntity
         return sprintPeriod;
     }
 
+    public Result<IEnumerable<SprintProjectTask>> AssignTasks(IEnumerable<ISprintTaskId> taskIds)
+    {
+        var results = taskIds
+            .Select(taskId => taskId switch
+            {
+                ProjectTaskId projectTaskId => SprintProjectTask.Create(Id, projectTaskId),
+                StoryId storyId => SprintProjectTask.Create(Id, storyId),
+                EpicId epicId => SprintProjectTask.Create(Id, epicId),
+                _ => throw new ArgumentOutOfRangeException(nameof(taskId), taskId, null)
+            })
+            .Select(r => r.ValueOrDefault);
+
+        return Result.Ok(results);
+    }
+
     #endregion
 }

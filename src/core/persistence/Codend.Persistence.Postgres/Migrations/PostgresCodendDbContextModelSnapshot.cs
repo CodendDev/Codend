@@ -186,6 +186,9 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Position")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
@@ -256,6 +259,43 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.ToTable("Sprint");
                 });
 
+            modelBuilder.Entity("Codend.Domain.Entities.SprintProjectTask", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasPrecision(0)
+                        .HasColumnType("timestamp(0) with time zone");
+
+                    b.Property<Guid?>("EpicId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Position")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("SprintId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("StoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("TaskId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EpicId");
+
+                    b.HasIndex("SprintId");
+
+                    b.HasIndex("StoryId");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("SprintProjectTask");
+                });
+
             modelBuilder.Entity("Codend.Domain.Entities.Story", b =>
                 {
                     b.Property<Guid>("Id")
@@ -292,21 +332,6 @@ namespace Codend.Persistence.Postgres.Migrations
                     b.HasIndex("StatusId");
 
                     b.ToTable("Story");
-                });
-
-            modelBuilder.Entity("SprintProjectTask", b =>
-                {
-                    b.Property<Guid>("BaseProjectTaskId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("SprintId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("BaseProjectTaskId", "SprintId");
-
-                    b.HasIndex("SprintId");
-
-                    b.ToTable("SprintProjectTask");
                 });
 
             modelBuilder.Entity("Codend.Domain.Entities.ProjectTask.Bugfix.BugfixProjectTask", b =>
@@ -680,6 +705,30 @@ namespace Codend.Persistence.Postgres.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Codend.Domain.Entities.SprintProjectTask", b =>
+                {
+                    b.HasOne("Codend.Domain.Entities.Epic", null)
+                        .WithMany()
+                        .HasForeignKey("EpicId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Codend.Domain.Entities.Sprint", null)
+                        .WithMany()
+                        .HasForeignKey("SprintId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Codend.Domain.Entities.Story", null)
+                        .WithMany()
+                        .HasForeignKey("StoryId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Codend.Domain.Entities.BaseProjectTask", null)
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.NoAction);
+                });
+
             modelBuilder.Entity("Codend.Domain.Entities.Story", b =>
                 {
                     b.HasOne("Codend.Domain.Entities.Epic", null)
@@ -741,21 +790,6 @@ namespace Codend.Persistence.Postgres.Migrations
                         .IsRequired();
 
                     b.Navigation("Name")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("SprintProjectTask", b =>
-                {
-                    b.HasOne("Codend.Domain.Entities.BaseProjectTask", null)
-                        .WithMany()
-                        .HasForeignKey("BaseProjectTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Codend.Domain.Entities.Sprint", null)
-                        .WithMany()
-                        .HasForeignKey("SprintId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
