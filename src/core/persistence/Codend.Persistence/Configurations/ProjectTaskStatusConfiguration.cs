@@ -26,7 +26,9 @@ internal sealed class ProjectTaskStatusConfiguration : IEntityTypeConfiguration<
         builder
             .Property(projectTaskStatus => projectTaskStatus.Position)
             .HasConversion(
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 position => position.Value,
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 value => new Lexorank(value));
     }
 }
