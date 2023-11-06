@@ -1,8 +1,12 @@
+using Codend.Application.Core.Abstractions.Common;
+using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
+using Codend.Application.Extensions;
+using Codend.Contracts.Responses.Board;
 using Codend.Contracts.Responses.Sprint;
 using Codend.Domain.Entities;
 using FluentResults;
-using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Application.Sprints.Queries.GetSprints;
 
@@ -20,16 +24,67 @@ public record GetSprintsQuery
 /// </summary>
 public class GetSprintsQueryHandler : IQueryHandler<GetSprintsQuery, SprintsResponse>
 {
+    private readonly IQueryableSets _sets;
+    private readonly IDateTime _dateTime;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GetSprintsQueryHandler"/> class.
     /// </summary>
-    public GetSprintsQueryHandler()
+    public GetSprintsQueryHandler(IQueryableSets sets, IDateTime dateTime)
     {
+        _sets = sets;
+        _dateTime = dateTime;
     }
 
     /// <inheritdoc />
-    public Task<Result<SprintsResponse>> Handle(GetSprintsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<SprintsResponse>> Handle(GetSprintsQuery request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var boardTasks = await _sets.GetBoardTasksAsyncByProjectId(request.ProjectId, cancellationToken);
+
+        var sprints = await _sets
+            .Queryable<Sprint>()
+            .GetProjectSprints(request.ProjectId)
+            .ToListAsync(cancellationToken);
+
+        var sprintBoards = sprints
+            .GroupJoin(
+                _sets.Queryable<SprintProjectTask>(),
+                sprint => sprint.Id,
+                task => task.SprintId,
+                (sprint, tasks) => new { sprint, Board = new BoardResponse(FindBoardTasks(tasks, boardTasks)) }
+            );
+
+        var sprintResponses = sprintBoards.Select(
+            sprintBoard =>
+                new SprintResponse
+                (
+                    sprintBoard.sprint.Id.Value,
+                    sprintBoard.sprint.Name.Value,
+                    sprintBoard.sprint.Period.StartDate,
+                    sprintBoard.sprint.Period.EndDate,
+                    sprintBoard.sprint.Goal.Value,
+                    sprintBoard.Board
+                )
+        );
+
+        var activeSprints = sprints
+            .Where(s => s.IsSprintActiveThisDay(_dateTime.UtcNow))
+            .Select(s => s.Id.Value);
+
+        return Result.Ok(new SprintsResponse(activeSprints, sprintResponses));
     }
+
+    private static IEnumerable<BoardTaskResponse> FindBoardTasks(
+        IEnumerable<SprintProjectTask> sprintTask,
+        IEnumerable<BoardTaskResponse> tasks
+    ) =>
+        tasks
+            .Where(t =>
+                sprintTask.Any(
+                    st =>
+                        (st.TaskId != null && t.Id == st.TaskId.Value) ||
+                        (st.StoryId != null && t.Id == st.StoryId.Value) ||
+                        (st.EpicId != null && t.Id == st.EpicId.Value)
+                )
+            );
 }
