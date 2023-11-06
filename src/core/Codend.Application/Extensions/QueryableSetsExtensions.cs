@@ -7,7 +7,7 @@ namespace Codend.Application.Extensions;
 
 internal static class QueryableSetsExtensions
 {
-    internal static Task<IEnumerable<BoardTaskResponse>> GetBoardTasksAsyncByProjectId(
+    internal static Task<IEnumerable<BoardTaskResponse>> GetBoardTasksByProjectIdAsync(
         this IQueryableSets sets,
         ProjectId projectId,
         CancellationToken cancellationToken
@@ -21,10 +21,10 @@ internal static class QueryableSetsExtensions
             .Queryable<SprintProjectTask>()
             .Where(task => sprints.Any(s => s.Id == task.SprintId));
 
-        return sets.GetBoardTasksAsyncBySprintTasks(sprintTasks, cancellationToken);
+        return sets.GetBoardTasksBySprintTasksAsync(sprintTasks, cancellationToken);
     }
 
-    internal static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksAsyncBySprintTasks(
+    internal static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksBySprintTasksAsync(
         this IQueryableSets sets,
         IQueryable<SprintProjectTask> sprintTasks,
         CancellationToken cancellationToken
@@ -36,16 +36,7 @@ internal static class QueryableSetsExtensions
                 sprintTasks,
                 task => task.Id,
                 sprintTask => sprintTask.TaskId,
-                (task, sprintTask) =>
-                    new BoardTaskResponse(
-                        task.Id.Value,
-                        task.Name.Value,
-                        task.StatusId.Value,
-                        task.StoryId!.Value,
-                        task.Priority.Name,
-                        null,
-                        sprintTask.Position!.Value
-                    )
+                (task, sprintTask) => task.ToBoardTaskResponse(sprintTask)
             )
             .ToListAsync(cancellationToken);
 
@@ -55,16 +46,7 @@ internal static class QueryableSetsExtensions
                 sprintTasks,
                 task => task.Id,
                 sprintTask => sprintTask.StoryId,
-                (task, sprintTask) =>
-                    new BoardTaskResponse(
-                        task.Id.Value,
-                        task.Name.Value,
-                        task.StatusId.Value,
-                        task.EpicId!.Value,
-                        null,
-                        null,
-                        sprintTask.Position!.Value
-                    )
+                (story, sprintTask) => story.ToBoardTaskResponse(sprintTask)
             )
             .ToListAsync(cancellationToken);
 
@@ -72,18 +54,9 @@ internal static class QueryableSetsExtensions
             .Queryable<Epic>()
             .Join(
                 sprintTasks,
-                task => task.Id,
+                epic => epic.Id,
                 sprintTask => sprintTask.EpicId,
-                (task, sprintTask) =>
-                    new BoardTaskResponse(
-                        task.Id.Value,
-                        task.Name.Value,
-                        task.StatusId.Value,
-                        null,
-                        null,
-                        null,
-                        sprintTask.Position!.Value
-                    )
+                (epic, sprintTask) => epic.ToBoardTaskResponse(sprintTask)
             )
             .ToListAsync(cancellationToken);
 

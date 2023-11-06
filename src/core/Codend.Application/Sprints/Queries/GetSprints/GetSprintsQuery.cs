@@ -39,7 +39,7 @@ public class GetSprintsQueryHandler : IQueryHandler<GetSprintsQuery, SprintsResp
     /// <inheritdoc />
     public async Task<Result<SprintsResponse>> Handle(GetSprintsQuery request, CancellationToken cancellationToken)
     {
-        var boardTasks = await _sets.GetBoardTasksAsyncByProjectId(request.ProjectId, cancellationToken);
+        var boardTasks = await _sets.GetBoardTasksByProjectIdAsync(request.ProjectId, cancellationToken);
 
         var sprints = await _sets
             .Queryable<Sprint>()
