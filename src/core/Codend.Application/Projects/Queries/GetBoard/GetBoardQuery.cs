@@ -1,26 +1,12 @@
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
-using Codend.Application.Core.Abstractions.Querying;
 using Codend.Application.Core.Abstractions.Services;
-using Codend.Application.Extensions;
 using Codend.Application.Projects.Queries.GetProjects;
-using Codend.Contracts.Automapper.Entities.ProjectTask;
-using Codend.Contracts.Common;
 using Codend.Contracts.Responses.Board;
-using Codend.Contracts.Responses.Epic;
-using Codend.Contracts.Responses.Project;
-using Codend.Contracts.Responses.ProjectTask;
-using Codend.Contracts.Responses.Story;
-using Codend.Domain.Core.Errors;
-using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
-using Codend.Domain.Entities.ProjectTask.Bugfix;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.Projects.Queries.GetBoard;
 
@@ -59,7 +45,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
         _queryableSets = queryableSets;
         _userService = userService;
     }
-    
+
     /// <inheritdoc />
     public async Task<Result<BoardResponse>> Handle(GetBoardQuery query, CancellationToken cancellationToken)
     {
@@ -99,6 +85,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                     (projectTask, sprintProjectTask) => new
                     {
                         Id = projectTask.Id,
+                        TaskType = projectTask.TaskType,
                         Name = projectTask.Name,
                         StatusId = projectTask.StatusId,
                         StoryId = projectTask.StoryId,
@@ -122,6 +109,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                 new BoardTaskResponse
                 (
                     task.Id.Value,
+                    task.TaskType,
                     task.Name.Value,
                     task.StatusId.Value,
                     task.StoryId?.Value,
@@ -146,6 +134,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                 (story, sprintProjectTask) => new
                 {
                     Id = story.Id,
+                    TaskType = story.TaskType,
                     Name = story.Name,
                     StatusId = story.StatusId,
                     EpicId = story.EpicId,
@@ -159,6 +148,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                 new BoardTaskResponse
                 (
                     story.Id.Value,
+                    story.TaskType,
                     story.Name.Value,
                     story.StatusId.Value,
                     story.EpicId?.Value,
@@ -183,6 +173,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                 (epic, sprintProjectTask) => new
                 {
                     Id = epic.Id,
+                    TaskType = epic.TaskType,
                     Name = epic.Name,
                     StatusId = epic.StatusId,
                     Position = sprintProjectTask.Position
@@ -195,6 +186,7 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                 new BoardTaskResponse
                 (
                     epic.Id.Value,
+                    epic.TaskType,
                     epic.Name.Value,
                     epic.StatusId.Value,
                     null,
