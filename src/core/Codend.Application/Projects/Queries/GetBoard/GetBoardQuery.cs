@@ -4,6 +4,7 @@ using Codend.Application.Core.Abstractions.Services;
 using Codend.Application.Extensions;
 using Codend.Application.Projects.Queries.GetProjects;
 using Codend.Contracts.Responses.Board;
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -43,9 +44,10 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
     /// <inheritdoc />
     public async Task<Result<BoardResponse>> Handle(GetBoardQuery query, CancellationToken cancellationToken)
     {
-        var sprintTasksQuery = _queryableSets
+        var sprintTasksQuery = await _queryableSets
             .Queryable<SprintProjectTask>()
-            .Where(task => task.SprintId == query.SprintId);
+            .Where(task => task.SprintId == query.SprintId)
+            .ToListAsync(cancellationToken);
 
         var projectTasks = await HandleProjectTasks(sprintTasksQuery, query, cancellationToken);
 
@@ -55,10 +57,8 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
             return Result.Ok(new BoardResponse(projectTasks));
         }
 
-        var storyTasks =
-            await _queryableSets.GetBoardTasksBySprintTasksAsync<Story>(sprintTasksQuery, cancellationToken);
-        var epicTasks =
-            await _queryableSets.GetBoardTasksBySprintTasksAsync<Epic>(sprintTasksQuery, cancellationToken);
+        var storyTasks = await Handle<Story>(sprintTasksQuery, query, cancellationToken);
+        var epicTasks = await Handle<Epic>(sprintTasksQuery, query, cancellationToken);
         var merged = projectTasks.Union(storyTasks).Union(epicTasks);
 
         return Result.Ok(new BoardResponse(merged));
@@ -111,4 +111,15 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
                     )
             );
     }
+
+    private Task<IEnumerable<BoardTaskResponse>> Handle<T>(
+        IEnumerable<SprintProjectTask> sprintTasksQuery,
+        GetBoardQuery query,
+        CancellationToken cancellationToken
+    ) where T : class, ISprintTask, IEntity, IProjectOwnedEntity =>
+        _queryableSets.GetBoardTasksBySprintTasksAsync<T>(
+            query.ProjectId,
+            sprintTasksQuery,
+            cancellationToken
+        );
 }
