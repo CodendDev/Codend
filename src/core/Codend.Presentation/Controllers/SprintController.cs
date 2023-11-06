@@ -4,6 +4,7 @@ using Codend.Application.Sprints.Commands.DeleteSprint;
 using Codend.Application.Sprints.Commands.MoveTask;
 using Codend.Application.Sprints.Commands.RemoveTasks;
 using Codend.Application.Sprints.Commands.UpdateSprint;
+using Codend.Application.Sprints.Queries.GetSprints;
 using Codend.Contracts;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.Sprint;
@@ -283,4 +284,21 @@ public class SprintController : ApiController
                 request.Next))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
+
+    /// <summary>
+    /// Retrieves all project sprints and active sprint id.
+    /// </summary>
+    /// <param name="projectId">The id of the project.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 200 - on success.
+    /// 404 - when project was not found.
+    /// </returns>
+    [HttpGet]
+    public async Task<IActionResult> GetSprints([FromRoute] Guid projectId) =>
+        await Resolver<GetSprintsQuery>
+            .For(new GetSprintsQuery(projectId.GuidConversion<ProjectId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
+
 }
