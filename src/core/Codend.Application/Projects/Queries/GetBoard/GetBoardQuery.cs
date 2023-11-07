@@ -1,26 +1,13 @@
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
-using Codend.Application.Core.Abstractions.Querying;
 using Codend.Application.Core.Abstractions.Services;
 using Codend.Application.Extensions;
 using Codend.Application.Projects.Queries.GetProjects;
-using Codend.Contracts.Automapper.Entities.ProjectTask;
-using Codend.Contracts.Common;
 using Codend.Contracts.Responses.Board;
-using Codend.Contracts.Responses.Epic;
-using Codend.Contracts.Responses.Project;
-using Codend.Contracts.Responses.ProjectTask;
-using Codend.Contracts.Responses.Story;
-using Codend.Domain.Core.Errors;
-using Codend.Domain.Core.Primitives;
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
-using Codend.Domain.Entities.ProjectTask.Bugfix;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Application.Projects.Queries.GetBoard;
 
@@ -42,40 +29,36 @@ public sealed record GetBoardQuery
 /// </summary>
 public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
 {
-    private readonly IMapper _mapper;
     private readonly IQueryableSets _queryableSets;
     private readonly IUserService _userService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetProjectsQueryHandler"/> class.
     /// </summary>
-    public GetBoardQueryHandler(
-        IMapper mapper,
-        IQueryableSets queryableSets,
-        IUserService userService
-    )
+    public GetBoardQueryHandler(IQueryableSets queryableSets, IUserService userService)
     {
-        _mapper = mapper;
         _queryableSets = queryableSets;
         _userService = userService;
     }
-    
+
     /// <inheritdoc />
     public async Task<Result<BoardResponse>> Handle(GetBoardQuery query, CancellationToken cancellationToken)
     {
-        var sprintTasksQuery = _queryableSets
+        var sprintTasksQuery = await _queryableSets
             .Queryable<SprintProjectTask>()
-            .Where(task => task.SprintId == query.SprintId);
+            .Where(task => task.SprintId == query.SprintId)
+            .ToListAsync(cancellationToken);
 
         var projectTasks = await HandleProjectTasks(sprintTasksQuery, query, cancellationToken);
 
+        // Story and epic cannot be assigned to any user
         if (query.AssigneeId is not null)
         {
             return Result.Ok(new BoardResponse(projectTasks));
         }
 
-        var storyTasks = await HandleStories(sprintTasksQuery, query, cancellationToken);
-        var epicTasks = await HandleEpics(sprintTasksQuery, query, cancellationToken);
+        var storyTasks = await Handle<Story>(sprintTasksQuery, query, cancellationToken);
+        var epicTasks = await Handle<Epic>(sprintTasksQuery, query, cancellationToken);
         var merged = projectTasks.Union(storyTasks).Union(epicTasks);
 
         return Result.Ok(new BoardResponse(merged));
@@ -87,28 +70,28 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
         CancellationToken cancellationToken
     )
     {
-        var projectTasksQuery = await
-            _queryableSets.Queryable<BaseProjectTask>()
-                .Where(baseProjectTask =>
-                    baseProjectTask.ProjectId != query.ProjectId ||
-                    query.AssigneeId == null || baseProjectTask.AssigneeId == query.AssigneeId
-                )
-                .Join(sprintTasksQuery,
-                    projectTask => projectTask.Id,
-                    sprintProjectTask => sprintProjectTask.TaskId,
-                    (projectTask, sprintProjectTask) => new
-                    {
-                        Id = projectTask.Id,
-                        Name = projectTask.Name,
-                        StatusId = projectTask.StatusId,
-                        StoryId = projectTask.StoryId,
-                        Priority = projectTask.Priority,
-                        Position = sprintProjectTask.Position,
-                        AssigneeId = projectTask.AssigneeId
-                    }
-                )
-                .ToListAsync(cancellationToken);
+        var tasks = await _queryableSets
+            .Queryable<BaseProjectTask>()
+            .Where(baseProjectTask =>
+                baseProjectTask.ProjectId != query.ProjectId ||
+                query.AssigneeId == null || baseProjectTask.AssigneeId == query.AssigneeId
+            )
+            .ToListAsync(cancellationToken);
 
+        // Select AssigneeId to assign avatar to assignee
+        var projectTasksQuery = sprintTasksQuery
+            .JoinSprintTaskWith(tasks)
+            .Select(
+                boardTask =>
+                    new
+                    {
+                        boardTask,
+                        tasks.Single(t => t.Id.Value == boardTask.Id).AssigneeId
+                    }
+            )
+            .ToList();
+
+        // Fetch all needed users
 #pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
         var userIds = projectTasksQuery
             .Where(boardTask => boardTask.AssigneeId is not null)
@@ -117,91 +100,26 @@ public class GetBoardQueryHandler : IQueryHandler<GetBoardQuery, BoardResponse>
         var users = await _userService.GetUsersByIdsAsync(userIds);
 #pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types. 
 
+        // Assign avatars for board tasks
         return projectTasksQuery
-            .Select(task =>
-                new BoardTaskResponse
-                (
-                    task.Id.Value,
-                    task.Name.Value,
-                    task.StatusId.Value,
-                    task.StoryId?.Value,
-                    task.Priority.Name,
-                    task.AssigneeId is not null ? users.Single(u => u.Id == task.AssigneeId?.Value).ImageUrl : null,
-                    task.Position?.Value
-                )
+            .Select(
+                task =>
+                    task.boardTask.ToBoardTaskResponseWithAvatar(
+                        task.AssigneeId is not null
+                            ? users.Single(u => u.Id == task.AssigneeId?.Value).ImageUrl
+                            : null
+                    )
             );
     }
 
-    private async Task<IEnumerable<BoardTaskResponse>> HandleStories(
+    private Task<IEnumerable<BoardTaskResponse>> Handle<T>(
         IEnumerable<SprintProjectTask> sprintTasksQuery,
         GetBoardQuery query,
         CancellationToken cancellationToken
-    )
-    {
-        var storiesQuery = await _queryableSets.Queryable<Story>()
-            .Where(story => story.ProjectId == query.ProjectId)
-            .Join(sprintTasksQuery,
-                story => story.Id,
-                sprintProjectTask => sprintProjectTask.StoryId,
-                (story, sprintProjectTask) => new
-                {
-                    Id = story.Id,
-                    Name = story.Name,
-                    StatusId = story.StatusId,
-                    EpicId = story.EpicId,
-                    Position = sprintProjectTask.Position
-                }
-            )
-            .ToListAsync(cancellationToken);
-
-        return storiesQuery
-            .Select(story =>
-                new BoardTaskResponse
-                (
-                    story.Id.Value,
-                    story.Name.Value,
-                    story.StatusId.Value,
-                    story.EpicId?.Value,
-                    null,
-                    null,
-                    story.Position?.Value
-                )
-            );
-    }
-
-    private async Task<IEnumerable<BoardTaskResponse>> HandleEpics(
-        IEnumerable<SprintProjectTask> sprintTasksQuery,
-        GetBoardQuery query,
-        CancellationToken cancellationToken
-    )
-    {
-        var epicsQuery = await _queryableSets.Queryable<Epic>()
-            .Where(epic => epic.ProjectId == query.ProjectId)
-            .Join(sprintTasksQuery,
-                epic => epic.Id,
-                sprintProjectTask => sprintProjectTask.EpicId,
-                (epic, sprintProjectTask) => new
-                {
-                    Id = epic.Id,
-                    Name = epic.Name,
-                    StatusId = epic.StatusId,
-                    Position = sprintProjectTask.Position
-                }
-            )
-            .ToListAsync(cancellationToken);
-
-        return epicsQuery
-            .Select(epic =>
-                new BoardTaskResponse
-                (
-                    epic.Id.Value,
-                    epic.Name.Value,
-                    epic.StatusId.Value,
-                    null,
-                    null,
-                    null,
-                    epic.Position?.Value
-                )
-            );
-    }
+    ) where T : class, ISprintTask, IEntity, IProjectOwnedEntity =>
+        _queryableSets.GetBoardTasksBySprintTasksAsync<T>(
+            query.ProjectId,
+            sprintTasksQuery,
+            cancellationToken
+        );
 }

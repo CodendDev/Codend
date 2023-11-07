@@ -101,7 +101,7 @@ public class GetBacklogQueryHandler : IQueryHandler<GetBacklogQuery, BacklogResp
             {
                 Id = story.Id.Value,
                 Name = story.Name.Value,
-                TaskType = story.TaskType,
+                TaskType = story.SprintTaskType,
                 StatusId = story.StatusId.Value,
                 CreatedOn = story.CreatedOn
             })
@@ -128,7 +128,7 @@ public class GetBacklogQueryHandler : IQueryHandler<GetBacklogQuery, BacklogResp
             {
                 Id = epic.Id.Value,
                 Name = epic.Name.Value,
-                TaskType = epic.TaskType,
+                TaskType = epic.SprintTaskType,
                 StatusId = epic.StatusId.Value,
                 CreatedOn = epic.CreatedOn
             })
