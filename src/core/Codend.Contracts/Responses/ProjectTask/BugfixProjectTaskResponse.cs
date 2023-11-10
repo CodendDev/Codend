@@ -7,6 +7,7 @@ namespace Codend.Contracts.Responses.ProjectTask;
 /// <param name="TaskType"><inheritdoc/></param>
 /// <param name="Name"><inheritdoc/></param>
 /// <param name="Priority"><inheritdoc/></param>
+/// <param name="StatusId"><inheritdoc/></param>
 /// <param name="Description"><inheritdoc/></param>
 /// <param name="DueDate"><inheritdoc/></param>
 /// <param name="StoryPoints"><inheritdoc/></param>
@@ -19,6 +20,7 @@ public record BugfixProjectTaskResponse
     string TaskType,
     string Name,
     string Priority,
+    Guid StatusId,
     string? Description,
     DateTime? DueDate,
     uint? StoryPoints,
@@ -31,6 +33,7 @@ public record BugfixProjectTaskResponse
     TaskType,
     Name,
     Priority,
+    StatusId,
     Description,
     DueDate,
     StoryPoints,
