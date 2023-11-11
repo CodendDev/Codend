@@ -35,8 +35,8 @@ public class UpdateSprintValidator : AbstractValidator<UpdateSprintCommand>
         RuleFor(x => x.EndDate)
             .NotEmpty()
             .WithError(new PropertyNullOrEmpty(nameof(UpdateSprintCommand.EndDate)));
-        
-        When(x => x.Goal.ShouldUpdate, () =>
+
+        When(x => x.Goal is { ShouldUpdate: true, Value: not null }, () =>
         {
             RuleFor(x => x.Goal.Value)
                 .NotEmpty()
