@@ -67,14 +67,7 @@ public class GetProjectTaskByIdQueryHandler : IQueryHandler<GetProjectTaskByIdQu
             return DomainNotFound.Fail<BaseProjectTask>();
         }
 
-        var status = await _statusRepository.GetByIdAsync(task.StatusId, cancellationToken);
-        if (status is null)
-        {
-            throw new NoNullAllowedException("ProjectStatus can't be null.");
-        }
-
         var dto = Map(task);
-        dto.Status = status.Name.Value;
         return Result.Ok(dto);
     }
 }
