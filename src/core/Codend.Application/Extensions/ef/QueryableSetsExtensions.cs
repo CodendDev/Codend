@@ -4,7 +4,7 @@ using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Codend.Application.Extensions;
+namespace Codend.Application.Extensions.ef;
 
 internal static class QueryableSetsExtensions
 {
