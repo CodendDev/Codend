@@ -1,7 +1,10 @@
+using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
-using Codend.Contracts.Responses.Backlog;
+using Codend.Application.Extensions.ef;
+using Codend.Contracts.Responses.Sprint;
 using Codend.Domain.Entities;
 using FluentResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Application.Sprints.Queries.GetAssignableTasks;
 
@@ -14,16 +17,58 @@ public record GetAssignableTasksQuery
 (
     ProjectId ProjectId,
     SprintId SprintId
-) : IQuery<BacklogResponse>;
+) : IQuery<AssignableTasksResponse>;
 
 /// <summary>
 /// <see cref="GetAssignableTasksQuery"/> handler.
 /// </summary>
-public class GetAssignableTasksQueryHandler : IQueryHandler<GetAssignableTasksQuery, BacklogResponse>
+public class GetAssignableTasksQueryHandler : IQueryHandler<GetAssignableTasksQuery, AssignableTasksResponse>
 {
-    /// <inheritdoc />
-    public Task<Result<BacklogResponse>> Handle(GetAssignableTasksQuery request, CancellationToken cancellationToken)
+    private readonly IQueryableSets _sets;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetAssignableTasksQueryValidator"/> class.
+    /// </summary>
+    public GetAssignableTasksQueryHandler(IQueryableSets sets)
     {
-        throw new NotImplementedException();
+        _sets = sets;
+    }
+
+    /// 💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀
+    public async Task<Result<AssignableTasksResponse>> Handle(
+        GetAssignableTasksQuery request,
+        CancellationToken cancellationToken
+    )
+    {
+        var sprints = _sets
+            .Queryable<Sprint>()
+            .Where(sprint => sprint.ProjectId == request.ProjectId);
+        var sprintTasks = await _sets
+            .Queryable<SprintProjectTask>()
+            .Where(task =>
+                task.SprintId != request.SprintId &&
+                sprints.Any(s => s.Id == task.SprintId)
+            )
+            .ToListAsync(cancellationToken);
+
+        var boardTasks = await _sets.GetBoardTasksBySprintTasksAsync(request.ProjectId, sprintTasks, cancellationToken);
+
+        var statuses = await _sets.Queryable<ProjectTaskStatus>()
+            .Where(status => status.ProjectId == request.ProjectId)
+            .ToDictionaryAsync(status => status.Id.Value, status => status.Name.Value, cancellationToken);
+
+        var res = new AssignableTasksResponse(
+            boardTasks
+                .Select(x =>
+                    new AssignableTaskResponse(
+                        x.Id,
+                        x.Name,
+                        x.TaskType,
+                        statuses[x.StatusId]
+                    )
+                )
+        );
+
+        return Result.Ok(res);
     }
 }
