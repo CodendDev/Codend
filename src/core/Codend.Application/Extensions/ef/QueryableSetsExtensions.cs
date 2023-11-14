@@ -8,6 +8,23 @@ namespace Codend.Application.Extensions.ef;
 
 internal static class QueryableSetsExtensions
 {
+    [Obsolete(message: "Dont use pls 🙏🏻 💀💀💀")]
+    internal static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksBySprintIdAsync(
+        this IQueryableSets sets,
+        ProjectId projectId,
+        SprintId sprintId,
+        CancellationToken cancellationToken
+    )
+    {
+        var sprintTasks = await
+            sets
+                .Queryable<SprintProjectTask>()
+                .Where(task => task.SprintId == sprintId)
+                .ToListAsync(cancellationToken);
+
+        return await sets.GetBoardTasksBySprintTasksAsync(projectId, sprintTasks, cancellationToken);
+    }
+    
     [Obsolete(message: "Dont use pls 🙏🏻 💀💀💀")] 
     internal static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksByProjectIdAsync(
         this IQueryableSets sets,
