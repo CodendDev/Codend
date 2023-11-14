@@ -5,6 +5,8 @@ using Codend.Application.Sprints.Commands.MoveTask;
 using Codend.Application.Sprints.Commands.RemoveTasks;
 using Codend.Application.Sprints.Commands.UpdateSprint;
 using Codend.Application.Sprints.Queries.GetActiveSprints;
+using Codend.Application.Sprints.Queries.GetAssignableTasks;
+using Codend.Application.Sprints.Queries.GetSprint;
 using Codend.Application.Sprints.Queries.GetSprints;
 using Codend.Contracts;
 using Codend.Contracts.Requests;
@@ -320,6 +322,50 @@ public class SprintController : ApiController
     public async Task<IActionResult> GetActiveSprintsInfo([FromRoute] Guid projectId) =>
         await Resolver<GetActiveSprintsQuery>
             .For(new GetActiveSprintsQuery(projectId.GuidConversion<ProjectId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Retrieves all tasks that can be assigned to given sprint.
+    /// </summary>
+    /// <param name="projectId">The id of the project.</param>
+    /// <param name="sprintId">The id of the sprint.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 200 - on success.
+    /// 404 - when sprint was not found.
+    /// </returns>
+    [HttpGet("{sprintId:guid}/assignable")]
+    [ProducesResponseType(typeof(IEnumerable<SprintInfoResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAssignableTasks([FromRoute] Guid projectId, [FromRoute] Guid sprintId) =>
+        await Resolver<GetAssignableTasksQuery>
+            .For(
+                new GetAssignableTasksQuery
+                (
+                    projectId.GuidConversion<ProjectId>(),
+                    sprintId.GuidConversion<SprintId>()
+                )
+            )
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Retrieves sprint details.
+    /// </summary>
+    /// <param name="projectId">The id of the project.</param>
+    /// <param name="sprintId">The id of the sprint.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 200 - on success.
+    /// 404 - when sprint was not found.
+    /// </returns>
+    [HttpGet("{sprintId:guid}")]
+    [ProducesResponseType(typeof(IEnumerable<SprintInfoResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetSprintDetails([FromRoute] Guid projectId, [FromRoute] Guid sprintId) =>
+        await Resolver<GetSprintQuery>
+            .For(new GetSprintQuery(projectId.GuidConversion<ProjectId>(), sprintId.GuidConversion<SprintId>()))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 }

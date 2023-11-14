@@ -2,6 +2,7 @@ using Codend.Application.Core.Abstractions.Common;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
 using Codend.Application.Extensions;
+using Codend.Application.Extensions.ef;
 using Codend.Contracts.Responses.Board;
 using Codend.Contracts.Responses.Sprint;
 using Codend.Domain.Entities;
