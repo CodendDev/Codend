@@ -4,10 +4,11 @@ using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Codend.Application.Extensions;
+namespace Codend.Application.Extensions.ef;
 
 internal static class QueryableSetsExtensions
 {
+    [Obsolete(message: "Dont use pls 🙏🏻 💀💀💀")] 
     internal static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksByProjectIdAsync(
         this IQueryableSets sets,
         ProjectId projectId,
@@ -27,10 +28,11 @@ internal static class QueryableSetsExtensions
         return await sets.GetBoardTasksBySprintTasksAsync(projectId, sprintTasks, cancellationToken);
     }
 
-    private static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksBySprintTasksAsync(
+    [Obsolete(message: "Dont use pls 🙏🏻 💀💀💀")]
+    internal static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksBySprintTasksAsync(
         this IQueryableSets sets,
         ProjectId projectId,
-        IEnumerable<SprintProjectTask> sprintTasks,
+        IList<SprintProjectTask> sprintTasks,
         CancellationToken cancellationToken
     )
     {
@@ -43,6 +45,7 @@ internal static class QueryableSetsExtensions
         return boardProjectTasks.Union(boardStories).Union(boardEpics);
     }
 
+    [Obsolete(message: "Dont use pls 🙏🏻 💀💀💀")] 
     internal static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksBySprintTasksAsync<T>(
         this IQueryableSets sets,
         ProjectId projectId,
