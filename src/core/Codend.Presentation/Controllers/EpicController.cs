@@ -40,7 +40,8 @@ public class EpicController : ApiController
     ///     {
     ///         "name": "Epic name",
     ///         "description": "Epic description",
-    ///         "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///         "sprintId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     ///     }
     /// </remarks>
     /// <returns>
@@ -60,7 +61,8 @@ public class EpicController : ApiController
                 request.Name,
                 request.Description,
                 projectId.GuidConversion<ProjectId>(),
-                request.StatusId.GuidConversion<ProjectTaskStatusId>()
+                request.StatusId.GuidConversion<ProjectTaskStatusId>(),
+                request.SprintId.GuidConversion<SprintId>()
             ))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
