@@ -49,4 +49,9 @@ public interface ICreateBaseProjectTaskRequest
     /// StoryId to which task will be assigned.
     /// </summary>
     Guid? StoryId { get; }
+
+    /// <summary>
+    /// SprintId to which task will be assigned.
+    /// </summary>
+    Guid? SprintId { get; }
 }

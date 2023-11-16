@@ -1,3 +1,4 @@
+using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Abstractions;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
@@ -23,4 +24,9 @@ public interface ICreateProjectTaskCommand<out TProjectTaskProperties> : ICreate
     /// Properties used for creating ProjectTask.
     /// </summary>
     TProjectTaskProperties TaskProperties { get; }
+
+    /// <summary>
+    /// Id of the sprint to which epic will be assigned.
+    /// </summary>
+    SprintId? SprintId { get; }
 }

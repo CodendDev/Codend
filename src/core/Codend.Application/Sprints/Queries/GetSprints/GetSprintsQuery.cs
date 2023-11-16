@@ -45,6 +45,7 @@ public class GetSprintsQueryHandler : IQueryHandler<GetSprintsQuery, SprintsResp
         var sprints = await _sets
             .Queryable<Sprint>()
             .GetProjectSprints(request.ProjectId)
+            .OrderByDescending(sprint => sprint.Period.StartDate)
             .ToListAsync(cancellationToken);
 
         var sprintBoards = sprints
