@@ -173,7 +173,7 @@ public class SprintController : ApiController
     /// - 400 on failure
     /// - 404 on failure
     /// </returns>
-    [HttpPost("{sprintId:guid}/tasks")]
+    [HttpPost("{sprintId:guid}/tasks/assign")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -226,7 +226,7 @@ public class SprintController : ApiController
     /// - 400 on failure
     /// - 404 on failure
     /// </returns>
-    [HttpDelete("{sprintId:guid}/tasks")]
+    [HttpPost("{sprintId:guid}/tasks/delete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

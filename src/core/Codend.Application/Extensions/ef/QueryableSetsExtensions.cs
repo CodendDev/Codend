@@ -46,7 +46,7 @@ internal static class QueryableSetsExtensions
     }
 
     [Obsolete(message: "Dont use pls 🙏🏻 💀💀💀")]
-    internal static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksBySprintTasksAsync(
+    private static async Task<IEnumerable<BoardTaskResponse>> GetBoardTasksBySprintTasksAsync(
         this IQueryableSets sets,
         ProjectId projectId,
         IList<SprintProjectTask> sprintTasks,
