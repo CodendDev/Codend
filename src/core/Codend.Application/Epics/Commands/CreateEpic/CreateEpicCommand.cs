@@ -1,9 +1,11 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Application.Sprints.Commands.AssignTasks;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
+using MediatR;
 using static Codend.Domain.Core.Errors.DomainErrors.General;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 
@@ -16,12 +18,14 @@ namespace Codend.Application.Epics.Commands.CreateEpic;
 /// <param name="Description">Epic description.</param>
 /// <param name="ProjectId">Epic projectId.</param>
 /// <param name="StatusId">Epic statusId.</param>
+/// <param name="SprintId">Id of the sprint to which epic will be assigned.</param>
 public sealed record CreateEpicCommand
 (
     string Name,
     string Description,
     ProjectId ProjectId,
-    ProjectTaskStatusId? StatusId
+    ProjectTaskStatusId? StatusId,
+    SprintId? SprintId
 ) : ICommand<Guid>;
 
 /// <summary>
@@ -33,6 +37,7 @@ public class CreateEpicCommandHandler : ICommandHandler<CreateEpicCommand, Guid>
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectTaskStatusRepository _statusRepository;
+    private readonly IMediator _mediator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateEpicCommandHandler"/> class.
@@ -41,12 +46,14 @@ public class CreateEpicCommandHandler : ICommandHandler<CreateEpicCommand, Guid>
         IEpicRepository epicRepository,
         IUnitOfWork unitOfWork,
         IProjectRepository projectRepository,
-        IProjectTaskStatusRepository statusRepository)
+        IProjectTaskStatusRepository statusRepository,
+        IMediator mediator)
     {
         _epicRepository = epicRepository;
         _unitOfWork = unitOfWork;
         _projectRepository = projectRepository;
         _statusRepository = statusRepository;
+        _mediator = mediator;
     }
 
     /// <inheritdoc />
@@ -66,7 +73,7 @@ public class CreateEpicCommandHandler : ICommandHandler<CreateEpicCommand, Guid>
         {
             return Result.Fail(new InvalidStatusId());
         }
-        
+
         var epicResult = Epic.Create(
             request.Name,
             request.Description,
@@ -81,6 +88,11 @@ public class CreateEpicCommandHandler : ICommandHandler<CreateEpicCommand, Guid>
         _epicRepository.Add(epic);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Ok(epic.Id.Value);
+        // Assign epic to sprint if sprint id provided.
+        if (request.SprintId is null) return Result.Ok(epic.Id.Value);
+        var result = await _mediator.Send(new SprintAssignTasksCommand(request.SprintId, new[] { epic.Id }),
+            cancellationToken);
+
+        return result.IsFailed ? result : Result.Ok(epic.Id.Value);
     }
 }

@@ -45,8 +45,8 @@ public class GetSprintsQueryHandler : IQueryHandler<GetActiveSprintsQuery, IEnum
         var sprints = await _sets
             .Queryable<Sprint>()
             .GetProjectSprints(request.ProjectId)
-            .Where(s => s.Period.StartDate < today && s.Period.EndDate > today)
-            .OrderBy(s => s.Period.EndDate)
+            .Where(s => s.Period.EndDate > today)
+            .OrderBy(s => s.Period.StartDate)
             .Select(s =>
                 new SprintInfoResponse(s.Id.Value, s.Name.Value, s.Period.StartDate, s.Period.EndDate, s.Goal.Value))
             .ToListAsync(cancellationToken);

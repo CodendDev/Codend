@@ -1,9 +1,10 @@
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
-using Codend.Application.Extensions.ef;
+using Codend.Application.Projects.Queries.GetBacklog;
 using Codend.Contracts.Responses.Sprint;
 using Codend.Domain.Entities;
 using FluentResults;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Application.Sprints.Queries.GetAssignableTasks;
@@ -25,13 +26,15 @@ public record GetAssignableTasksQuery
 public class GetAssignableTasksQueryHandler : IQueryHandler<GetAssignableTasksQuery, AssignableTasksResponse>
 {
     private readonly IQueryableSets _sets;
+    private readonly IMediator _mediator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetAssignableTasksQueryValidator"/> class.
     /// </summary>
-    public GetAssignableTasksQueryHandler(IQueryableSets sets)
+    public GetAssignableTasksQueryHandler(IQueryableSets sets, IMediator mediator)
     {
         _sets = sets;
+        _mediator = mediator;
     }
 
     /// 💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀💀
@@ -40,35 +43,32 @@ public class GetAssignableTasksQueryHandler : IQueryHandler<GetAssignableTasksQu
         CancellationToken cancellationToken
     )
     {
-        var sprints = _sets
-            .Queryable<Sprint>()
-            .Where(sprint => sprint.ProjectId == request.ProjectId);
+        var query = new GetBacklogQuery(request.ProjectId);
+        var backlogResult = await _mediator.Send(query, cancellationToken);
+
+        if (backlogResult.IsFailed)
+        {
+            return backlogResult.ToResult();
+        }
+
+        var backlog = backlogResult.Value.Tasks.ToList();
+
         var sprintTasks = await _sets
             .Queryable<SprintProjectTask>()
             .Where(task =>
-                task.SprintId != request.SprintId &&
-                sprints.Any(s => s.Id == task.SprintId)
+                task.SprintId == request.SprintId
             )
             .ToListAsync(cancellationToken);
 
-        var boardTasks = await _sets.GetBoardTasksBySprintTasksAsync(request.ProjectId, sprintTasks, cancellationToken);
+        var assignableTasks = backlog
+            .Where(t => sprintTasks.All(st => st.SprintTaskId != t.Id));
 
-        var statuses = await _sets.Queryable<ProjectTaskStatus>()
-            .Where(status => status.ProjectId == request.ProjectId)
-            .ToDictionaryAsync(status => status.Id.Value, status => status.Name.Value, cancellationToken);
-
-        var res = new AssignableTasksResponse(
-            boardTasks
-                .Select(x =>
-                    new AssignableTaskResponse(
-                        x.Id,
-                        x.Name,
-                        x.TaskType,
-                        statuses[x.StatusId]
-                    )
+        return Result.Ok(
+            new AssignableTasksResponse(
+                assignableTasks.Select(t =>
+                    new AssignableTaskResponse(t.Id, t.Name, t.TaskType, t.StatusName)
                 )
+            )
         );
-
-        return Result.Ok(res);
     }
 }

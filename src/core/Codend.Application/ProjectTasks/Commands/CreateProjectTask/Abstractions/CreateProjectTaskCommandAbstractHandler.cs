@@ -1,10 +1,12 @@
 using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Application.Sprints.Commands.AssignTasks;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Domain.Repositories;
 using FluentResults;
+using MediatR;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 
@@ -35,6 +37,7 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     private readonly IHttpContextProvider _contextProvider;
     private readonly IStoryRepository _storyRepository;
     private readonly IProjectTaskStatusRepository _statusRepository;
+    private readonly IMediator _mediator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateProjectTaskCommandAbstractHandler{TCommand,TProjectTask,TProjectTaskProperties}"/> class.
@@ -45,7 +48,8 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         IHttpContextProvider contextProvider,
         IProjectMemberRepository projectMemberRepository,
         IStoryRepository storyRepository,
-        IProjectTaskStatusRepository statusRepository)
+        IProjectTaskStatusRepository statusRepository,
+        IMediator mediator)
     {
         _projectTaskRepository = projectTaskRepository;
         _unitOfWork = unitOfWork;
@@ -53,6 +57,7 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         _projectMemberRepository = projectMemberRepository;
         _storyRepository = storyRepository;
         _statusRepository = statusRepository;
+        _mediator = mediator;
     }
 
     /// <inheritdoc />
@@ -91,7 +96,12 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         _projectTaskRepository.Add(task);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Ok(task.Id.Value);
+        // Assign task to sprint if sprint id provided.
+        if (request.SprintId is null) return Result.Ok(task.Id.Value);
+        var assignResult = await _mediator.Send(new SprintAssignTasksCommand(request.SprintId, new[] { task.Id }),
+            cancellationToken);
+
+        return assignResult.IsFailed ? assignResult : Result.Ok(task.Id.Value);
     }
 
     // Validate status id, if null set defaultStatusId as statusId.

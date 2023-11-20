@@ -9,10 +9,12 @@
 /// <param name="StatusName">Task status.</param>
 /// <param name="AssigneeAvatar">Avatar of assigned user, if there is one.</param>
 /// <param name="CreatedOn">Creation datetime.</param>
-public record BacklogTaskResponse(
+public record BacklogTaskResponse
+(
     Guid Id,
     string Name,
     string TaskType,
     string StatusName,
     string? AssigneeAvatar,
-    DateTime CreatedOn);
+    DateTime CreatedOn
+);

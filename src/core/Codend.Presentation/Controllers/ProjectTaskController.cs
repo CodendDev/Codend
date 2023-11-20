@@ -153,7 +153,8 @@ public class ProjectTaskController : ApiController
     ///         "dueDate": "2023-12-30T15:30:56.123Z",
     ///         "storyPoints": 35,
     ///         "assigneeId": "e405f337-4da0-4cce-818b-9231642c93fe",
-    ///         "storyId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42"
+    ///         "storyId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42",
+    ///         "sprintId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42"
     ///     }
     /// </remarks>
     /// <returns>
@@ -183,7 +184,8 @@ public class ProjectTaskController : ApiController
                 )
                 {
                     StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>()
-                }
+                },
+                request.SprintId.GuidConversion<SprintId>()
             ))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
@@ -304,7 +306,8 @@ public class ProjectTaskController : ApiController
     ///         "dueDate": "2023-12-30T15:30:56.123Z",
     ///         "storyPoints": 35,
     ///         "assigneeId": "e405f337-4da0-4cce-818b-9231642c93fe",
-    ///         "storyId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42"
+    ///         "storyId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42",
+    ///         "sprintId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42"
     ///     }
     /// </remarks>
     /// <returns>
@@ -334,7 +337,8 @@ public class ProjectTaskController : ApiController
                 )
                 {
                     StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>(),
-                }
+                },
+                request.SprintId.GuidConversion<SprintId>()
             ))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
