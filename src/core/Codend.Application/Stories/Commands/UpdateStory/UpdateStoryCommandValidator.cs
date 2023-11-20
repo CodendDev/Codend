@@ -36,12 +36,5 @@ public class UpdateStoryCommandValidator : AbstractValidator<UpdateStoryCommand>
                 .MaximumLength(StoryDescription.MaxLength)
                 .WithError(new StringPropertyTooLong(nameof(UpdateStoryCommand.Description), StoryDescription.MaxLength));
         });
-
-        When(x => x.EpicId.ShouldUpdate, () =>
-        {
-            RuleFor(x => x.EpicId.Value)
-                .NotEmpty()
-                .WithError(new PropertyNullOrEmpty(nameof(UpdateStoryCommand.EpicId)));
-        });
     }
 }
