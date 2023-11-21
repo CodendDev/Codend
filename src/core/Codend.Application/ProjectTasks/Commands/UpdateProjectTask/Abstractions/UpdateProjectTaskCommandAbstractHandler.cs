@@ -75,7 +75,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         }
 
         // Validate assignee.
-        if (request.AssigneeId.ShouldUpdate)
+        if (request.AssigneeId is { ShouldUpdate: true, Value: not null })
         {
             var assigneeValid = await
                 _memberRepository.IsProjectMember(request.AssigneeId.Value!, task.ProjectId, cancellationToken);
@@ -86,7 +86,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         }
 
         // Validate story.
-        if (request.StoryId.ShouldUpdate)
+        if (request.StoryId is { ShouldUpdate: true, Value: not null })
         {
             var story = await _storyRepository.GetByIdAsync(request.StoryId.Value!, cancellationToken);
             if (story is null || story.ProjectId != task.ProjectId)
