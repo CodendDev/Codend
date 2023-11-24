@@ -1,6 +1,7 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Services;
 using Codend.Application.Exceptions;
+using Codend.Contracts.Responses;
 using Codend.Domain.Entities;
 using FluentResults;
 using io.fusionauth;
@@ -8,7 +9,6 @@ using io.fusionauth.domain;
 using io.fusionauth.domain.api;
 using io.fusionauth.domain.api.user;
 using Microsoft.Extensions.Options;
-using UserResponse = Codend.Contracts.Responses.UserResponse;
 
 namespace Codend.Infrastructure.Authentication;
 
