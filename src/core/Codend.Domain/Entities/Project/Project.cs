@@ -73,9 +73,6 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
 
         Name = result.Value;
 
-        var evt = new ProjectEditedEvent(this);
-        Raise(evt);
-
         return result;
     }
 
@@ -93,9 +90,6 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
         }
 
         Description = result.Value;
-
-        var evt = new ProjectEditedEvent(this);
-        Raise(evt);
 
         return result;
     }
@@ -115,9 +109,6 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
         {
             return result;
         }
-
-        var evt = new ProjectVersionReleasedEvent(result.Value, Id);
-        Raise(evt);
 
         return result;
     }
@@ -157,9 +148,6 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
         {
             return result;
         }
-
-        var evt = new SprintCreatedEvent(result.Value, Id);
-        Raise(evt);
 
         return result;
     }

@@ -188,10 +188,6 @@ public class BaseProjectTask :
     public Result<StoryId?> EditStory(StoryId? storyId)
     {
         StoryId = storyId;
-
-        var evt = new ProjectTaskStoryEditedEvent(Id, storyId);
-        Raise(evt);
-
         return Result.Ok(storyId);
     }
 
