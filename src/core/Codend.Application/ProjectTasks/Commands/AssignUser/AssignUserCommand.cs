@@ -58,14 +58,16 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
         {
             return DomainNotFound.Fail<BaseProjectTask>();
         }
-
+        
         // Validate assignee id.
-        if (!await _projectMemberRepository.IsProjectMember(request.AssigneeId, task.ProjectId, cancellationToken))
+        var member = await
+            _projectMemberRepository.GetByProjectAndMemberId(task.ProjectId, request.AssigneeId, cancellationToken);
+        if (member is null)
         {
             return Result.Fail(new InvalidAssigneeId());
         }
 
-        var result = task.AssignUser(request.AssigneeId);
+        var result = task.AssignUser(member);
         if (result.IsFailed)
         {
             return result.ToResult();

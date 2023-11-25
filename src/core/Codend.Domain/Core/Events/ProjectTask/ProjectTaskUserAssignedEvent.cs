@@ -6,14 +6,8 @@ namespace Codend.Domain.Core.Events;
 /// <summary>
 /// Domain event raised after AssigneeId has been changed.
 /// </summary>
-public class ProjectTaskUserAssignedEvent : IDomainEvent
-{
-    public ProjectTaskUserAssignedEvent(UserId? assigneeId, ProjectTaskId projectTaskId)
-    {
-        AssigneeId = assigneeId;
-        ProjectTaskId = projectTaskId;
-    }
-
-    public UserId? AssigneeId { get; set; }
-    public ProjectTaskId ProjectTaskId { get; set; }
-}
+public record ProjectTaskUserAssignedEvent
+(
+    IUser User,
+    ProjectTaskId ProjectTaskId
+) : IUserNotification;

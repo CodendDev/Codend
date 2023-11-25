@@ -147,14 +147,17 @@ public class BaseProjectTask :
     /// </summary>
     /// <param name="assigneeId">New assigneeId.</param>
     /// <returns>Ok result with UserId object.</returns>
-    public Result<UserId?> AssignUser(UserId? assigneeId)
+    public Result<UserId?> AssignUser(ProjectMember? assigneeId)
     {
-        AssigneeId = assigneeId;
+        AssigneeId = assigneeId?.MemberId;
 
-        var evt = new ProjectTaskUserAssignedEvent(assigneeId, Id);
-        Raise(evt);
+        if (assigneeId is not null)
+        {
+            var evt = new ProjectTaskUserAssignedEvent(assigneeId, Id);
+            Raise(evt);
+        }
 
-        return Result.Ok(assigneeId);
+        return Result.Ok(AssigneeId);
     }
 
     /// <summary>

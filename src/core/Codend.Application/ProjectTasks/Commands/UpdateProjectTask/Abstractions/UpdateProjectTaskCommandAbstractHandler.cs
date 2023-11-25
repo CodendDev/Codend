@@ -75,11 +75,12 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         }
 
         // Validate assignee.
+        ProjectMember? member = null;
         if (request.AssigneeId is { ShouldUpdate: true, Value: not null })
         {
-            var assigneeValid = await
-                _memberRepository.IsProjectMember(request.AssigneeId.Value!, task.ProjectId, cancellationToken);
-            if (!assigneeValid)
+            member = await
+                _memberRepository.GetByProjectAndMemberId(task.ProjectId, request.AssigneeId.Value, cancellationToken);
+            if (member is null)
             {
                 return Result.Fail(new InvalidAssigneeId());
             }
@@ -95,7 +96,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
             }
         }
 
-        var result = HandleUpdate(task, request);
+        var result = HandleUpdate(task, request, member);
         if (result.IsFailed)
         {
             return result;
@@ -113,8 +114,9 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     /// </summary>
     /// <param name="task">Task which will be updated.</param>
     /// <param name="request">Command request.</param>
+    /// <param name="projectMember"><see cref="ProjectMember"/> of assignee.</param>
     /// <returns><see cref="Result"/>.Ok() or a failure with errors.</returns>
-    protected virtual Result HandleUpdate(TProjectTask task, TCommand request)
+    protected virtual Result HandleUpdate(TProjectTask task, TCommand request, ProjectMember? projectMember)
     {
         var result = Result.Merge
         (
@@ -123,7 +125,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
             request.EstimatedTime.HandleUpdate(task.EditEstimatedTime),
             request.DueDate.HandleUpdate(task.EditDueDate),
             request.StoryPoints.HandleUpdate(task.EditStoryPoints),
-            request.AssigneeId.HandleUpdate(task.AssignUser),
+            request.AssigneeId.HandleUpdate(_ => task.AssignUser(projectMember)),
             request.StoryId.HandleUpdate(task.EditStory),
             request.StatusId.GetResultFromDelegate(task.EditStatus, Result.Ok),
             request.Priority.GetResultFromDelegate(task.EditPriority, Result.Ok)
