@@ -156,9 +156,9 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
     /// Adds user to project.
     /// </summary>
     /// <param name="userId">User to be added.</param>
-    public void AddUserToProject(UserId userId)
+    public void AddUserToProject(ProjectMember userId)
     {
-        var evt = new UserAddedToProjectEvent(userId, Id);
+        var evt = new UserAddedToProjectEvent(Id, userId);
         Raise(evt);
     }
 
