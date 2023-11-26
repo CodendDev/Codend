@@ -1,8 +1,10 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Common;
+using Codend.Application.Core.Abstractions.Notifications;
 using Codend.Application.Core.Abstractions.Services;
 using Codend.Infrastructure.Authentication;
 using Codend.Infrastructure.Common;
+using Codend.Infrastructure.Notifications;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,6 +25,8 @@ public static class DependencyInjection
         services.AddScoped<IHttpContextProvider, HttpContextProvider>();
         services.AddScoped<IAuthService, FusionAuthService>();
         services.AddScoped<IUserService, FusionAuthService>();
+
+        services.AddScoped<IUserNotificationService, ExampleNotificationService>();
 
         return services;
     }
