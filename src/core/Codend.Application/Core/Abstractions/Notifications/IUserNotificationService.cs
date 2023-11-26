@@ -16,6 +16,7 @@ public interface IUserNotificationService
     /// Sends notification to given <paramref name="user"/>.
     /// </summary>
     /// <param name="user">User data.</param>
+    /// <param name="message">Message which will be send to the user.</param>
     /// <returns></returns>
-    Task SendNotification(IUser user);
+    Task SendNotification(IUser user, object message);
 }
