@@ -220,7 +220,7 @@ public class ProjectController : ApiController
     /// 404 - when project was not found.
     /// </returns>
     [HttpGet("{projectId:guid}/members")]
-    [ProducesResponseType(typeof(IEnumerable<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<UserDetails>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> GetMembers(
