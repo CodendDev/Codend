@@ -18,12 +18,12 @@ public sealed record GetMembersQuery
 (
     ProjectId ProjectId,
     string? Search = null
-) : IQuery<IEnumerable<UserResponse>>, ITextSearchQuery;
+) : IQuery<IEnumerable<UserDetails>>, ITextSearchQuery;
 
 /// <summary>
 /// <see cref="GetMembersQueryHandler"/> Handler.
 /// </summary>
-public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, IEnumerable<UserResponse>>
+public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, IEnumerable<UserDetails>>
 {
     private readonly IQueryableSets _queryableSets;
     private readonly IUserService _userService;
@@ -40,7 +40,7 @@ public class GetMembersQueryHandler : IQueryHandler<GetMembersQuery, IEnumerable
     }
 
     /// <inheritdoc />
-    public async Task<Result<IEnumerable<UserResponse>>> Handle(GetMembersQuery query,
+    public async Task<Result<IEnumerable<UserDetails>>> Handle(GetMembersQuery query,
         CancellationToken cancellationToken)
     {
         var usersIds = await _queryableSets.Queryable<ProjectMember>()
