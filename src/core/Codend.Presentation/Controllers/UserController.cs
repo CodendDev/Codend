@@ -13,7 +13,7 @@ namespace Codend.Presentation.Controllers;
 /// <summary>
 /// Controller containing endpoints associated with user management.
 /// </summary>
-[Route("user")]
+[Route("api/user")]
 public class UserController : ApiController
 {
     /// <summary>
