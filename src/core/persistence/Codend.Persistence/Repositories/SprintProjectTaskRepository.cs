@@ -1,4 +1,5 @@
 using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using Codend.Shared.Infrastructure.Lexorank;
@@ -33,14 +34,22 @@ public class SprintProjectTaskRepository
         return sprintProjectTasks.ToList();
     }
 
-    public Task<SprintProjectTask?> GetBySprintTaskIdAsync(ISprintTaskId entityId, CancellationToken cancellationToken)
+    public Task<SprintProjectTask?> GetBySprintTaskIdAsync(ISprintTaskId entityId, string sprintTaskType,
+        CancellationToken cancellationToken)
     {
         var sprintTasks = Context.Set<SprintProjectTask>();
-        var sprintProjectTask = entityId switch
+        // ️💀
+        var taskId = entityId.Value.GuidConversion<ProjectTaskId>();
+        var storyId = entityId.Value.GuidConversion<StoryId>();
+        var epicId = entityId.Value.GuidConversion<EpicId>();
+        var sprintProjectTask = sprintTaskType.ToLower() switch
         {
-            ProjectTaskId id => sprintTasks.SingleOrDefaultAsync(task => task.TaskId == id, cancellationToken),
-            StoryId id => sprintTasks.SingleOrDefaultAsync(task => task.SprintId == id, cancellationToken),
-            EpicId id => sprintTasks.SingleOrDefaultAsync(task => task.EpicId == id, cancellationToken),
+            "base" or "bugfix" or "task" => sprintTasks.SingleOrDefaultAsync(
+                task => Equals(task.TaskId, taskId), cancellationToken),
+            "story" => sprintTasks.SingleOrDefaultAsync(
+                task => Equals(task.StoryId, storyId), cancellationToken),
+            "epic" => sprintTasks.SingleOrDefaultAsync(task => Equals(task.EpicId, epicId),
+                cancellationToken),
             _ => throw new ArgumentException("SprintProjectTaskId is not any of supported types")
         };
         return sprintProjectTask;
