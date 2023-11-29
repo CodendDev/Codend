@@ -282,10 +282,13 @@ public class SprintController : ApiController
         await Resolver<MoveSprintTaskCommand>
             .IfRequestNotNull(request)
             .ResolverFor(new MoveSprintTaskCommand(
+                projectId.GuidConversion<ProjectId>(),
                 sprintId.GuidConversion<SprintId>(),
                 request.TaskRequest.MapToSprintTaskId(),
                 request.Prev,
-                request.Next))
+                request.Next,
+                request.StatusId.GuidConversion<ProjectTaskStatusId>(),
+                request.TaskRequest.Type))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 
