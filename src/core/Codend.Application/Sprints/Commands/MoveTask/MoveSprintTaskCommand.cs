@@ -29,12 +29,12 @@ public record MoveSprintTaskCommand(
     string? Next,
     ProjectTaskStatusId? StatusId,
     string Type
-) : ICommand;
+) : ICommand<string>;
 
 /// <summary>
 /// <see cref="MoveSprintTaskCommand"/> handler.
 /// </summary>
-public class MoveSprintTaskCommandHandler : ICommandHandler<MoveSprintTaskCommand>
+public class MoveSprintTaskCommandHandler : ICommandHandler<MoveSprintTaskCommand, string>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISprintProjectTaskRepository _sprintProjectTaskRepository;
@@ -63,7 +63,7 @@ public class MoveSprintTaskCommandHandler : ICommandHandler<MoveSprintTaskComman
     }
 
     /// <inheritdoc />
-    public async Task<Result> Handle(MoveSprintTaskCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(MoveSprintTaskCommand request, CancellationToken cancellationToken)
     {
         var task = await _sprintProjectTaskRepository.GetBySprintTaskIdAsync(request.TaskId, request.Type,
             cancellationToken);
@@ -102,7 +102,7 @@ public class MoveSprintTaskCommandHandler : ICommandHandler<MoveSprintTaskComman
         _sprintProjectTaskRepository.Update(task);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Ok();
+        return Result.Ok(midPosition.Value);
     }
 
     private async Task<Result> EditSprintTaskStatus(MoveSprintTaskCommand request, CancellationToken cancellationToken)
