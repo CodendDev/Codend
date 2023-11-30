@@ -21,12 +21,12 @@ public record MoveProjectTaskStatusCommand(
     ProjectId ProjectId,
     ProjectTaskStatusId StatusId,
     string? Prev,
-    string? Next) : ICommand;
+    string? Next) : ICommand<string>;
 
 /// <summary>
 /// <see cref="MoveProjectTaskStatusCommand"/> handler.
 /// </summary>
-public class MoveProjectTaskStatusCommandHandler : ICommandHandler<MoveProjectTaskStatusCommand>
+public class MoveProjectTaskStatusCommandHandler : ICommandHandler<MoveProjectTaskStatusCommand, string>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectTaskStatusRepository _statusRepository;
@@ -43,7 +43,7 @@ public class MoveProjectTaskStatusCommandHandler : ICommandHandler<MoveProjectTa
     }
 
     /// <inheritdoc />
-    public async Task<Result> Handle(MoveProjectTaskStatusCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(MoveProjectTaskStatusCommand request, CancellationToken cancellationToken)
     {
         var status = await _statusRepository.GetByIdAsync(request.StatusId, cancellationToken);
 
@@ -65,6 +65,6 @@ public class MoveProjectTaskStatusCommandHandler : ICommandHandler<MoveProjectTa
         _statusRepository.Update(status);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Ok();
+        return Result.Ok(midPosition.Value);
     }
 }
