@@ -18,8 +18,8 @@ public class AddMemberCommandValidator : AbstractValidator<AddMemberCommand>
             .NotEmpty()
             .WithError(new ValidationErrors.Common.PropertyNullOrEmpty(nameof(AddMemberCommand.ProjectId)));
 
-        RuleFor(x => x.Userid)
-            .NotEmpty()
-            .WithError(new ValidationErrors.Common.PropertyNullOrEmpty(nameof(AddMemberCommand.Userid)));
+        RuleFor(x => x.Email)
+            .EmailAddress()
+            .WithError(new ValidationErrors.EmailAddress.NotValid());
     }
 }
