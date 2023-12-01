@@ -20,6 +20,16 @@ public class ProjectMemberRepository : GenericRepository<ProjectMemberId, Guid, 
                 cancellationToken);
     }
 
+    public async Task<ICollection<ProjectMember>> GetByMembersIdAsync(UserId memberId,
+        CancellationToken cancellationToken)
+    {
+        return await Context.Set<ProjectMember>()
+            .Where(projectMember =>
+                projectMember.MemberId == memberId
+            )
+            .ToListAsync(cancellationToken);
+    }
+
     public Task<bool> IsProjectMember(UserId memberId, ProjectId projectId, CancellationToken cancellationToken)
     {
         var isMember = Context.Set<ProjectMember>()
