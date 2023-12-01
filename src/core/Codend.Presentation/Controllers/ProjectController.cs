@@ -167,23 +167,23 @@ public class ProjectController : ApiController
     /// Adds member with given <paramref name="userId"/> to project with given <paramref name="projectId"/>.
     /// </summary>
     /// <param name="projectId">The id of the project to which user will be added as member.</param>
-    /// <param name="userId">The id of the user which will be added as member.</param>
+    /// <param name="email">The email of the site user.</param>
     /// <returns>
     /// HTTP response with status code:
     /// 204 - on success
     /// 400 - on failure
     /// 404 - when user or project was not found
     /// </returns>
-    [HttpPost("{projectId:guid}/members/{userId:guid}")]
+    [HttpPost("{projectId:guid}/members")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> AddMember(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid userId) =>
+        [FromQuery] string email) =>
         await Resolver<AddMemberCommand>
-            .For(new AddMemberCommand(projectId.GuidConversion<ProjectId>(), userId.GuidConversion<UserId>()))
+            .For(new AddMemberCommand(projectId.GuidConversion<ProjectId>(), email))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 

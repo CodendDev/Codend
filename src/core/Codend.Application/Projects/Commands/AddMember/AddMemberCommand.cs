@@ -1,5 +1,7 @@
 ﻿using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Application.Core.Abstractions.Services;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentResults;
@@ -13,11 +15,11 @@ namespace Codend.Application.Projects.Commands.AddMember;
 /// Command to add member to a project.
 /// </summary>
 /// <param name="ProjectId">Project id.</param>
-/// <param name="Userid">User id which will be added as member.</param>
+/// <param name="Email">User email which will be added as member if user exists.</param>
 public sealed record AddMemberCommand
 (
     ProjectId ProjectId,
-    UserId Userid
+    string Email
 ) : ICommand;
 
 /// <summary>
@@ -28,6 +30,7 @@ public class AddMemberCommandHandler : ICommandHandler<AddMemberCommand>
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
+    private readonly IUserService _userService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AddMemberCommandHandler"/> class.
@@ -35,11 +38,14 @@ public class AddMemberCommandHandler : ICommandHandler<AddMemberCommand>
     public AddMemberCommandHandler(
         IUnitOfWork unitOfWork,
         IProjectRepository projectRepository,
-        IProjectMemberRepository projectMemberRepository)
+        IProjectMemberRepository projectMemberRepository,
+        IUserService userService
+    )
     {
         _unitOfWork = unitOfWork;
         _projectRepository = projectRepository;
         _projectMemberRepository = projectMemberRepository;
+        _userService = userService;
     }
 
     /// <inheritdoc />
@@ -56,15 +62,29 @@ public class AddMemberCommandHandler : ICommandHandler<AddMemberCommand>
             return Result.Fail(new ProjectHasMaximumNumberOfMembers());
         }
 
-        if (await _projectMemberRepository.IsProjectMember(request.Userid, request.ProjectId, cancellationToken))
+        var user = await _userService.GetUserByEmailAsync(request.Email);
+        if (user is null)
+        {
+            return Result.Ok();
+        }
+
+        if (
+            await _projectMemberRepository
+                .IsProjectMember(
+                    user.Id.GuidConversion<UserId>(),
+                    request.ProjectId,
+                    cancellationToken
+                )
+        )
         {
             return Result.Fail(new UserIsProjectMemberAlready());
         }
 
-        project.AddUserToProject(request.Userid);
+        var userId = user.Id.GuidConversion<UserId>();
+        project.AddUserToProject(userId);
         _projectRepository.Update(project);
 
-        var result = ProjectMember.Create(request.ProjectId, request.Userid);
+        var result = ProjectMember.Create(request.ProjectId, userId);
         if (result.IsFailed)
         {
             return result.ToResult();
