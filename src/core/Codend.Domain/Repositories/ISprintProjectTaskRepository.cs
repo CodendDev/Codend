@@ -11,7 +11,8 @@ public interface ISprintProjectTaskRepository
         IEnumerable<ISprintTaskId> taskIds
     );
 
-    public Task<SprintProjectTask?> GetBySprintTaskIdAsync(ISprintTaskId entityId, CancellationToken cancellationToken);
+    public Task<SprintProjectTask?> GetBySprintTaskIdAsync(ISprintTaskId entityId, string sprintTaskType,
+        CancellationToken cancellationToken);
 
     Task AddRangeAsync(IEnumerable<SprintProjectTask> sprintProjectTasks, CancellationToken cancellationToken);
 
