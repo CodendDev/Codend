@@ -1,4 +1,5 @@
 ﻿using Codend.Application.Users.Commands.DisableNotifications;
+using Codend.Application.Users.Commands.EnableNotifications;
 using Codend.Application.Users.Commands.UpdateUser;
 using Codend.Application.Users.Queries.GetUserDetails;
 using Codend.Contracts.Requests.User;
@@ -87,6 +88,30 @@ public class UserController : ApiController
     public async Task<IActionResult> DisableProjectNotifications() =>
         await Resolver<DisableUserNotificationsCommand>
             .For(new DisableUserNotificationsCommand())
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Enables the project notifications for the current user.
+    /// </summary>
+    /// <remarks>
+    /// Makes a request to enable the project notifications tied to the user. Once a user 
+    /// has enabled notifications, they will start receiving all kinds of updates related to any project.
+    /// </remarks>
+    /// <remarks>
+    /// It doesn't take any parameters and it directly depends on the user's 
+    /// authentication status, taking the user from the currently active session.
+    /// </remarks>
+    /// <returns>
+    /// Returns a No Content HTTP response once the operation is successful or a Not Found HTTP response 
+    /// if the user was not found or not authenticated.
+    /// </returns>
+    [HttpPost("notifications/enable")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> EnableProjectNotifications() =>
+        await Resolver<EnableUserNotificationsCommand>
+            .For(new EnableUserNotificationsCommand())
             .Execute(query => Mediator.Send(query))
             .ResolveResponse();
 }
