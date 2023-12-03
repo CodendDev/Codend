@@ -24,7 +24,6 @@ public sealed record GetProjectByIdQuery
 /// </summary>
 public class GetProjectByIdQueryHandler : IQueryHandler<GetProjectByIdQuery, ProjectResponse>
 {
-    private readonly IProjectRepository _projectRepository;
     private readonly IHttpContextProvider _contextProvider;
     private readonly IQueryableSets _sets;
 
@@ -32,12 +31,10 @@ public class GetProjectByIdQueryHandler : IQueryHandler<GetProjectByIdQuery, Pro
     /// Initializes a new instance of the <see cref="GetProjectByIdQueryHandler"/> class.
     /// </summary>
     public GetProjectByIdQueryHandler(
-        IProjectRepository projectRepository,
         IQueryableSets sets,
         IHttpContextProvider contextProvider
     )
     {
-        _projectRepository = projectRepository;
         _sets = sets;
         _contextProvider = contextProvider;
     }
@@ -60,7 +57,7 @@ public class GetProjectByIdQueryHandler : IQueryHandler<GetProjectByIdQuery, Pro
                 project => project.Id,
                 member => member.ProjectId,
                 (project, member) =>
-                    new { project, member.IsFavourite }
+                    new { project, member.IsFavourite, member.NotificationEnabled }
             )
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -75,7 +72,8 @@ public class GetProjectByIdQueryHandler : IQueryHandler<GetProjectByIdQuery, Pro
                 project.project.Name.Value,
                 project.project.Description.Value,
                 project.project.OwnerId.Value,
-                project.IsFavourite
+                project.IsFavourite,
+                project.NotificationEnabled
             )
         );
     }

@@ -13,5 +13,6 @@ public sealed record ProjectResponse(
     string Name,
     string? Description,
     Guid OwnerId,
-    bool? IsFavourite
+    bool? IsFavourite,
+    bool Notifications
 );
