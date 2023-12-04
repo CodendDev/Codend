@@ -18,6 +18,7 @@ public class ProjectMember : Entity<ProjectMemberId>
     public ProjectId ProjectId { get; private set; }
     public UserId MemberId { get; private set; }
     public bool IsFavourite { get; private set; }
+    public bool NotificationEnabled { get; private set; }
 
     public static Result<ProjectMember> Create(ProjectId projectId, UserId memberId)
     {
@@ -25,7 +26,8 @@ public class ProjectMember : Entity<ProjectMemberId>
         {
             ProjectId = projectId,
             MemberId = memberId,
-            IsFavourite = false
+            IsFavourite = false,
+            NotificationEnabled = true
         };
 
         return Result.Ok(projectMember);
@@ -40,6 +42,18 @@ public class ProjectMember : Entity<ProjectMemberId>
 
         IsFavourite = isFavourite;
 
+        return Result.Ok(this);
+    }
+
+    public Result<ProjectMember> EnableNotifications()
+    {
+        NotificationEnabled = true;
+        return Result.Ok(this);
+    }
+
+    public Result<ProjectMember> DisableNotifications()
+    {
+        NotificationEnabled = false;
         return Result.Ok(this);
     }
 }

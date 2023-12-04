@@ -68,7 +68,8 @@ public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList
                     project.Name,
                     project.Description,
                     project.OwnerId,
-                    projectMember.IsFavourite
+                    projectMember.IsFavourite,
+                    projectMember.NotificationEnabled
                 }
             );
         var searchedProjects = query.Search is null
@@ -82,7 +83,15 @@ public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList
             .ToListAsync(cancellationToken);
 
         var projectsResponse = projects.Select(x =>
-            new ProjectResponse(x.Id.Value, x.Name.Value, x.Description.Value, x.OwnerId.Value, x.IsFavourite));
+            new ProjectResponse(
+                x.Id.Value,
+                x.Name.Value,
+                x.Description.Value,
+                x.OwnerId.Value,
+                x.IsFavourite,
+                x.NotificationEnabled
+            )
+        );
 
         var totalCount = await projectsResponseQuery.CountAsync(cancellationToken);
 

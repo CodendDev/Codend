@@ -1,6 +1,8 @@
 using Codend.Application.Projects.Commands.AddMember;
 using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
+using Codend.Application.Projects.Commands.DisableNotifications;
+using Codend.Application.Projects.Commands.EnableNotifications;
 using Codend.Application.Projects.Commands.RemoveMember;
 using Codend.Application.Projects.Commands.UpdateIsFavouriteFlag;
 using Codend.Application.Projects.Commands.UpdateProject;
@@ -164,7 +166,7 @@ public class ProjectController : ApiController
             .ResolveResponse();
 
     /// <summary>
-    /// Adds member with given <paramref name="userId"/> to project with given <paramref name="projectId"/>.
+    /// Adds member with given <paramref name="email"/> to project with given <paramref name="projectId"/>.
     /// </summary>
     /// <param name="projectId">The id of the project to which user will be added as member.</param>
     /// <param name="email">The email of the site user.</param>
@@ -307,6 +309,48 @@ public class ProjectController : ApiController
             .ResolverFor(new UpdateProjectIsFavouriteFlagCommand(
                 projectId.GuidConversion<ProjectId>(),
                 request.IsFavourite))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Disables the notifications for a specific project for the current user.
+    /// </summary>
+    /// <param name="projectId">The id of the project for which notifications will be disabled.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 204 - on success.
+    /// 400 - on failure.
+    /// 404 - when the project was not found.
+    /// </returns>
+    [HttpPost("{projectId:guid}/notifications/disable")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
+    public async Task<IActionResult> DisableProjectNotifications([FromRoute] Guid projectId) =>
+        await Resolver<DisableUserNotificationsCommand>
+            .For(new DisableUserNotificationsCommand(projectId.GuidConversion<ProjectId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Enables the notifications for a specific project for the current user.
+    /// </summary>
+    /// <param name="projectId">The id of the project for which notifications will be enabled.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 204 - on success.
+    /// 400 - on failure.
+    /// 404 - when the project was not found.
+    /// </returns>
+    [HttpPost("{projectId:guid}/notifications/enable")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
+    public async Task<IActionResult> EnableProjectNotifications([FromRoute] Guid projectId) =>
+        await Resolver<EnableUserNotificationsCommand>
+            .For(new EnableUserNotificationsCommand(projectId.GuidConversion<ProjectId>()))
             .Execute(query => Mediator.Send(query))
             .ResolveResponse();
 }
