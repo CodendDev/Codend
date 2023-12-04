@@ -1,7 +1,6 @@
-using Codend.Application.Core.Errors;
 using Codend.Application.Extensions;
-using Codend.Application.Projects.Commands.RemoveMember;
 using FluentValidation;
+using static Codend.Application.Core.Errors.ValidationErrors.Common;
 
 namespace Codend.Application.Projects.Commands.EnableNotifications;
 
@@ -17,6 +16,6 @@ public class EnableUserNotificationsCommandValidator : AbstractValidator<EnableU
     {
         RuleFor(x => x.ProjectId)
             .NotEmpty()
-            .WithError(new ValidationErrors.Common.PropertyNullOrEmpty(nameof(RemoveMemberCommand.ProjectId)));
+            .WithError(new PropertyNullOrEmpty(nameof(EnableUserNotificationsCommand.ProjectId)));
     }
 }
