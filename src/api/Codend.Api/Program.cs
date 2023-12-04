@@ -42,7 +42,7 @@ builder.Services.AddHttpLogging(logging =>
 builder.Services
     .AddContracts()
     .AddApplication()
-    .AddInfrastructure(builder.Configuration)
+    .AddInfrastructure()
     .AddDatabase(builder.Configuration)
     .AddPresentation();
 
