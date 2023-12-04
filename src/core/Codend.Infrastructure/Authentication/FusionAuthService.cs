@@ -9,6 +9,7 @@ using io.fusionauth;
 using io.fusionauth.domain;
 using io.fusionauth.domain.api;
 using io.fusionauth.domain.api.user;
+using io.fusionauth.domain.search;
 using Microsoft.Extensions.Options;
 
 namespace Codend.Infrastructure.Authentication;
@@ -144,6 +145,33 @@ public sealed class FusionAuthService : IAuthService, IUserService
 
         var user = response.successResponse.user;
         return new UserDetails(userId.Value, user.firstName, user.lastName, user.email, user.imageUrl);
+    }
+
+    public async Task<UserDetails?> GetUserByEmailAsync(string email)
+    {
+        var query = new SearchRequest
+        {
+            search = new UserSearchCriteria
+            {
+                queryString = email
+            }
+        };
+        var response = await _fusionAuthClient.SearchUsersByQueryAsync(query);
+
+        if (!response.WasSuccessful())
+        {
+            throw new AuthenticationServiceException(response.errorResponse.ToString());
+        }
+
+        if (response.successResponse.total != 1)
+        {
+            return null;
+        }
+
+        var user = response.successResponse.users[0];
+        return user.id is null
+            ? null
+            : new UserDetails(user.id.Value, user.firstName, user.lastName, user.email, user.imageUrl);
     }
 
     /// <inheritdoc />

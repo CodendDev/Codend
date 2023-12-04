@@ -153,15 +153,15 @@ public class ProjectTaskStatusController : ApiController
     /// </remarks>
     /// <returns>
     /// HTTP response with status code:
-    /// - 204 on success
+    /// - 200 on success with new position string.
     /// - 400 on failure
     /// - 404 on failure
     /// </returns>
     [HttpPost("{statusId:guid}/move")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> MoveTask(
+    public async Task<IActionResult> MoveStatus(
         [FromRoute] Guid projectId,
         [FromRoute] Guid statusId,
         [FromBody] MoveProjectTaskStatusRequest request) =>

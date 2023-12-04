@@ -25,6 +25,13 @@ public interface IUserService
     public Task<UserDetails> GetUserByIdAsync(UserId userId);
 
     /// <summary>
+    /// Retrieves details of user with given email.
+    /// </summary>
+    /// <param name="email">Email og the user whose details will be returned.</param>
+    /// <returns>User details as <see cref="UserDetails"/></returns>
+    public Task<UserDetails?> GetUserByEmailAsync(string email);
+
+    /// <summary>
     /// Updates user data.
     /// </summary>
     /// <param name="userId">Id of the user which will be updated.</param>

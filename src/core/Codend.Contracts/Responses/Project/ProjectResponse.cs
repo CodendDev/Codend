@@ -8,10 +8,12 @@ namespace Codend.Contracts.Responses.Project;
 /// <param name="Description">Description of the project.</param>
 /// <param name="OwnerId">Id of the project owner.</param>
 /// <param name="IsFavourite">Is the project user's favourite.</param>
+/// <param name="Notifications">User has notifications enabled.</param>
 public sealed record ProjectResponse(
     Guid Id,
     string Name,
     string? Description,
     Guid OwnerId,
-    bool? IsFavourite
+    bool? IsFavourite,
+    bool Notifications
 );

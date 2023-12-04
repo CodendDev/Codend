@@ -267,12 +267,12 @@ public class SprintController : ApiController
     /// </remarks>
     /// <returns>
     /// HTTP response with status code:
-    /// - 204 on success
+    /// - 200 on success with mid position
     /// - 400 on failure
     /// - 404 on failure
     /// </returns>
     [HttpPost("{sprintId:guid}/tasks/move")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> MoveTask(
@@ -282,10 +282,13 @@ public class SprintController : ApiController
         await Resolver<MoveSprintTaskCommand>
             .IfRequestNotNull(request)
             .ResolverFor(new MoveSprintTaskCommand(
+                projectId.GuidConversion<ProjectId>(),
                 sprintId.GuidConversion<SprintId>(),
                 request.TaskRequest.MapToSprintTaskId(),
                 request.Prev,
-                request.Next))
+                request.Next,
+                request.StatusId.GuidConversion<ProjectTaskStatusId>(),
+                request.TaskRequest.Type))
             .Execute(command => Mediator.Send(command))
             .ResolveResponse();
 

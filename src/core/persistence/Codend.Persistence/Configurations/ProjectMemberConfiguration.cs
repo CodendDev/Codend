@@ -1,5 +1,4 @@
 ﻿using Codend.Domain.Entities;
-using Codend.Domain.ValueObjects;
 using Codend.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -22,5 +21,9 @@ internal sealed class ProjectMemberConfiguration : IEntityTypeConfiguration<Proj
             .HasConversion(id => id.Value, value => new ProjectId(value));
         builder
             .HasUserIdProperty(projectMember => projectMember.MemberId);
+
+        builder
+            .Property(member => member.NotificationEnabled)
+            .IsRequired();
     }
 }
