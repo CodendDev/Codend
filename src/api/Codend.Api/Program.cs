@@ -6,6 +6,7 @@ using Codend.Application;
 using Codend.Contracts;
 using Codend.Database;
 using Codend.Infrastructure;
+using Codend.Notifications.Email;
 using Codend.Presentation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
@@ -44,6 +45,7 @@ builder.Services
     .AddApplication()
     .AddInfrastructure()
     .AddDatabase(builder.Configuration)
+    .AddUserEmailNotifications()
     .AddPresentation();
 
 var app = builder.Build();
