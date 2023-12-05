@@ -1,6 +1,8 @@
 using Codend.Application.Core;
+using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
@@ -29,6 +31,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectMemberRepository _memberRepository;
     private readonly IStoryRepository _storyRepository;
+    private readonly IHttpContextProvider _httpContext;
 
     /// <summary>
     /// Constructs implementation of <see cref="UpdateProjectTaskCommandAbstractHandler{TCommand,TProjectTask}"/> with
@@ -38,16 +41,20 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     /// <param name="unitOfWork">Unit of work.</param>
     /// <param name="memberRepository">Repository for <see cref="ProjectMember"/>.</param>
     /// <param name="storyRepository">Repository for <see cref="Story"/></param>
+    /// <param name="httpContext">Http context.</param>
     protected UpdateProjectTaskCommandAbstractHandler(
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
-        IStoryRepository storyRepository)
+        IStoryRepository storyRepository,
+        IHttpContextProvider httpContext
+    )
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
         _memberRepository = memberRepository;
         _storyRepository = storyRepository;
+        _httpContext = httpContext;
     }
 
     /// <summary>
@@ -58,6 +65,15 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     /// <returns><see cref="Result"/>.Ok() or a failure with errors.</returns>
     public async Task<Result> Handle(TCommand request, CancellationToken cancellationToken)
     {
+        // Validate assigner
+        var assignerId = _httpContext.UserId;
+        var assigner = await
+            _memberRepository.GetByProjectAndMemberId(request.ProjectId, assignerId, cancellationToken);
+        if (assigner is null)
+        {
+            return DomainNotFound.Fail<BaseProjectTask>();
+        }
+
         // Validate task id.
         if (await _taskRepository.GetByIdAsync(request.TaskId, cancellationToken) is not TProjectTask task)
         {
@@ -75,12 +91,12 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
         }
 
         // Validate assignee.
-        ProjectMember? member = null;
+        ProjectMember? assignee = null;
         if (request.AssigneeId is { ShouldUpdate: true, Value: not null })
         {
-            member = await
-                _memberRepository.GetByProjectAndMemberId(task.ProjectId, request.AssigneeId.Value, cancellationToken);
-            if (member is null)
+            assignee = await _memberRepository
+                .GetByProjectAndMemberId(request.ProjectId, request.AssigneeId.Value, cancellationToken);
+            if (assignee is null)
             {
                 return Result.Fail(new InvalidAssigneeId());
             }
@@ -96,7 +112,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
             }
         }
 
-        var result = HandleUpdate(task, request, member);
+        var result = HandleUpdate(task, request, assigner, assignee);
         if (result.IsFailed)
         {
             return result;
@@ -114,9 +130,15 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
     /// </summary>
     /// <param name="task">Task which will be updated.</param>
     /// <param name="request">Command request.</param>
-    /// <param name="projectMember"><see cref="ProjectMember"/> of assignee.</param>
+    /// <param name="assigner"><see cref="IUser"/>of the assigner.</param>
+    /// <param name="assignee"><see cref="ProjectMember"/> of assignee.</param>
     /// <returns><see cref="Result"/>.Ok() or a failure with errors.</returns>
-    protected virtual Result HandleUpdate(TProjectTask task, TCommand request, ProjectMember? projectMember)
+    protected virtual Result HandleUpdate(
+        TProjectTask task,
+        TCommand request,
+        ProjectMember assigner,
+        ProjectMember? assignee
+    )
     {
         var result = Result.Merge
         (
@@ -125,7 +147,7 @@ public abstract class UpdateProjectTaskCommandAbstractHandler<TCommand, TProject
             request.EstimatedTime.HandleUpdate(task.EditEstimatedTime),
             request.DueDate.HandleUpdate(task.EditDueDate),
             request.StoryPoints.HandleUpdate(task.EditStoryPoints),
-            request.AssigneeId.HandleUpdate(_ => task.AssignUser(projectMember)),
+            request.AssigneeId.HandleUpdate(_ => task.AssignUser(assigner, assignee)),
             request.StoryId.HandleUpdate(task.EditStory),
             request.StatusId.GetResultFromDelegate(task.EditStatus, Result.Ok),
             request.Priority.GetResultFromDelegate(task.EditPriority, Result.Ok)
