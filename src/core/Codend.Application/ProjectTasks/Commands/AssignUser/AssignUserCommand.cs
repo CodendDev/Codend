@@ -12,10 +12,12 @@ namespace Codend.Application.ProjectTasks.Commands.AssignUser;
 /// <summary>
 /// Assign user to a ProjectTask command.
 /// </summary>
-public sealed record AssignUserCommand(
-        ProjectTaskId ProjectTaskId,
-        UserId AssigneeId)
-    : ICommand;
+public sealed record AssignUserCommand
+(
+    ProjectId ProjectId,
+    ProjectTaskId ProjectTaskId,
+    UserId AssigneeId
+) : ICommand;
 
 /// <summary>
 /// <see cref="AssignUserCommand"/> handler.
@@ -34,7 +36,8 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository projectMemberRepository,
-        IHttpContextProvider contextProvider)
+        IHttpContextProvider contextProvider
+    )
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
@@ -45,6 +48,23 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
     /// <inheritdoc />
     public async Task<Result> Handle(AssignUserCommand request, CancellationToken cancellationToken)
     {
+        // Validate user permission.
+        var userId = _contextProvider.UserId;
+        var assigner = await
+            _projectMemberRepository.GetByProjectAndMemberId(request.ProjectId, userId, cancellationToken);
+        if (assigner is null)
+        {
+            return DomainNotFound.Fail<BaseProjectTask>();
+        }
+
+        // Validate assignee id.
+        var assignee = await
+            _projectMemberRepository.GetByProjectAndMemberId(request.ProjectId, request.AssigneeId, cancellationToken);
+        if (assignee is null)
+        {
+            return Result.Fail(new InvalidAssigneeId());
+        }
+
         // Validate task id.
         var task = await _taskRepository.GetByIdAsync(request.ProjectTaskId, cancellationToken);
         if (task is null)
@@ -52,22 +72,7 @@ public class AssignUserCommandHandler : ICommandHandler<AssignUserCommand>
             return DomainNotFound.Fail<BaseProjectTask>();
         }
 
-        // Validate user permission.
-        var userId = _contextProvider.UserId;
-        if (!await _projectMemberRepository.IsProjectMember(userId, task.ProjectId, cancellationToken))
-        {
-            return DomainNotFound.Fail<BaseProjectTask>();
-        }
-        
-        // Validate assignee id.
-        var member = await
-            _projectMemberRepository.GetByProjectAndMemberId(task.ProjectId, request.AssigneeId, cancellationToken);
-        if (member is null)
-        {
-            return Result.Fail(new InvalidAssigneeId());
-        }
-
-        var result = task.AssignUser(member);
+        var result = task.AssignUser(assigner, assignee);
         if (result.IsFailed)
         {
             return result.ToResult();
