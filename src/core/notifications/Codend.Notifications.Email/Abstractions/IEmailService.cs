@@ -1,6 +1,7 @@
+using Codend.Application.Core.Notifications.Abstractions;
+
 namespace Codend.Notifications.Email.Abstractions;
 
-public interface IEmailService
+public interface IEmailService : IUserNotificationService<EmailNotification>
 {
-    Task SendAsync(EmailNotification message, CancellationToken cancellationToken);
 }

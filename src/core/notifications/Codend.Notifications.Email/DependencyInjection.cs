@@ -1,6 +1,5 @@
 ﻿using Codend.Notifications.Email.Abstractions;
 using Codend.Notifications.Email.Azure;
-using Codend.Notifications.Email.Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Codend.Notifications.Email;
@@ -14,8 +13,6 @@ public static class DependencyInjection
     /// <returns>The same service collection.</returns>
     public static IServiceCollection AddUserEmailNotifications(this IServiceCollection services)
     {
-        services.AddScoped<EmailNotificationsService>();
-
         var assembly = typeof(DependencyInjection).Assembly;
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
 

@@ -26,7 +26,7 @@ internal class AzureEmailService : IEmailService
         _sender = sender.Value ?? throw new AzureEmailSenderConfigurationException();
     }
 
-    public Task SendAsync(EmailNotification message, CancellationToken cancellationToken)
+    public Task SendNotificationAsync(EmailNotification message, CancellationToken cancellationToken)
     {
         return _client.SendAsync(
             WaitUntil.Started,
