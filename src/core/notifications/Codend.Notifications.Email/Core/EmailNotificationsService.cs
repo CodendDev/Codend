@@ -1,13 +1,17 @@
 using Codend.Application.Core.Notifications.Abstractions;
-using Codend.Domain.Core.Abstractions;
+using Codend.Notifications.Email.Abstractions;
 
 namespace Codend.Notifications.Email.Core;
 
 public class EmailNotificationsService : IUserNotificationService<EmailNotification>
 {
-    public Task SendNotification(IUser user, EmailNotification message)
+    private readonly IEmailService _emailService;
+
+    public EmailNotificationsService(IEmailService emailService)
     {
-        // todo
-        throw new NotImplementedException();
+        _emailService = emailService;
     }
+
+    public Task SendNotificationAsync(EmailNotification message, CancellationToken cancellationToken) =>
+        _emailService.SendAsync(message, cancellationToken);
 }
