@@ -1,4 +1,6 @@
-﻿using Codend.Notifications.Email.Core;
+﻿using Codend.Notifications.Email.Abstractions;
+using Codend.Notifications.Email.Azure;
+using Codend.Notifications.Email.Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Codend.Notifications.Email;
@@ -16,6 +18,8 @@ public static class DependencyInjection
 
         var assembly = typeof(DependencyInjection).Assembly;
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
+
+        services.AddSingleton<IEmailService, AzureEmailService>();
 
         return services;
     }
