@@ -1,25 +1,18 @@
 using Codend.Application.Core.Abstractions.Services;
-using Codend.Application.Core.Notifications.Core;
 using Codend.Domain.Core.Events;
 using Codend.Notifications.Email.Abstractions;
-using Codend.Notifications.Email.Core;
+using Codend.Notifications.Email.Notifications.Core;
 
 namespace Codend.Notifications.Email.Notifications;
 
-public class UserAddedToProject
-    : UserNotificationAbstractHandler<UserAddedToProjectEvent, EmailNotificationsService, EmailNotification>
+public class UserAddedToProject : UserEmailNotificationAbstractHandler<UserAddedToProjectEvent>
 {
-    private readonly IUserService _userService;
-
-    public UserAddedToProject(
-        EmailNotificationsService notificationService, IUserService userService) : base(notificationService)
+    public UserAddedToProject(IEmailService notificationService, IUserService userService)
+        : base(notificationService, userService)
     {
-        _userService = userService;
     }
 
-    protected override async Task<EmailNotification> GetMessageAsync(UserAddedToProjectEvent notification)
-    {
-        var user = await _userService.GetUserDetails(notification.Receiver);
-        return new EmailNotification(user.Email, "dodany", "do projektu 💀");
-    }
+    protected override string GetEmailSubject(UserAddedToProjectEvent notification) => "dodany";
+
+    protected override string GetEmailMessage(UserAddedToProjectEvent notification) => "do projektu 💀";
 }
