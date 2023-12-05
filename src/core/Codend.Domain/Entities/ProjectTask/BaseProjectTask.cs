@@ -142,21 +142,28 @@ public class BaseProjectTask :
         return Result.Ok(dueDate);
     }
 
-    /// <summary>
-    /// Changes ProjectTask assignee.
-    /// </summary>
-    /// <param name="assigneeId">New assigneeId.</param>
-    /// <returns>Ok result with UserId object.</returns>
-    public Result<UserId?> AssignUser(ProjectMember? assigneeId)
-    {
-        AssigneeId = assigneeId?.MemberId;
 
-        if (assigneeId is not null)
+    /// <summary>
+    /// Assigns a user as the assignee of a project task.
+    /// </summary>
+    /// <param name="assigner">The user that performs the operation.</param>
+    /// <param name="assignee">The member to be assigned to the task, can be null.</param>
+    /// <returns>
+    /// A <see cref="Result"/> object that encapsulates the result of the operation.
+    /// Contains the UserId of the assignee if successful.
+    /// </returns>
+    public Result<UserId?> AssignUser(ProjectMember assigner, ProjectMember? assignee)
+    {
+        AssigneeId = assignee?.MemberId;
+
+        // Don't raise event if assigner and assignee is same user or assignee is null
+        if (assignee is null || assigner.UserId == assignee.UserId)
         {
-            var evt = new ProjectTaskUserAssignedEvent(assigneeId, Id);
-            Raise(evt);
+            return Result.Ok(AssigneeId);
         }
 
+        var evt = new ProjectTaskUserAssignedEvent(Id, assigner, assignee);
+        Raise(evt);
         return Result.Ok(AssigneeId);
     }
 

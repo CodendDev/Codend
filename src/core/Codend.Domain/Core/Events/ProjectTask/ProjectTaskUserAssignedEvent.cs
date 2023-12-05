@@ -8,6 +8,10 @@ namespace Codend.Domain.Core.Events;
 /// </summary>
 public record ProjectTaskUserAssignedEvent
 (
-    IUser Receiver,
-    ProjectTaskId ProjectTaskId
-) : IUserNotification;
+    ProjectTaskId ProjectTaskId,
+    IUser Assigner,
+    IUser Assignee
+) : IUserNotification
+{
+    public IUser Receiver => Assignee;
+}
