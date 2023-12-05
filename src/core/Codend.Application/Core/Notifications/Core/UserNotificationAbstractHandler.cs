@@ -30,13 +30,13 @@ public abstract class UserNotificationAbstractHandler<TNotificationEvent, TNotif
     }
 
     /// <inheritdoc />
-    public virtual Task Handle(TNotificationEvent notification, CancellationToken cancellationToken) =>
-        _notificationService.SendNotificationAsync(GetMessage(notification), cancellationToken);
+    public virtual async Task Handle(TNotificationEvent notification, CancellationToken cancellationToken) =>
+        await _notificationService.SendNotificationAsync(await GetMessageAsync(notification), cancellationToken);
 
     /// <summary>
     /// Generates notification message.
     /// </summary>
     /// <param name="notification">Notification data.</param>
     /// <returns>Notification message.</returns>
-    protected abstract TNotificationMessage GetMessage(TNotificationEvent notification);
+    protected abstract Task<TNotificationMessage> GetMessageAsync(TNotificationEvent notification);
 }
