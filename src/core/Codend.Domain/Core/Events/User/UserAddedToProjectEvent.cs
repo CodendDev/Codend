@@ -9,5 +9,5 @@ namespace Codend.Domain.Core.Events;
 public record UserAddedToProjectEvent
 (
     ProjectId ProjectId,
-    IUser User
+    IUser Receiver
 ) : IUserNotification;

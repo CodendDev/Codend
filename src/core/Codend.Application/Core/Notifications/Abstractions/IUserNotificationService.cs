@@ -9,10 +9,10 @@ public interface IUserNotificationService<in TMessage>
     where TMessage : INotificationMessage
 {
     /// <summary>
-    /// Sends notification to given <paramref name="user"/>.
+    /// Sends given notification. 
     /// </summary>
-    /// <param name="user">User data.</param>
     /// <param name="message">Message which will be send to the user.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    Task SendNotification(IUser user, TMessage message);
+    Task SendNotificationAsync(TMessage message, CancellationToken cancellationToken);
 }
