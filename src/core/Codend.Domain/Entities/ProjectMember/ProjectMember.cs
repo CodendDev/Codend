@@ -1,3 +1,4 @@
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Core.Primitives;
 using FluentResults;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectMember;
@@ -7,7 +8,7 @@ namespace Codend.Domain.Entities;
 /// <summary>
 /// Project member entity, which describes user's affiliation with the project.
 /// </summary>
-public class ProjectMember : Entity<ProjectMemberId>
+public class ProjectMember : Entity<ProjectMemberId>, IUser
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private ProjectMember() : base(new ProjectMemberId(Guid.NewGuid()))
@@ -56,4 +57,6 @@ public class ProjectMember : Entity<ProjectMemberId>
         NotificationEnabled = false;
         return Result.Ok(this);
     }
+
+    public Guid UserId => MemberId.Value;
 }

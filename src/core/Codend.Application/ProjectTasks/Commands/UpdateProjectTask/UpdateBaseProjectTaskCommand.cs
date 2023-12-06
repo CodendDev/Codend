@@ -1,3 +1,4 @@
+using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.ProjectTasks.Commands.UpdateProjectTask.Abstractions;
@@ -12,6 +13,7 @@ namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 /// </summary>
 public sealed record UpdateBaseProjectTaskCommand
 (
+    ProjectId ProjectId,
     ProjectTaskId TaskId,
     string? Name,
     string? Priority,
@@ -37,11 +39,15 @@ public class UpdateAbstractProjectTaskCommandHandler :
         IProjectTaskRepository taskRepository,
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
-        IStoryRepository storyRepository)
-        : base(taskRepository,
-            unitOfWork,
-            memberRepository,
-            storyRepository)
+        IStoryRepository storyRepository,
+        IHttpContextProvider httpContext
+    ) : base(
+        taskRepository,
+        unitOfWork,
+        memberRepository,
+        storyRepository,
+        httpContext
+    )
     {
     }
 }

@@ -96,6 +96,7 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid assigneeId) =>
         await Resolver<AssignUserCommand>
             .For(new AssignUserCommand(
+                projectId.GuidConversion<ProjectId>(),
                 projectTaskId.GuidConversion<ProjectTaskId>(),
                 assigneeId.GuidConversion<UserId>()
             ))
@@ -261,6 +262,7 @@ public class ProjectTaskController : ApiController
 
         var command = new UpdateBaseProjectTaskCommand
         (
+            projectId.GuidConversion<ProjectId>(),
             projectTaskId.GuidConversion<ProjectTaskId>(),
             request.Name,
             request.Priority,
@@ -411,6 +413,7 @@ public class ProjectTaskController : ApiController
 
         var command = new UpdateBugfixProjectTaskCommand
         (
+            projectId.GuidConversion<ProjectId>(),
             projectTaskId.GuidConversion<ProjectTaskId>(),
             request.Name,
             request.Priority,

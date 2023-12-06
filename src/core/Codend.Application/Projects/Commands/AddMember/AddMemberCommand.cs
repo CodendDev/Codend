@@ -81,15 +81,16 @@ public class AddMemberCommandHandler : ICommandHandler<AddMemberCommand>
         }
 
         var userId = user.Id.GuidConversion<UserId>();
-        project.AddUserToProject(userId);
-        _projectRepository.Update(project);
-
         var result = ProjectMember.Create(request.ProjectId, userId);
         if (result.IsFailed)
         {
             return result.ToResult();
         }
 
+        var member = result.Value;
+        project.AddUserToProject(member);
+
+        _projectRepository.Update(project); 
         _projectMemberRepository.Add(result.Value);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

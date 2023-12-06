@@ -1,5 +1,6 @@
 using Codend.Application.Users.Commands.UpdateUser;
 using Codend.Contracts.Responses;
+using Codend.Domain.Core.Abstractions;
 using Codend.Domain.Entities;
 using FluentResults;
 
@@ -24,6 +25,13 @@ public interface IUserService
     /// <returns>User details as <see cref="UserDetails"/></returns>
     public Task<UserDetails> GetUserByIdAsync(UserId userId);
 
+    /// <summary>
+    /// Retrieves details of user with given id.
+    /// </summary>
+    /// <param name="user">User whose details will be returned.</param>
+    /// <returns>User details as <see cref="UserDetails"/></returns>
+    public Task<UserDetails> GetUserDetails(IUser user);
+    
     /// <summary>
     /// Retrieves details of user with given email.
     /// </summary>
