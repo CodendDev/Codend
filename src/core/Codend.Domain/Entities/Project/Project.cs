@@ -73,9 +73,6 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
 
         Name = result.Value;
 
-        var evt = new ProjectEditedEvent(this);
-        Raise(evt);
-
         return result;
     }
 
@@ -93,9 +90,6 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
         }
 
         Description = result.Value;
-
-        var evt = new ProjectEditedEvent(this);
-        Raise(evt);
 
         return result;
     }
@@ -115,9 +109,6 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
         {
             return result;
         }
-
-        var evt = new ProjectVersionReleasedEvent(result.Value, Id);
-        Raise(evt);
 
         return result;
     }
@@ -158,9 +149,6 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
             return result;
         }
 
-        var evt = new SprintCreatedEvent(result.Value, Id);
-        Raise(evt);
-
         return result;
     }
 
@@ -168,21 +156,18 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
     /// Adds user to project.
     /// </summary>
     /// <param name="userId">User to be added.</param>
-    public void AddUserToProject(UserId userId)
+    public Result AddUserToProject(ProjectMember userId)
     {
-        var evt = new UserAddedToProjectEvent(userId, Id);
+        var evt = new UserAddedToProjectEvent(Id, userId);
         Raise(evt);
+        return Result.Ok();
     }
 
     /// <summary>
     /// Removes user from project.
     /// </summary>
     /// <param name="userId">User to be removed.</param>
-    public void RemoveUserFromProject(UserId userId)
-    {
-        var evt = new UserRemovedFromProjectEvent(userId, Id);
-        Raise(evt);
-    }
+    public Result RemoveUserFromProject(UserId userId) => Result.Ok();
 
     /// <summary>
     /// Creates and adds projectTask status to project

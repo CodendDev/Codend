@@ -46,6 +46,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{C00003
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codend.Shared.Infrastructure", "src\shared\Codend.Shared.Infrastructure\Codend.Shared.Infrastructure.csproj", "{F6586A5B-B26A-4B06-BFA1-CFB35CF25BF0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "notifications", "notifications", "{719C5720-FA5A-4E55-9A45-93977669F9C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codend.Notifications.Email", "src\core\notifications\Codend.Notifications.Email\Codend.Notifications.Email.csproj", "{258EC8AC-7E9C-4BD2-A777-CF6FA017F19B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +72,8 @@ Global
 		{1DAC7ED1-91B5-47AF-91A0-42F070687178} = {5F854B30-5C9E-484E-AD59-6EB15CEE2C79}
 		{C0000305-E9D7-4876-841D-AAD8EC10EEEF} = {D9C5A8BF-6B39-467C-8AE7-413F7C10B044}
 		{F6586A5B-B26A-4B06-BFA1-CFB35CF25BF0} = {C0000305-E9D7-4876-841D-AAD8EC10EEEF}
+		{719C5720-FA5A-4E55-9A45-93977669F9C0} = {5F854B30-5C9E-484E-AD59-6EB15CEE2C79}
+		{258EC8AC-7E9C-4BD2-A777-CF6FA017F19B} = {719C5720-FA5A-4E55-9A45-93977669F9C0}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E79B0EEC-5CA0-4B8D-8E88-580F62C1AF14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -118,5 +124,9 @@ Global
 		{F6586A5B-B26A-4B06-BFA1-CFB35CF25BF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6586A5B-B26A-4B06-BFA1-CFB35CF25BF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6586A5B-B26A-4B06-BFA1-CFB35CF25BF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{258EC8AC-7E9C-4BD2-A777-CF6FA017F19B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{258EC8AC-7E9C-4BD2-A777-CF6FA017F19B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{258EC8AC-7E9C-4BD2-A777-CF6FA017F19B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{258EC8AC-7E9C-4BD2-A777-CF6FA017F19B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

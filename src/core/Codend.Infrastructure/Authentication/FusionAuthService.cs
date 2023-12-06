@@ -3,6 +3,8 @@ using Codend.Application.Core.Abstractions.Services;
 using Codend.Application.Exceptions;
 using Codend.Application.Users.Commands.UpdateUser;
 using Codend.Contracts.Responses;
+using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using FluentResults;
 using io.fusionauth;
@@ -146,6 +148,9 @@ public sealed class FusionAuthService : IAuthService, IUserService
         var user = response.successResponse.user;
         return new UserDetails(userId.Value, user.firstName, user.lastName, user.email, user.imageUrl);
     }
+
+    public Task<UserDetails> GetUserDetails(IUser user)
+        => GetUserByIdAsync(user.UserId.GuidConversion<UserId>());
 
     public async Task<UserDetails?> GetUserByEmailAsync(string email)
     {

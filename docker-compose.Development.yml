@@ -34,7 +34,6 @@ services:
       FUSIONAUTH_APP_KICKSTART_FILE: ${FUSIONAUTH_APP_KICKSTART_FILE}
     networks:
       - codend_database
-    restart: unless-stopped
     ports:
       - "9011:9011"
     volumes:
