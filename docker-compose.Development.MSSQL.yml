@@ -2,25 +2,41 @@ version: '3.8'
 
 services:
 
+  mssql:
+    container_name: codend_mssql
+    image: mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: ${MSSQL_PASSWORD}
+      MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+
   postgres:
     container_name: codend_postgres
-    image: postgres:latest
+    image: postgres:16.1
     environment:
       PGDATA: /var/lib/postgresql/data/
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - codend_database
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-        
+  
   fusionauth:
     container_name: codend_fusionauth
-    image: fusionauth/fusionauth-app:latest
+    image: fusionauth/fusionauth-app:1.48.3
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       DATABASE_URL: jdbc:postgresql://postgres:5432/fusionauth
       DATABASE_ROOT_USERNAME: ${POSTGRES_USER}
