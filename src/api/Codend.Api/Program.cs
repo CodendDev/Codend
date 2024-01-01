@@ -53,7 +53,8 @@ var app = builder.Build();
 app.UseCustomExceptionHandler();
 
 var buildDate = builder.Configuration["BUILD_DATE"];
-if (app.Environment.IsDevelopment() || string.IsNullOrEmpty(buildDate))
+var swagger = builder.Configuration.GetValue<bool>("Swagger");
+if (app.Environment.IsDevelopment() || swagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
