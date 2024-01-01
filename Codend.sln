@@ -36,10 +36,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{643F16
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
 		.env = .env
-		docker-compose.Development.yml = docker-compose.Development.yml
 		docker-compose.yml = docker-compose.yml
 		nginx\nginx.conf = nginx\nginx.conf
 		kickstart\kickstart.json = kickstart\kickstart.json
+		docker-compose.Development.PSQL.yml = docker-compose.Development.PSQL.yml
+		docker-compose.Development.MSSQL.yml = docker-compose.Development.MSSQL.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{C0000305-E9D7-4876-841D-AAD8EC10EEEF}"

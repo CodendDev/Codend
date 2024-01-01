@@ -45,14 +45,16 @@ builder.Services
     .AddApplication()
     .AddInfrastructure()
     .AddDatabase(builder.Configuration)
-    .AddUserEmailNotifications()
+    .AddUserEmailNotifications(builder.Configuration)
     .AddPresentation();
 
 var app = builder.Build();
 
 app.UseCustomExceptionHandler();
 
-if (app.Environment.IsDevelopment())
+var buildDate = builder.Configuration["BUILD_DATE"];
+var swagger = builder.Configuration.GetValue<bool>("Swagger");
+if (app.Environment.IsDevelopment() || swagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -67,9 +69,8 @@ app.MapControllers();
 
 app.MigrateDatabase();
 
-var buildDate = builder.Configuration["BUILD_DATE"];
 var deploymentDate = DateTime.UtcNow.ToString("R");
-var helloString = $"Deployment date: {deploymentDate}" + (buildDate is not null ? $"\nBuild date: {buildDate}" : "");
+var helloString = $"Deployment date: {deploymentDate}" + (!string.IsNullOrEmpty(buildDate)  ? $"\nBuild date: {buildDate}" : "");
 app.MapGet("", () => helloString);
 
 app.Run();
