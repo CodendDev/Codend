@@ -45,7 +45,7 @@ builder.Services
     .AddApplication()
     .AddInfrastructure()
     .AddDatabase(builder.Configuration)
-    .AddUserEmailNotifications()
+    .AddUserEmailNotifications(builder.Configuration)
     .AddPresentation();
 
 var app = builder.Build();
