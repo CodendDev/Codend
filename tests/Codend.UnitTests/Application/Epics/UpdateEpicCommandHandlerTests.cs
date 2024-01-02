@@ -8,7 +8,7 @@ using Codend.Domain.Repositories;
 using FluentAssertions;
 using Moq;
 
-namespace Codend.UnitTests.Application.CommandHandlers.Epics;
+namespace Codend.UnitTests.Application.Epics;
 
 public class UpdateEpicCommandHandlerTests
 {

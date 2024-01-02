@@ -1,14 +1,13 @@
 ﻿using Bogus;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Epics.Commands.DeleteEpic;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentAssertions;
 using Moq;
 
-namespace Codend.UnitTests.Application.CommandHandlers.Epics;
+namespace Codend.UnitTests.Application.Epics;
 
 public class DeleteEpicCommandHandlerTests
 {

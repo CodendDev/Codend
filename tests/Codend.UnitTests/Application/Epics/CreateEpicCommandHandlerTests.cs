@@ -9,7 +9,7 @@ using FluentAssertions;
 using MediatR;
 using Moq;
 
-namespace Codend.UnitTests.Application.CommandHandlers.Epics;
+namespace Codend.UnitTests.Application.Epics;
 
 public class CreateEpicCommandHandlerTests
 {
