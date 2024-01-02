@@ -19,7 +19,7 @@ public static class SwaggerConfiguration
             options.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Codend - simple project managment app",
+                Title = "Codend - simple project management app",
                 Description = "An ASP.NET Core Web API for managing projects and more.",
             });
 

@@ -6,6 +6,7 @@ using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Repositories;
 using FluentAssertions;
+using MediatR;
 using Moq;
 
 namespace Codend.UnitTests.Application.CommandHandlers.Epics;
@@ -16,6 +17,7 @@ public class CreateEpicCommandHandlerTests
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<IProjectRepository> _projectRepository = new();
     private readonly Mock<IProjectTaskStatusRepository> _statusRepository = new();
+    private readonly Mock<IMediator> _mediator = new();
     private readonly CreateEpicCommandHandler _instance;
 
     public CreateEpicCommandHandlerTests()
@@ -24,7 +26,8 @@ public class CreateEpicCommandHandlerTests
             _epicRepository.Object,
             _unitOfWork.Object,
             _projectRepository.Object,
-            _statusRepository.Object);
+            _statusRepository.Object,
+            _mediator.Object);
     }
 
     [Fact]
@@ -36,7 +39,8 @@ public class CreateEpicCommandHandlerTests
             faker.Random.Word(),
             faker.Lorem.Paragraph(),
             faker.Random.Guid().GuidConversion<ProjectId>(),
-            faker.Random.Guid().GuidConversion<ProjectTaskStatusId>()
+            faker.Random.Guid().GuidConversion<ProjectTaskStatusId>(),
+            null
         );
         var project = Project.Create(faker.Random.Guid().GuidConversion<UserId>(), faker.Random.Word()).Value;
         _projectRepository
@@ -63,6 +67,7 @@ public class CreateEpicCommandHandlerTests
             faker.Random.Word(),
             faker.Lorem.Paragraph(),
             faker.Random.Guid().GuidConversion<ProjectId>(),
+            null,
             null
         );
         var project = Project.Create(faker.Random.Guid().GuidConversion<UserId>(), faker.Random.Word()).Value;
@@ -88,7 +93,8 @@ public class CreateEpicCommandHandlerTests
             faker.Random.Word(),
             faker.Lorem.Paragraph(),
             faker.Random.Guid().GuidConversion<ProjectId>(),
-            faker.Random.Guid().GuidConversion<ProjectTaskStatusId>()
+            faker.Random.Guid().GuidConversion<ProjectTaskStatusId>(),
+            null
         );
         var project = Project.Create(faker.Random.Guid().GuidConversion<UserId>(), faker.Random.Word()).Value;
         project.EditDefaultStatus(faker.Random.Guid().GuidConversion<ProjectTaskStatusId>());
