@@ -30,6 +30,7 @@
         <ProjectReference Include="..\..\core\Codend.Database\Codend.Database.csproj" />
         <ProjectReference Include="..\..\core\Codend.Infrastructure\Codend.Infrastructure.csproj"/>
         <ProjectReference Include="..\..\core\Codend.Presentation\Codend.Presentation.csproj"/>
+        <ProjectReference Include="..\..\core\notifications\Codend.Notifications.Email\Codend.Notifications.Email.csproj"/>
     </ItemGroup>
 
 

@@ -8,7 +8,7 @@ namespace Codend.Domain.Entities;
 /// <summary>
 /// User story domain model for scrum.
 /// </summary>
-public class Story : Entity<StoryId>, ISoftDeletableEntity
+public class Story : Entity<StoryId>, ISoftDeletableEntity, IProjectOwnedEntity, ISprintTask
 {
     [Obsolete("Public for 1 unit test 👍🤑🤓", true)]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -31,7 +31,17 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
         StatusId = statusId;
     }
 
+    #region ISprintTask properties
 
+    public Guid SprintTaskId => Id.Value;
+    public string SprintTaskType => nameof(Story);
+    public string SprintTaskName => Name.Value;
+    public Guid SprintTaskStatusId => StatusId.Value;
+    public string? SprintTaskPriority => null;
+    public Guid? SprintTaskRelatedTaskId => EpicId?.Value;
+
+    #endregion
+    
     #region ISoftDeletableEntity properties
 
     /// <inheritdoc />
@@ -41,7 +51,6 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     public bool Deleted { get; }
 
     #endregion
-
 
     #region Story properties
 
@@ -71,7 +80,6 @@ public class Story : Entity<StoryId>, ISoftDeletableEntity
     public ProjectTaskStatusId StatusId { get; private set; }
 
     #endregion
-
 
     #region Domain methods
 

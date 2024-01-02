@@ -13,6 +13,7 @@ namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 /// </summary>
 public sealed record UpdateBaseProjectTaskCommand
 (
+    ProjectId ProjectId,
     ProjectTaskId TaskId,
     string? Name,
     string? Priority,
@@ -39,12 +40,14 @@ public class UpdateAbstractProjectTaskCommandHandler :
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
         IStoryRepository storyRepository,
-        IUserIdentityProvider identityProvider)
-        : base(taskRepository,
-            unitOfWork,
-            memberRepository,
-            storyRepository,
-            identityProvider)
+        IHttpContextProvider httpContext
+    ) : base(
+        taskRepository,
+        unitOfWork,
+        memberRepository,
+        storyRepository,
+        httpContext
+    )
     {
     }
 }

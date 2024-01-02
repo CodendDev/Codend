@@ -1,11 +1,12 @@
 using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Application.Sprints.Commands.AssignTasks;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Abstractions;
 using Codend.Domain.Repositories;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
+using MediatR;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskErrors;
 using static Codend.Domain.Core.Errors.DomainErrors.ProjectTaskStatus;
 
@@ -33,9 +34,10 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     private readonly IProjectTaskRepository _projectTaskRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IStoryRepository _storyRepository;
     private readonly IProjectTaskStatusRepository _statusRepository;
+    private readonly IMediator _mediator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateProjectTaskCommandAbstractHandler{TCommand,TProjectTask,TProjectTaskProperties}"/> class.
@@ -43,30 +45,26 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
     protected CreateProjectTaskCommandAbstractHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IProjectMemberRepository projectMemberRepository,
         IStoryRepository storyRepository,
-        IProjectTaskStatusRepository statusRepository)
+        IProjectTaskStatusRepository statusRepository,
+        IMediator mediator)
     {
         _projectTaskRepository = projectTaskRepository;
         _unitOfWork = unitOfWork;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _projectMemberRepository = projectMemberRepository;
         _storyRepository = storyRepository;
         _statusRepository = statusRepository;
+        _mediator = mediator;
     }
 
     /// <inheritdoc />
     public async Task<Result<Guid>> Handle(TCommand request, CancellationToken cancellationToken)
     {
-        // Validate current user and it's permissions.
-        var userId = _identityProvider.UserId;
+        var userId = _contextProvider.UserId;
         var projectId = request.TaskProperties.ProjectId;
-        if (!await _projectMemberRepository
-                .IsProjectMember(userId, projectId, cancellationToken))
-        {
-            return DomainNotFound.Fail<Project>();
-        }
 
         var resultProjectTaskStatus = await ValidateStatus(request, cancellationToken);
 
@@ -98,7 +96,12 @@ public class CreateProjectTaskCommandAbstractHandler<TCommand, TProjectTask, TPr
         _projectTaskRepository.Add(task);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Ok(task.Id.Value);
+        // Assign task to sprint if sprint id provided.
+        if (request.SprintId is null) return Result.Ok(task.Id.Value);
+        var assignResult = await _mediator.Send(new SprintAssignTasksCommand(request.SprintId, new[] { task.Id }),
+            cancellationToken);
+
+        return assignResult.IsFailed ? assignResult : Result.Ok(task.Id.Value);
     }
 
     // Validate status id, if null set defaultStatusId as statusId.

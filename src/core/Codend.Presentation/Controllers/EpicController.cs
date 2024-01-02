@@ -5,11 +5,13 @@ using Codend.Application.Epics.Queries.GetEpicById;
 using Codend.Contracts;
 using Codend.Contracts.Requests.Epic;
 using Codend.Contracts.Responses.Epic;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
+using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
+using Codend.Presentation.Infrastructure.Authorization;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +21,7 @@ namespace Codend.Presentation.Controllers;
 /// Controller for <see cref="Epic"/> commands.
 /// </summary>
 [Route("api/projects/{projectId:guid}/epics")]
+[Authorize(ProjectOperations.IsProjectMemberPolicy)]
 public class EpicController : ApiController
 {
     /// <inheritdoc />
@@ -37,7 +40,8 @@ public class EpicController : ApiController
     ///     {
     ///         "name": "Epic name",
     ///         "description": "Epic description",
-    ///         "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///         "sprintId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     ///     }
     /// </remarks>
     /// <returns>
@@ -50,23 +54,18 @@ public class EpicController : ApiController
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(
         [FromRoute] Guid projectId,
-        [FromBody] CreateEpicRequest request)
-    {
-        var command = new CreateEpicCommand(
-            request.Name,
-            request.Description,
-            projectId.GuidConversion<ProjectId>(),
-            request.StatusId.GuidConversion<ProjectTaskStatusId>()
-        );
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        [FromBody] CreateEpicRequest request) =>
+        await Resolver<CreateEpicCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new CreateEpicCommand(
+                request.Name,
+                request.Description,
+                projectId.GuidConversion<ProjectId>(),
+                request.StatusId.GuidConversion<ProjectTaskStatusId>(),
+                request.SprintId.GuidConversion<SprintId>()
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Deletes epic with given <paramref name="epicId"/>.
@@ -83,18 +82,11 @@ public class EpicController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid epicId)
-    {
-        var command = new DeleteEpicCommand(epicId.GuidConversion<EpicId>());
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        return NotFound();
-    }
+        [FromRoute] Guid epicId) =>
+        await Resolver<DeleteEpicCommand>
+            .For(new DeleteEpicCommand(epicId.GuidConversion<EpicId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Updates epic with id <paramref name="epicId"/>.
@@ -124,28 +116,17 @@ public class EpicController : ApiController
     public async Task<IActionResult> Update(
         [FromRoute] Guid projectId,
         [FromRoute] Guid epicId,
-        [FromBody] UpdateEpicRequest request)
-    {
-        var command = new UpdateEpicCommand(
-            epicId.GuidConversion<EpicId>(),
-            request.Name,
-            request.Description,
-            request.StatusId.GuidConversion<ProjectTaskStatusId>()
-        );
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        if (response.HasError<DomainErrors.General.DomainNotFound>())
-        {
-            return NotFound();
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        [FromBody] UpdateEpicRequest request) =>
+        await Resolver<UpdateEpicCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new UpdateEpicCommand(
+                epicId.GuidConversion<EpicId>(),
+                request.Name,
+                request.Description,
+                request.StatusId.GuidConversion<ProjectTaskStatusId>()
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves common information about Epic with given <paramref name="epicId"/>
@@ -162,17 +143,9 @@ public class EpicController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid epicId)
-    {
-        var query = new GetEpicByIdQuery(epicId.GuidConversion<EpicId>());
-
-        var response = await Mediator.Send(query);
-
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return NotFound();
-    }
+        [FromRoute] Guid epicId) =>
+        await Resolver<GetEpicByIdQuery>
+            .For(new GetEpicByIdQuery(epicId.GuidConversion<EpicId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
 }

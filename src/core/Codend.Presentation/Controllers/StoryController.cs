@@ -8,11 +8,13 @@ using Codend.Contracts.Requests.Story;
 using Codend.Contracts.Responses.Story;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
+using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
+using Codend.Presentation.Infrastructure.Authorization;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Presentation.Controllers;
 
@@ -20,6 +22,7 @@ namespace Codend.Presentation.Controllers;
 /// Controller for <see cref="Story"/> commands. 
 /// </summary>
 [Route("api/projects/{projectId:guid}/stories")]
+[Authorize(ProjectOperations.IsProjectMemberPolicy)]
 public class StoryController : ApiController
 {
     /// <inheritdoc />
@@ -39,7 +42,8 @@ public class StoryController : ApiController
     ///         "name": "Story name",
     ///         "description": "Story description",
     ///         "epicId": "bda4a1f5-e135-493c-852c-826e6f9fbcb0",
-    ///         "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///         "statusId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///         "sprintId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ///     }
     /// </remarks>
     /// <returns>
@@ -52,24 +56,19 @@ public class StoryController : ApiController
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(
         [FromRoute] Guid projectId,
-        [FromBody] CreateStoryRequest request)
-    {
-        var command = new CreateStoryCommand(
-            projectId.GuidConversion<ProjectId>(),
-            request.Name,
-            request.Description,
-            request.EpicId.GuidConversion<EpicId>(),
-            request.StatusId.GuidConversion<ProjectTaskStatusId>()
-        );
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        [FromBody] CreateStoryRequest request) =>
+        await Resolver<CreateStoryCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new CreateStoryCommand(
+                projectId.GuidConversion<ProjectId>(),
+                request.Name,
+                request.Description,
+                request.EpicId.GuidConversion<EpicId>(),
+                request.StatusId.GuidConversion<ProjectTaskStatusId>(),
+                request.SprintId.GuidConversion<SprintId>()
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Deletes story with given <paramref name="storyId"/>.
@@ -86,18 +85,11 @@ public class StoryController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid storyId)
-    {
-        var command = new DeleteStoryCommand(storyId.GuidConversion<StoryId>());
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        return NotFound();
-    }
+        [FromRoute] Guid storyId) =>
+        await Resolver<DeleteStoryCommand>
+            .For(new DeleteStoryCommand(storyId.GuidConversion<StoryId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Updates story with id <paramref name="storyId"/>.
@@ -131,29 +123,18 @@ public class StoryController : ApiController
     public async Task<IActionResult> Update(
         [FromRoute] Guid projectId,
         [FromRoute] Guid storyId,
-        [FromBody] UpdateStoryRequest request)
-    {
-        var command = new UpdateStoryCommand(
-            storyId.GuidConversion<StoryId>(),
-            request.Name,
-            request.Description,
-            request.EpicId.HandleNull().Convert(EntityIdExtensions.GuidConversion<EpicId>),
-            request.StatusId.GuidConversion<ProjectTaskStatusId>()
-        );
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        if (response.HasError<DomainNotFound>())
-        {
-            return NotFound();
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        [FromBody] UpdateStoryRequest request) =>
+        await Resolver<UpdateStoryCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new UpdateStoryCommand(
+                storyId.GuidConversion<StoryId>(),
+                request.Name,
+                request.Description,
+                request.EpicId.HandleNull().Convert(EntityIdExtensions.GuidConversion<EpicId>),
+                request.StatusId.GuidConversion<ProjectTaskStatusId>()
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves common information about Story with given <paramref name="storyId"/>
@@ -170,17 +151,9 @@ public class StoryController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid storyId)
-    {
-        var query = new GetStoryByIdQuery(storyId.GuidConversion<StoryId>());
-
-        var response = await Mediator.Send(query);
-
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return NotFound();
-    }
+        [FromRoute] Guid storyId) =>
+        await Resolver<GetStoryByIdQuery>
+            .For(new GetStoryByIdQuery(storyId.GuidConversion<StoryId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
 }

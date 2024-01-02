@@ -1,5 +1,4 @@
 using AutoMapper;
-using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
 using Codend.Contracts.Responses.Epic;
 using Codend.Domain.Entities;
@@ -23,23 +22,17 @@ public sealed record GetEpicByIdQuery(
 public class GetEpicByIdQueryHandler : IQueryHandler<GetEpicByIdQuery, EpicResponse>
 {
     private readonly IEpicRepository _epicRepository;
-    private readonly IProjectMemberRepository _memberRepository;
-    private readonly IUserIdentityProvider _identityProvider;
     private readonly IMapper _mapper;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetEpicByIdQueryHandler"/> class.
     /// </summary>
     public GetEpicByIdQueryHandler(
-        IMapper mapper,
         IEpicRepository epicRepository,
-        IProjectMemberRepository memberRepository,
-        IUserIdentityProvider identityProvider)
+        IMapper mapper)
     {
-        _mapper = mapper;
         _epicRepository = epicRepository;
-        _memberRepository = memberRepository;
-        _identityProvider = identityProvider;
+        _mapper = mapper;
     }
 
     /// <inheritdoc />
@@ -50,12 +43,6 @@ public class GetEpicByIdQueryHandler : IQueryHandler<GetEpicByIdQuery, EpicRespo
         if (epic is null)
         {
             return DomainNotFound.Fail<Epic>();
-        }
-
-        var userId = _identityProvider.UserId;
-        if (await _memberRepository.IsProjectMember(userId, epic.ProjectId, cancellationToken) is false)
-        {
-            return DomainNotFound.Fail<Project>();
         }
 
         var dto = _mapper.Map<EpicResponse>(epic);

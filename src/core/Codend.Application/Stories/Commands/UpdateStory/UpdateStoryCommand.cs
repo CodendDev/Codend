@@ -69,8 +69,8 @@ public class UpdateStoryCommandHandler : ICommandHandler<UpdateStoryCommand>
             return DomainNotFound.Fail<Story>();
         }
 
-        if (request.EpicId.ShouldUpdate &&
-            await _projectRepository.ProjectContainsEpic(story.ProjectId, request.EpicId.Value!) is false)
+        if (request.EpicId is { ShouldUpdate: true, Value: not null } &&
+            await _projectRepository.ProjectContainsEpic(story.ProjectId, request.EpicId.Value!) is false) 
         {
             return Result.Fail(new InvalidEpicId());
         }

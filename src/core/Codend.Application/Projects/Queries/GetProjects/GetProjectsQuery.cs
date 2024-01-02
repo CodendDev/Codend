@@ -1,5 +1,3 @@
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Queries;
@@ -37,20 +35,17 @@ public sealed record GetProjectsQuery(
 /// </summary>
 public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList<ProjectResponse>>
 {
-    private readonly IMapper _mapper;
-    private readonly IUserIdentityProvider _identityProvider;
+    private readonly IHttpContextProvider _contextProvider;
     private readonly IQueryableSets _queryableSets;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetProjectsQueryHandler"/> class.
     /// </summary>
     public GetProjectsQueryHandler(
-        IMapper mapper,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IQueryableSets queryableSets)
     {
-        _mapper = mapper;
-        _identityProvider = identityProvider;
+        _contextProvider = contextProvider;
         _queryableSets = queryableSets;
     }
 
@@ -58,20 +53,49 @@ public class GetProjectsQueryHandler : IQueryHandler<GetProjectsQuery, PagedList
     public async Task<Result<PagedList<ProjectResponse>>> Handle(GetProjectsQuery query,
         CancellationToken cancellationToken)
     {
-        var userId = _identityProvider.UserId;
-        var userProjects = _queryableSets.Queryable<ProjectMember>().GetUserProjectsIds(userId);
-        var projectsQuery = _queryableSets.Queryable<Project>().GetProjectsWithIds(userProjects);
+        var userId = _contextProvider.UserId;
+        var projectsQuery = _queryableSets.Queryable<Project>();
 
-        var projects = await projectsQuery
-            .Search(query.Search)
-            .Sort(query, ProjectSortColumnSelector.SortColumnSelector(query.SortColumn))
+        var projectsResponseQuery = _queryableSets.Queryable<ProjectMember>()
+            .GetProjectsForUser(userId)
+            .Join(
+                projectsQuery,
+                projectMember => projectMember.ProjectId,
+                project => project.Id,
+                (projectMember, project) => new
+                {
+                    project.Id,
+                    project.Name,
+                    project.Description,
+                    project.OwnerId,
+                    projectMember.IsFavourite,
+                    projectMember.NotificationEnabled
+                }
+            );
+        var searchedProjects = query.Search is null
+            ? projectsResponseQuery
+            : projectsResponseQuery
+                .Where(project => project.Name.Value.ToLower().Contains(query.Search.ToLower()));
+
+        var projects = await searchedProjects
+            .OrderByDescending(project => project.IsFavourite)
             .Paginate(query)
-            .ProjectTo<ProjectResponse>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        var totalCount = await projectsQuery.CountAsync(cancellationToken);
+        var projectsResponse = projects.Select(x =>
+            new ProjectResponse(
+                x.Id.Value,
+                x.Name.Value,
+                x.Description.Value,
+                x.OwnerId.Value,
+                x.IsFavourite,
+                x.NotificationEnabled
+            )
+        );
 
-        var result = new PagedList<ProjectResponse>(projects, query.PageIndex, query.PageSize, totalCount);
+        var totalCount = await projectsResponseQuery.CountAsync(cancellationToken);
+
+        var result = new PagedList<ProjectResponse>(projectsResponse, query.PageIndex, query.PageSize, totalCount);
         return Result.Ok(result);
     }
 }

@@ -1,8 +1,12 @@
 using Codend.Application.Projects.Commands.AddMember;
 using Codend.Application.Projects.Commands.CreateProject;
 using Codend.Application.Projects.Commands.DeleteProject;
+using Codend.Application.Projects.Commands.DisableNotifications;
+using Codend.Application.Projects.Commands.EnableNotifications;
 using Codend.Application.Projects.Commands.RemoveMember;
+using Codend.Application.Projects.Commands.UpdateIsFavouriteFlag;
 using Codend.Application.Projects.Commands.UpdateProject;
+using Codend.Application.Projects.Queries.GetBacklog;
 using Codend.Application.Projects.Queries.GetBoard;
 using Codend.Application.Projects.Queries.GetMembers;
 using Codend.Application.Projects.Queries.GetProjectById;
@@ -12,16 +16,18 @@ using Codend.Contracts.Common;
 using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.Project;
 using Codend.Contracts.Responses;
+using Codend.Contracts.Responses.Backlog;
 using Codend.Contracts.Responses.Board;
 using Codend.Contracts.Responses.Project;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
+using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
+using static Codend.Presentation.Infrastructure.Authorization.ProjectOperations;
 
 namespace Codend.Presentation.Controllers;
 
@@ -56,17 +62,12 @@ public class ProjectController : ApiController
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateProjectRequest request)
-    {
-        var command = new CreateProjectCommand(request.Name, request.Description);
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+    public async Task<IActionResult> Create([FromBody] CreateProjectRequest request) =>
+        await Resolver<CreateProjectCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new CreateProjectCommand(request.Name, request.Description))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Deletes Project entity with given <paramref name="projectId"/>.
@@ -78,17 +79,12 @@ public class ProjectController : ApiController
     [HttpDelete("{projectId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete([FromRoute] Guid projectId)
-    {
-        var command = new DeleteProjectCommand(projectId.GuidConversion<ProjectId>());
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        return NotFound();
-    }
+    [Authorize(IsProjectOwnerPolicy)]
+    public async Task<IActionResult> Delete([FromRoute] Guid projectId) =>
+        await Resolver<DeleteProjectCommand>
+            .For(new DeleteProjectCommand(projectId.GuidConversion<ProjectId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Updated the Project entity with given <paramref name="projectId"/>.
@@ -114,29 +110,20 @@ public class ProjectController : ApiController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> Update(
         [FromRoute] Guid projectId,
-        [FromBody] UpdateProjectRequest request)
-    {
-        var command = new UpdateProjectCommand(
-            projectId.GuidConversion<ProjectId>(),
-            request.Name,
-            request.Description.HandleNull(),
-            request.DefaultStatusId.GuidConversion<ProjectTaskStatusId>());
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        if (response.HasError<DomainNotFound>())
-        {
-            return NotFound();
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        [FromBody] UpdateProjectRequest request) =>
+        await Resolver<UpdateProjectCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new UpdateProjectCommand(
+                projectId.GuidConversion<ProjectId>(),
+                request.Name,
+                request.Description.HandleNull(),
+                request.DefaultStatusId.GuidConversion<ProjectTaskStatusId>()
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves common information about Project with given <paramref name="projectId"/>
@@ -148,17 +135,12 @@ public class ProjectController : ApiController
     [HttpGet("{projectId:guid}")]
     [ProducesResponseType(typeof(ProjectResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get([FromRoute] Guid projectId)
-    {
-        var query = new GetProjectByIdQuery(projectId.GuidConversion<ProjectId>());
-        var response = await Mediator.Send(query);
-        if (response.IsFailed)
-        {
-            return NotFound();
-        }
-
-        return Ok(response.Value);
-    }
+    [Authorize(IsProjectMemberPolicy)]
+    public async Task<IActionResult> Get([FromRoute] Guid projectId) =>
+        await Resolver<GetProjectByIdQuery>
+            .For(new GetProjectByIdQuery(projectId.GuidConversion<ProjectId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves all matching projects with their common information.
@@ -170,53 +152,42 @@ public class ProjectController : ApiController
     /// </returns>
     [HttpGet]
     [ProducesResponseType(typeof(PagedList<ProjectResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllForUser([FromQuery] GetProjectsRequest request)
-    {
-        var query = new GetProjectsQuery(
-            request.PageIndex,
-            request.PageSize,
-            request.SortColumn,
-            request.SortOrder,
-            request.Search);
-
-        var response = await Mediator.Send(query);
-
-        return Ok(response.Value);
-    }
+    public async Task<IActionResult> GetAllForUser([FromQuery] GetProjectsRequest request) =>
+        await Resolver<GetProjectsQuery>
+            .IfRequestNotNull(request)
+            .ResolverFor(new GetProjectsQuery(
+                request.PageIndex,
+                request.PageSize,
+                request.SortColumn,
+                request.SortOrder,
+                request.Search
+            ))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
 
     /// <summary>
-    /// Adds member with given <paramref name="userId"/> to project with given <paramref name="projectId"/>.
+    /// Adds member with given <paramref name="email"/> to project with given <paramref name="projectId"/>.
     /// </summary>
     /// <param name="projectId">The id of the project to which user will be added as member.</param>
-    /// <param name="userId">The id of the user which will be added as member.</param>
+    /// <param name="email">The email of the site user.</param>
     /// <returns>
     /// HTTP response with status code:
     /// 204 - on success
     /// 400 - on failure
     /// 404 - when user or project was not found
     /// </returns>
-    [HttpPost("{projectId:guid}/members/{userId:guid}")]
+    [HttpPost("{projectId:guid}/members")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> AddMember(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid userId)
-    {
-        var command = new AddMemberCommand(projectId.GuidConversion<ProjectId>(), userId.GuidConversion<UserId>());
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        if (response.HasError<DomainErrors.ProjectMember.UserIsProjectMemberAlready>())
-        {
-            return BadRequest(response.MapToApiErrorsResponse());
-        }
-
-        return NotFound();
-    }
+        [FromQuery] string email) =>
+        await Resolver<AddMemberCommand>
+            .For(new AddMemberCommand(projectId.GuidConversion<ProjectId>(), email))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Removes member with given <paramref name="userId"/> from project with given <paramref name="projectId"/>.
@@ -231,19 +202,14 @@ public class ProjectController : ApiController
     [HttpDelete("{projectId:guid}/members/{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> RemoveMember(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid userId)
-    {
-        var command = new RemoveMemberCommand(projectId.GuidConversion<ProjectId>(), userId.GuidConversion<UserId>());
-        var response = await Mediator.Send(command);
-        if (response.IsFailed)
-        {
-            return NotFound();
-        }
-
-        return NoContent();
-    }
+        [FromRoute] Guid userId) =>
+        await Resolver<RemoveMemberCommand>
+            .For(new RemoveMemberCommand(projectId.GuidConversion<ProjectId>(), userId.GuidConversion<UserId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves all project members who match given criteria.
@@ -255,47 +221,136 @@ public class ProjectController : ApiController
     /// 200 - on success with users list.
     /// 404 - when project was not found.
     /// </returns>
-    [HttpPost("{projectId:guid}/members")]
-    [ProducesResponseType(typeof(IEnumerable<UserResponse>), StatusCodes.Status200OK)]
+    [HttpGet("{projectId:guid}/members")]
+    [ProducesResponseType(typeof(IEnumerable<UserDetails>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> GetMembers(
         [FromRoute] Guid projectId,
-        [FromQuery] GetMembersRequest request)
-    {
-        var query = new GetMembersQuery(projectId.GuidConversion<ProjectId>(), request.Search);
-        var response = await Mediator.Send(query);
-
-        if (response.HasError<DomainNotFound>())
-        {
-            return NotFound();
-        }
-
-        return Ok(response.Value);
-    }
+        [FromQuery] GetMembersRequest request) =>
+        await Resolver<GetMembersQuery>
+            .IfRequestNotNull(request)
+            .ResolverFor(new GetMembersQuery(projectId.GuidConversion<ProjectId>(), request.Search))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves all project tasks, stories and epics within one object.
     /// </summary>
-    /// <param name="projectId">The id of the project whose elements will be returned.</param>
+    /// <param name="projectId">The id of the project which elements will be returned.</param>
+    /// <param name="sprintId">The id of the sprint which elements will be returned.</param>
+    /// <param name="assigneeId">The id of the user whose elements will be returned</param>
     /// <returns>
     /// HTTP response with status code:
     /// 200 - on success with board response.
     /// 404 - when project was not found.
     /// </returns>
-    [HttpPost("{projectId:guid}/board")]
+    [HttpGet("{projectId:guid}/board/{sprintId:guid}")]
     [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
     public async Task<IActionResult> GetBoard(
-        [FromRoute] Guid projectId)
-    {
-        var query = new GetBoardQuery(projectId.GuidConversion<ProjectId>());
-        var response = await Mediator.Send(query);
+        [FromRoute] Guid projectId,
+        [FromRoute] Guid sprintId,
+        [FromQuery] Guid? assigneeId
+    ) =>
+        await Resolver<GetBoardQuery>
+            .For(
+                new GetBoardQuery(
+                    projectId.GuidConversion<ProjectId>(),
+                    sprintId.GuidConversion<SprintId>(),
+                    assigneeId.GuidConversion<UserId>()
+                )
+            )
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
 
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
+    /// <summary>
+    /// Retrieves all project tasks, stories and epics within one sorted (onCreated criteria) list as compact tasks.
+    /// </summary>
+    /// <param name="projectId">The id of the project whose elements will be returned.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 200 - on success with backlog response.
+    /// 404 - when project was not found.
+    /// </returns>
+    [HttpGet("{projectId:guid}/backlog")]
+    [ProducesResponseType(typeof(BacklogResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
+    public async Task<IActionResult> GetBacklog(
+        [FromRoute] Guid projectId) =>
+        await Resolver<GetBacklogQuery>
+            .For(new GetBacklogQuery(projectId.GuidConversion<ProjectId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
 
-        return NotFound();
-    }
+    /// <summary>
+    /// Updates IsFavourite flag for user for chosen project.
+    /// </summary>
+    /// <param name="projectId">The id of the project which IsFavourite flag will be updated.</param>
+    /// <param name="request">Request containing new IsFavourite flag value.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 204 - on success.
+    /// 400 - on failure.
+    /// 404 - when project was not found.
+    /// </returns>
+    [HttpPut("{projectId:guid}/favourite")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
+    public async Task<IActionResult> UpdateProjectIsFavouriteFlag(
+        [FromRoute] Guid projectId,
+        [FromBody] UpdateProjectIsFavouriteFlagRequest request) =>
+        await Resolver<UpdateProjectIsFavouriteFlagCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new UpdateProjectIsFavouriteFlagCommand(
+                projectId.GuidConversion<ProjectId>(),
+                request.IsFavourite))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Disables the notifications for a specific project for the current user.
+    /// </summary>
+    /// <param name="projectId">The id of the project for which notifications will be disabled.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 204 - on success.
+    /// 400 - on failure.
+    /// 404 - when the project was not found.
+    /// </returns>
+    [HttpPost("{projectId:guid}/notifications/disable")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
+    public async Task<IActionResult> DisableProjectNotifications([FromRoute] Guid projectId) =>
+        await Resolver<DisableUserNotificationsCommand>
+            .For(new DisableUserNotificationsCommand(projectId.GuidConversion<ProjectId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
+
+    /// <summary>
+    /// Enables the notifications for a specific project for the current user.
+    /// </summary>
+    /// <param name="projectId">The id of the project for which notifications will be enabled.</param>
+    /// <returns>
+    /// HTTP response with status code:
+    /// 204 - on success.
+    /// 400 - on failure.
+    /// 404 - when the project was not found.
+    /// </returns>
+    [HttpPost("{projectId:guid}/notifications/enable")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(IsProjectMemberPolicy)]
+    public async Task<IActionResult> EnableProjectNotifications([FromRoute] Guid projectId) =>
+        await Resolver<EnableUserNotificationsCommand>
+            .For(new EnableUserNotificationsCommand(projectId.GuidConversion<ProjectId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
 }

@@ -2,6 +2,7 @@
 using Codend.Application.Authentication.Register;
 using Codend.Contracts;
 using Codend.Contracts.Authentication;
+using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -40,16 +41,13 @@ public class AuthenticationController : ApiController
     [ProducesResponseType(typeof(TokenResponse), 200)]
     [ProducesResponseType(typeof(ApiErrorsResponse), 400)]
     [AllowAnonymous]
-    public async Task<IActionResult> Login([FromBody] LoginCommand command)
-    {
-        var response = await Mediator.Send(command);
-        if (response.IsFailed)
-        {
-            return BadRequest(response.MapToApiErrorsResponse());
-        }
+    public async Task<IActionResult> Login([FromBody] LoginCommand command) =>
+        await Resolver<LoginCommand>
+            .IfRequestNotNull(command)
+            .ResolverFor(command)
+            .Execute(req => Mediator.Send(req))
+            .ResolveResponse();
 
-        return Ok(response.Value);
-    }
 
     /// <summary>
     /// Registers new user and returns a JWT token.
@@ -62,7 +60,8 @@ public class AuthenticationController : ApiController
     ///         "email": "test@test.com",
     ///         "password": "password",
     ///         "firstName": "Jan",
-    ///         "lastName": "Kowalski"
+    ///         "lastName": "Kowalski",
+    ///         "imageUrl": "https://picsum.photos/400"
     ///     }
     /// </remarks>
     /// <returns>
@@ -72,14 +71,10 @@ public class AuthenticationController : ApiController
     [ProducesResponseType(typeof(TokenResponse), 200)]
     [ProducesResponseType(typeof(ApiErrorsResponse), 400)]
     [AllowAnonymous]
-    public async Task<IActionResult> Register([FromBody] RegisterCommand command)
-    {
-        var response = await Mediator.Send(command);
-        if (response.IsFailed)
-        {
-            return BadRequest(response.MapToApiErrorsResponse());
-        }
-
-        return Ok(response.Value);
-    }
+    public async Task<IActionResult> Register([FromBody] RegisterCommand command) =>
+        await Resolver<RegisterCommand>
+            .IfRequestNotNull(command)
+            .ResolverFor(command)
+            .Execute(req => Mediator.Send(req))
+            .ResolveResponse();
 }

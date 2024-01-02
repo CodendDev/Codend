@@ -1,15 +1,18 @@
 ﻿using Codend.Application.Core.Abstractions.Authentication;
-using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Services;
 using Codend.Application.Exceptions;
+using Codend.Application.Users.Commands.UpdateUser;
+using Codend.Contracts.Responses;
+using Codend.Domain.Core.Abstractions;
+using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using FluentResults;
 using io.fusionauth;
 using io.fusionauth.domain;
 using io.fusionauth.domain.api;
 using io.fusionauth.domain.api.user;
+using io.fusionauth.domain.search;
 using Microsoft.Extensions.Options;
-using UserResponse = Codend.Contracts.Responses.UserResponse;
 
 namespace Codend.Infrastructure.Authentication;
 
@@ -56,7 +59,12 @@ public sealed class FusionAuthService : IAuthService, IUserService
     }
 
     /// <inheritdoc />
-    public async Task<Result<string>> RegisterAsync(string email, string password, string firstName, string lastName)
+    public async Task<Result<string>> RegisterAsync(
+        string email,
+        string password,
+        string firstName,
+        string lastName,
+        string imageUrl)
     {
         var newUser = new User()
         {
@@ -64,7 +72,8 @@ public sealed class FusionAuthService : IAuthService, IUserService
             email = email,
             password = password,
             firstName = firstName,
-            lastName = lastName
+            lastName = lastName,
+            imageUrl = imageUrl
         };
         var userRegistration = new UserRegistration()
         {
@@ -104,8 +113,13 @@ public sealed class FusionAuthService : IAuthService, IUserService
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<UserResponse>> GetUsersByIds(IEnumerable<UserId> usersIds)
+    public async Task<List<UserDetails>> GetUsersByIdsAsync(List<UserId> usersIds)
     {
+        if (!usersIds.Any())
+        {
+            return new List<UserDetails>();
+        }
+
         var response = await _fusionAuthClient
             .SearchUsersByIdsAsync(usersIds.Select(x => x.Value.ToString()).ToList());
 
@@ -115,9 +129,81 @@ public sealed class FusionAuthService : IAuthService, IUserService
         }
 
         var usersResponse = response.successResponse.users
-            .Select(user => new UserResponse(user.firstName, user.lastName, user.email, user.imageUrl))
-            .AsEnumerable();
+            .Select(user => new UserDetails((Guid)user.id!, user.firstName, user.lastName, user.email, user.imageUrl))
+            .ToList();
 
         return usersResponse;
+    }
+
+    /// <inheritdoc />
+    public async Task<UserDetails> GetUserByIdAsync(UserId userId)
+    {
+        var response = await _fusionAuthClient.RetrieveUserAsync(userId.Value);
+
+        if (!response.WasSuccessful())
+        {
+            throw new AuthenticationServiceException(response.errorResponse.ToString());
+        }
+
+        var user = response.successResponse.user;
+        return new UserDetails(userId.Value, user.firstName, user.lastName, user.email, user.imageUrl);
+    }
+
+    public Task<UserDetails> GetUserDetails(IUser user)
+        => GetUserByIdAsync(user.UserId.GuidConversion<UserId>());
+
+    public async Task<UserDetails?> GetUserByEmailAsync(string email)
+    {
+        var query = new SearchRequest
+        {
+            search = new UserSearchCriteria
+            {
+                queryString = email
+            }
+        };
+        var response = await _fusionAuthClient.SearchUsersByQueryAsync(query);
+
+        if (!response.WasSuccessful())
+        {
+            throw new AuthenticationServiceException(response.errorResponse.ToString());
+        }
+
+        if (response.successResponse.total != 1)
+        {
+            return null;
+        }
+
+        var user = response.successResponse.users[0];
+        return user.id is null
+            ? null
+            : new UserDetails(user.id.Value, user.firstName, user.lastName, user.email, user.imageUrl);
+    }
+
+    /// <inheritdoc />
+    public async Task<Result> UpdateUserAsync(UserId userId, UpdateUserCommand command)
+    {
+        var currentUserDetails = await GetUserByIdAsync(userId);
+
+        var user = new User()
+        {
+            email = currentUserDetails.Email,
+            firstName = command.FirstName,
+            lastName = command.LastName,
+            imageUrl = command.ImageUrl
+        };
+
+        var userRequest = new UserRequest()
+        {
+            user = user
+        };
+
+        var response = await _fusionAuthClient.UpdateUserAsync(userId.Value, userRequest);
+
+        if (!response.WasSuccessful())
+        {
+            throw new AuthenticationServiceException(response.errorResponse.ToString());
+        }
+
+        return Result.Ok();
     }
 }

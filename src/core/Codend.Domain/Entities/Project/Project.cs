@@ -3,6 +3,7 @@ using Codend.Domain.Core.Events;
 using Codend.Domain.Core.Extensions;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.ValueObjects;
+using Codend.Shared.Infrastructure.Lexorank;
 using FluentResults;
 
 namespace Codend.Domain.Entities;
@@ -72,12 +73,9 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
 
         Name = result.Value;
 
-        var evt = new ProjectEditedEvent(this);
-        Raise(evt);
-
         return result;
     }
-    
+
     /// <summary>
     /// Edits description of the Project, and validates new description.
     /// </summary>
@@ -92,9 +90,6 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
         }
 
         Description = result.Value;
-        
-        var evt = new ProjectEditedEvent(this);
-        Raise(evt);
 
         return result;
     }
@@ -114,9 +109,6 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
         {
             return result;
         }
-
-        var evt = new ProjectVersionReleasedEvent(result.Value, Id);
-        Raise(evt);
 
         return result;
     }
@@ -144,20 +136,18 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
     /// <summary>
     /// Creates new sprint.
     /// </summary>
-    /// <param name="startDate">Sprint startDane.</param>
+    /// <param name="name">Sprint name.</param>
+    /// <param name="startDate">Sprint startDate.</param>
     /// <param name="endDate">Sprint endDate.</param>
     /// <param name="goal">Sprint goal.</param>
     /// <returns>Ok result with Sprint object or an error.</returns>
-    public Result<Sprint> CreateSprint(DateTime startDate, DateTime endDate, string? goal)
+    public Result<Sprint> CreateSprint(string name, DateTime startDate, DateTime endDate, string? goal)
     {
-        var result = Sprint.Create(Id, startDate, endDate, goal);
+        var result = Sprint.Create(name, Id, startDate, endDate, goal);
         if (result.IsFailed)
         {
             return result;
         }
-
-        var evt = new SprintCreatedEvent(result.Value, Id);
-        Raise(evt);
 
         return result;
     }
@@ -166,29 +156,27 @@ public class Project : DomainEventsAggregate<ProjectId>, ISoftDeletableEntity
     /// Adds user to project.
     /// </summary>
     /// <param name="userId">User to be added.</param>
-    public void AddUserToProject(UserId userId)
+    public Result AddUserToProject(ProjectMember userId)
     {
-        var evt = new UserAddedToProjectEvent(userId, Id);
+        var evt = new UserAddedToProjectEvent(Id, userId);
         Raise(evt);
+        return Result.Ok();
     }
 
     /// <summary>
     /// Removes user from project.
     /// </summary>
     /// <param name="userId">User to be removed.</param>
-    public void RemoveUserFromProject(UserId userId)
-    {
-        var evt = new UserRemovedFromProjectEvent(userId, Id);
-        Raise(evt);
-    }
+    public Result RemoveUserFromProject(UserId userId) => Result.Ok();
 
     /// <summary>
     /// Creates and adds projectTask status to project
     /// </summary>
     /// <param name="statusName">Name for the new status.</param>
-    public Result<ProjectTaskStatus> AddProjectTaskStatusToProject(string statusName)
+    /// <param name="position">Position for the new status.</param>
+    public Result<ProjectTaskStatus> AddProjectTaskStatusToProject(string statusName, Lexorank? position)
     {
-        var result = ProjectTaskStatus.Create(Id, statusName);
+        var result = ProjectTaskStatus.Create(Id, statusName, position);
 
         if (result.IsFailed)
         {

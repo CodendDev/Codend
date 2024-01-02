@@ -1,4 +1,5 @@
 using Codend.Application.Core.Abstractions.Messaging.Commands;
+using Codend.Application.Exceptions;
 using Codend.Application.ProjectTasks.Commands.AssignUser;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 using Codend.Application.ProjectTasks.Commands.DeleteProjectTask;
@@ -10,22 +11,24 @@ using Codend.Contracts.Requests;
 using Codend.Contracts.Requests.ProjectTasks.Create;
 using Codend.Contracts.Requests.ProjectTasks.Update;
 using Codend.Contracts.Responses.ProjectTask;
-using Codend.Domain.Core.Errors;
 using Codend.Domain.Core.Primitives;
 using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
+using Codend.Presentation.Extensions;
 using Codend.Presentation.Infrastructure;
+using Codend.Presentation.Infrastructure.Authorization;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static Codend.Domain.Core.Errors.DomainErrors.General;
 
 namespace Codend.Presentation.Controllers;
 
 /// <summary>
 /// Controller containing endpoints associated with <see cref="BaseProjectTask"/> and it's derived entities management.
 /// </summary>
-[Route("api/projects/{projectId:guid}/task")]
+[Route("api/projects/{projectId:guid}/tasks")]
+[Authorize(ProjectOperations.IsProjectMemberPolicy)]
 public class ProjectTaskController : ApiController
 {
     /// <summary>
@@ -38,21 +41,11 @@ public class ProjectTaskController : ApiController
     #region Private methods
 
     private async Task<IActionResult> UpdateTask<TCommand>(TCommand command)
-        where TCommand : ICommand, IUpdateProjectTaskCommand
-    {
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        if (response.HasError<DomainNotFound>())
-        {
-            return NotFound();
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        where TCommand : ICommand, IUpdateProjectTaskCommand =>
+        await Resolver<TCommand>
+            .For(command)
+            .Execute(req => Mediator.Send(req))
+            .ResolveResponse();
 
     #endregion
 
@@ -71,20 +64,14 @@ public class ProjectTaskController : ApiController
     [HttpDelete("{projectTaskId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(ProjectOperations.IsProjectMemberPolicy)]
     public async Task<IActionResult> Delete(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid projectTaskId)
-    {
-        var command = new DeleteProjectTaskCommand(projectTaskId.GuidConversion<ProjectTaskId>());
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return NoContent();
-        }
-
-        return NotFound();
-    }
+        [FromRoute] Guid projectTaskId) =>
+        await Resolver<DeleteProjectTaskCommand>
+            .For(new DeleteProjectTaskCommand(projectTaskId.GuidConversion<ProjectTaskId>()))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Assigns project member with id <paramref name="assigneeId"/> to task with id <paramref name="projectTaskId"/>.
@@ -106,26 +93,15 @@ public class ProjectTaskController : ApiController
     public async Task<IActionResult> AssignUser(
         [FromRoute] Guid projectId,
         [FromRoute] Guid projectTaskId,
-        [FromRoute] Guid assigneeId)
-    {
-        var command = new AssignUserCommand(
-            projectTaskId.GuidConversion<ProjectTaskId>(),
-            assigneeId.GuidConversion<UserId>()
-        );
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return Ok();
-        }
-
-        if (response.HasError<DomainErrors.ProjectTaskErrors.InvalidAssigneeId>())
-        {
-            return BadRequest(response.MapToApiErrorsResponse());
-        }
-
-        return NotFound();
-    }
+        [FromRoute] Guid assigneeId) =>
+        await Resolver<AssignUserCommand>
+            .For(new AssignUserCommand(
+                projectId.GuidConversion<ProjectId>(),
+                projectTaskId.GuidConversion<ProjectTaskId>(),
+                assigneeId.GuidConversion<UserId>()
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Retrieves common data of project task with <paramref name="projectTaskId"/>.
@@ -142,18 +118,11 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(
         [FromRoute] Guid projectId,
-        [FromRoute] Guid projectTaskId)
-    {
-        var query = new GetProjectTaskByIdQuery(projectTaskId.GuidConversion<ProjectTaskId>());
-
-        var response = await Mediator.Send(query);
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return NotFound();
-    }
+        [FromRoute] Guid projectTaskId) =>
+        await Resolver<GetProjectTaskByIdQuery>
+            .For(new GetProjectTaskByIdQuery(projectTaskId.GuidConversion<ProjectTaskId>()))
+            .Execute(query => Mediator.Send(query))
+            .ResolveResponse();
 
     #endregion
 
@@ -185,7 +154,8 @@ public class ProjectTaskController : ApiController
     ///         "dueDate": "2023-12-30T15:30:56.123Z",
     ///         "storyPoints": 35,
     ///         "assigneeId": "e405f337-4da0-4cce-818b-9231642c93fe",
-    ///         "storyId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42"
+    ///         "storyId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42",
+    ///         "sprintId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42"
     ///     }
     /// </remarks>
     /// <returns>
@@ -193,38 +163,33 @@ public class ProjectTaskController : ApiController
     /// - 200 on success with newly created base project task id
     /// - 400 on failure with error response
     /// </returns>
-    [HttpPost]
+    [HttpPost("base")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateBaseTask(
         [FromRoute] Guid projectId,
-        [FromBody] CreateBaseProjectTaskRequest request)
-    {
-        var command = new CreateBaseProjectTaskCommand(
-            new BaseProjectTaskCreateProperties(
-                projectId.GuidConversion<ProjectId>(),
-                request.Name,
-                request.Priority,
-                request.Description,
-                request.EstimatedTime.ToTimeSpan(),
-                request.DueDate,
-                request.StoryPoints,
-                request.AssigneeId.GuidConversion<UserId>(),
-                request.StoryId.GuidConversion<StoryId>()
-            )
-            {
-                StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>()
-            }
-        );
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        [FromBody] CreateBaseProjectTaskRequest request) =>
+        await Resolver<CreateBaseProjectTaskCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new CreateBaseProjectTaskCommand(
+                new BaseProjectTaskCreateProperties(
+                    projectId.GuidConversion<ProjectId>(),
+                    request.Name,
+                    request.Priority,
+                    request.Description,
+                    request.EstimatedTime.ToTimeSpan(),
+                    request.DueDate,
+                    request.StoryPoints,
+                    request.AssigneeId.GuidConversion<UserId>(),
+                    request.StoryId.GuidConversion<StoryId>()
+                )
+                {
+                    StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>()
+                },
+                request.SprintId.GuidConversion<SprintId>()
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
     /// <summary>
     /// Updates BaseProjectTask entity with given <paramref name="projectTaskId"/>.
@@ -281,7 +246,7 @@ public class ProjectTaskController : ApiController
     /// - 400 on failure with error response
     /// - 404 on failure
     /// </returns>
-    [HttpPut("{projectTaskId:guid}")]
+    [HttpPut("base/{projectTaskId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -290,8 +255,14 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectTaskId,
         [FromBody] UpdateBaseProjectTaskRequest request)
     {
+        if (request is null)
+        {
+            throw new InvalidRequestException();
+        }
+
         var command = new UpdateBaseProjectTaskCommand
         (
+            projectId.GuidConversion<ProjectId>(),
             projectTaskId.GuidConversion<ProjectTaskId>(),
             request.Name,
             request.Priority,
@@ -337,7 +308,8 @@ public class ProjectTaskController : ApiController
     ///         "dueDate": "2023-12-30T15:30:56.123Z",
     ///         "storyPoints": 35,
     ///         "assigneeId": "e405f337-4da0-4cce-818b-9231642c93fe",
-    ///         "storyId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42"
+    ///         "storyId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42",
+    ///         "sprintId": "a5a2e6b1-9b79-4d1d-b4f3-f0b5ac29ba42"
     ///     }
     /// </remarks>
     /// <returns>
@@ -350,33 +322,28 @@ public class ProjectTaskController : ApiController
     [ProducesResponseType(typeof(ApiErrorsResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateBugfix(
         [FromRoute] Guid projectId,
-        [FromBody] CreateBugfixProjectTaskRequest request)
-    {
-        var command = new CreateBugfixProjectTaskCommand(
-            new BugfixProjectTaskCreateProperties(
-                projectId.GuidConversion<ProjectId>(),
-                request.Name,
-                request.Priority,
-                request.Description,
-                request.EstimatedTime.ToTimeSpan(),
-                request.DueDate,
-                request.StoryPoints,
-                request.AssigneeId.GuidConversion<UserId>(),
-                request.StoryId.GuidConversion<StoryId>()
-            )
-            {
-                StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>(),
-            }
-        );
-
-        var response = await Mediator.Send(command);
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return BadRequest(response.MapToApiErrorsResponse());
-    }
+        [FromBody] CreateBugfixProjectTaskRequest request) =>
+        await Resolver<CreateBugfixProjectTaskCommand>
+            .IfRequestNotNull(request)
+            .ResolverFor(new CreateBugfixProjectTaskCommand(
+                new BugfixProjectTaskCreateProperties(
+                    projectId.GuidConversion<ProjectId>(),
+                    request.Name,
+                    request.Priority,
+                    request.Description,
+                    request.EstimatedTime.ToTimeSpan(),
+                    request.DueDate,
+                    request.StoryPoints,
+                    request.AssigneeId.GuidConversion<UserId>(),
+                    request.StoryId.GuidConversion<StoryId>()
+                )
+                {
+                    StatusId = request.StatusId.GuidConversion<ProjectTaskStatusId>(),
+                },
+                request.SprintId.GuidConversion<SprintId>()
+            ))
+            .Execute(command => Mediator.Send(command))
+            .ResolveResponse();
 
 
     /// <summary>
@@ -439,8 +406,14 @@ public class ProjectTaskController : ApiController
         [FromRoute] Guid projectTaskId,
         [FromBody] UpdateBugfixProjectTaskRequest request)
     {
+        if (request is null)
+        {
+            throw new InvalidRequestException();
+        }
+
         var command = new UpdateBugfixProjectTaskCommand
         (
+            projectId.GuidConversion<ProjectId>(),
             projectTaskId.GuidConversion<ProjectTaskId>(),
             request.Name,
             request.Priority,

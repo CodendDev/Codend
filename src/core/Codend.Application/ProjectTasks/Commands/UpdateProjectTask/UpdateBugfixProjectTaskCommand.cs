@@ -12,7 +12,9 @@ namespace Codend.Application.ProjectTasks.Commands.UpdateProjectTask;
 /// <summary>
 /// Record used for updating <see cref="BugfixProjectTask"/> properties.
 /// </summary>
-public sealed record UpdateBugfixProjectTaskCommand(
+public sealed record UpdateBugfixProjectTaskCommand
+(
+    ProjectId ProjectId,
     ProjectTaskId TaskId,
     string? Name,
     string? Priority,
@@ -39,12 +41,14 @@ public class UpdateBugfixProjectTaskCommandHandler :
         IUnitOfWork unitOfWork,
         IProjectMemberRepository memberRepository,
         IStoryRepository storyRepository,
-        IUserIdentityProvider identityProvider)
-        : base(taskRepository,
-            unitOfWork,
-            memberRepository,
-            storyRepository,
-            identityProvider)
+        IHttpContextProvider httpContext
+    ) : base(
+        taskRepository,
+        unitOfWork,
+        memberRepository,
+        storyRepository,
+        httpContext
+    )
     {
     }
 }

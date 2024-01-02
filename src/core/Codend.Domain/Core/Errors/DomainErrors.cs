@@ -49,6 +49,15 @@ public static partial class DomainErrors
                 where T : IEntity
                 => Result.Fail(new DomainNotFound(typeof(T).Name));
         }
+
+        public class UnspecifiedBadRequest : DomainError
+        {
+            public UnspecifiedBadRequest()
+                : base("General.UnspecifiedBadRequest",
+                    "Bad request with unspecified errors. Check if values are valid for types.")
+            {
+            }
+        }
     }
 
     /// <summary>

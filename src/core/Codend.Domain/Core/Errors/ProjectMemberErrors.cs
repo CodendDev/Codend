@@ -11,7 +11,7 @@ public static partial class DomainErrors
         {
             public FavouriteDidntChange()
                 : base("ProjectMember.FavouriteDidntChange",
-                    "Favourite did not change.")
+                    "Favourite did not change. Provided value equals current value.")
             {
             }
         }

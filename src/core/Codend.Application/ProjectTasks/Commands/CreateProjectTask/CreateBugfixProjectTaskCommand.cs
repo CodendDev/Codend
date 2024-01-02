@@ -2,8 +2,10 @@ using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Application.ProjectTasks.Commands.CreateProjectTask.Abstractions;
+using Codend.Domain.Entities;
 using Codend.Domain.Entities.ProjectTask.Bugfix;
 using Codend.Domain.Repositories;
+using MediatR;
 
 namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 
@@ -11,9 +13,11 @@ namespace Codend.Application.ProjectTasks.Commands.CreateProjectTask;
 /// Command for creating <see cref="BugfixProjectTask"/>.
 /// </summary>
 /// <param name="TaskProperties">BugfixProjectTask properties.</param>
+/// <param name="SprintId">Id of the sprint to which epic will be assigned.</param>
 public sealed record CreateBugfixProjectTaskCommand
 (
-    BugfixProjectTaskCreateProperties TaskProperties
+    BugfixProjectTaskCreateProperties TaskProperties,
+    SprintId? SprintId
 ) : ICommand<Guid>, ICreateProjectTaskCommand<BugfixProjectTaskCreateProperties>;
 
 /// <summary>
@@ -31,16 +35,18 @@ public class CreateBugfixProjectTaskCommandHandler :
     public CreateBugfixProjectTaskCommandHandler(
         IProjectTaskRepository projectTaskRepository,
         IUnitOfWork unitOfWork,
-        IUserIdentityProvider identityProvider,
+        IHttpContextProvider contextProvider,
         IProjectMemberRepository projectMemberRepository,
         IStoryRepository storyRepository,
-        IProjectTaskStatusRepository statusRepository)
+        IProjectTaskStatusRepository statusRepository,
+        IMediator mediator)
         : base(projectTaskRepository,
             unitOfWork,
-            identityProvider,
+            contextProvider,
             projectMemberRepository,
             storyRepository,
-            statusRepository)
+            statusRepository,
+            mediator)
     {
     }
 }

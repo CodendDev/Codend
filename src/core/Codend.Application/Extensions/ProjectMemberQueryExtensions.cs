@@ -8,9 +8,9 @@ internal static class ProjectMemberQueryExtensions
     /// <summary>
     /// Gets all projects that user is member of.
     /// </summary>
-    internal static IQueryable<ProjectId> GetUserProjectsIds(this IQueryable<ProjectMember> query, UserId userId)
+    internal static IQueryable<ProjectMember> GetProjectsForUser(this IQueryable<ProjectMember> query, UserId userId)
     {
-        return query.Where(x => x.MemberId == userId).Select(x => x.ProjectId);
+        return query.Where(x => x.MemberId == userId);
     }
 
     /// <summary>

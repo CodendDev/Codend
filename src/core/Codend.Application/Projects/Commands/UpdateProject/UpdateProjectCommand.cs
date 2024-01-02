@@ -1,5 +1,4 @@
 using Codend.Application.Core;
-using Codend.Application.Core.Abstractions.Authentication;
 using Codend.Application.Core.Abstractions.Data;
 using Codend.Application.Core.Abstractions.Messaging.Commands;
 using Codend.Contracts.Requests;
@@ -33,8 +32,6 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IProjectMemberRepository _projectMemberRepository;
-    private readonly IUserIdentityProvider _identityProvider;
     private readonly IProjectTaskStatusRepository _statusRepository;
 
     /// <summary>
@@ -43,29 +40,18 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
     public UpdateProjectCommandHandler(
         IProjectRepository projectRepository,
         IUnitOfWork unitOfWork,
-        IProjectMemberRepository projectMemberRepository,
-        IUserIdentityProvider identityProvider,
         IProjectTaskStatusRepository statusRepository)
     {
         _projectRepository = projectRepository;
         _unitOfWork = unitOfWork;
-        _projectMemberRepository = projectMemberRepository;
-        _identityProvider = identityProvider;
         _statusRepository = statusRepository;
     }
 
     /// <inheritdoc />
     public async Task<Result> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
-        var userId = _identityProvider.UserId;
-
         var project = await _projectRepository.GetByIdAsync(request.ProjectId);
         if (project is null)
-        {
-            return DomainNotFound.Fail<Project>();
-        }
-
-        if (!await _projectMemberRepository.IsProjectMember(userId, request.ProjectId, cancellationToken))
         {
             return DomainNotFound.Fail<Project>();
         }
@@ -82,7 +68,8 @@ public class UpdateProjectCommandHandler : ICommandHandler<UpdateProjectCommand>
         var result = Result.Merge(
             request.Name.GetResultFromDelegate(project.EditName, Result.Ok),
             request.Description.HandleUpdateWithResult(project.EditDescription),
-            request.DefaultStatusId.GetResultFromDelegate(project.EditDefaultStatus, Result.Ok));
+            request.DefaultStatusId.GetResultFromDelegate(project.EditDefaultStatus, Result.Ok)
+        );
 
         if (result.IsFailed)
         {

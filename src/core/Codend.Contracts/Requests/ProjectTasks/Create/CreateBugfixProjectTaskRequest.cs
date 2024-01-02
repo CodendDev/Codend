@@ -11,5 +11,6 @@ public record CreateBugfixProjectTaskRequest
     DateTime? DueDate,
     uint? StoryPoints,
     Guid? AssigneeId,
-    Guid? StoryId
+    Guid? StoryId,
+    Guid? SprintId
 ) : ICreateBaseProjectTaskRequest;

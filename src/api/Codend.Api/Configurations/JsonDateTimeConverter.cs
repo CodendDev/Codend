@@ -14,12 +14,13 @@ public class JsonDateTimeConverter : JsonConverter<DateTime>
     /// <inheritdoc/>
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (!DateTime.TryParseExact(reader.GetString()!, DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateValue))
+        if (!DateTime.TryParseExact(reader.GetString()!, DateTimeFormat, CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out var dateValue))
         {
             throw new JsonException($"This date {reader.GetString()} has invalid format.");
         }
 
-        return dateValue;
+        return dateValue.ToUniversalTime();
     }
 
     /// <inheritdoc/>

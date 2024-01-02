@@ -6,6 +6,7 @@ using Codend.Application;
 using Codend.Contracts;
 using Codend.Database;
 using Codend.Infrastructure;
+using Codend.Notifications.Email;
 using Codend.Presentation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
@@ -42,12 +43,18 @@ builder.Services.AddHttpLogging(logging =>
 builder.Services
     .AddContracts()
     .AddApplication()
-    .AddInfrastructure(builder.Configuration)
-    .AddDatabase(builder.Configuration);
+    .AddInfrastructure()
+    .AddDatabase(builder.Configuration)
+    .AddUserEmailNotifications(builder.Configuration)
+    .AddPresentation();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.UseCustomExceptionHandler();
+
+var buildDate = builder.Configuration["BUILD_DATE"];
+var swagger = builder.Configuration.GetValue<bool>("Swagger");
+if (app.Environment.IsDevelopment() || swagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -57,15 +64,13 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCustomExceptionHandler();
 
 app.MapControllers();
 
-var database = app.MigrateDatabase();
+app.MigrateDatabase();
 
-var buildDate = builder.Configuration["BUILD_DATE"];
 var deploymentDate = DateTime.UtcNow.ToString("R");
-var helloString = $"Deployment date: {deploymentDate}" + (buildDate is not null ? $"\nBuild date: {buildDate}" : "");
+var helloString = $"Deployment date: {deploymentDate}" + (!string.IsNullOrEmpty(buildDate)  ? $"\nBuild date: {buildDate}" : "");
 app.MapGet("", () => helloString);
 
 app.Run();

@@ -15,7 +15,9 @@ namespace Codend.Domain.Entities;
 public class BaseProjectTask :
     DomainEventsAggregate<ProjectTaskId>,
     ISoftDeletableEntity,
-    IProjectTaskCreator<BaseProjectTask, BaseProjectTaskCreateProperties>
+    IProjectTaskCreator<BaseProjectTask, BaseProjectTaskCreateProperties>,
+    IProjectOwnedEntity,
+    ISprintTask
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected BaseProjectTask() : base(new ProjectTaskId(Guid.NewGuid()))
@@ -27,6 +29,17 @@ public class BaseProjectTask :
     /// String representation of task type. 
     /// </summary>
     public string TaskType => GetType().Name.Replace("ProjectTask", "");
+
+    #region ISprintTask properties
+
+    public Guid SprintTaskId => Id.Value;
+    public string SprintTaskType => TaskType;
+    public string SprintTaskName => Name.Value;
+    public Guid SprintTaskStatusId => StatusId.Value;
+    public string? SprintTaskPriority => Priority.Name;
+    public Guid? SprintTaskRelatedTaskId => StoryId?.Value;
+
+    #endregion
 
     #region ISoftDeletableEntity properties
 
@@ -129,19 +142,29 @@ public class BaseProjectTask :
         return Result.Ok(dueDate);
     }
 
+
     /// <summary>
-    /// Changes ProjectTask assignee.
+    /// Assigns a user as the assignee of a project task.
     /// </summary>
-    /// <param name="assigneeId">New assigneeId.</param>
-    /// <returns>Ok result with UserId object.</returns>
-    public Result<UserId?> AssignUser(UserId? assigneeId)
+    /// <param name="assigner">The user that performs the operation.</param>
+    /// <param name="assignee">The member to be assigned to the task, can be null.</param>
+    /// <returns>
+    /// A <see cref="Result"/> object that encapsulates the result of the operation.
+    /// Contains the UserId of the assignee if successful.
+    /// </returns>
+    public Result<UserId?> AssignUser(ProjectMember assigner, ProjectMember? assignee)
     {
-        AssigneeId = assigneeId;
+        AssigneeId = assignee?.MemberId;
 
-        var evt = new ProjectTaskUserAssignedEvent(assigneeId, Id);
+        // Don't raise event if assigner and assignee is same user or assignee is null
+        if (assignee is null || assigner.UserId == assignee.UserId)
+        {
+            return Result.Ok(AssigneeId);
+        }
+
+        var evt = new ProjectTaskUserAssignedEvent(Id, assigner, assignee);
         Raise(evt);
-
-        return Result.Ok(assigneeId);
+        return Result.Ok(AssigneeId);
     }
 
     /// <summary>
@@ -175,10 +198,6 @@ public class BaseProjectTask :
     public Result<StoryId?> EditStory(StoryId? storyId)
     {
         StoryId = storyId;
-
-        var evt = new ProjectTaskStoryEditedEvent(Id, storyId);
-        Raise(evt);
-
         return Result.Ok(storyId);
     }
 

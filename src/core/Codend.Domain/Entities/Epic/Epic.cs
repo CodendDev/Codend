@@ -5,13 +5,24 @@ using FluentResults;
 
 namespace Codend.Domain.Entities;
 
-public class Epic : Entity<EpicId>, ISoftDeletableEntity
+public class Epic : Entity<EpicId>, ISoftDeletableEntity, IProjectOwnedEntity, ISprintTask
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Epic() : base(new EpicId(Guid.NewGuid()))
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
     }
+
+    #region ISprintTask properties
+
+    public Guid SprintTaskId => Id.Value;
+    public string SprintTaskType => nameof(Epic);
+    public string SprintTaskName => Name.Value;
+    public Guid SprintTaskStatusId => StatusId.Value;
+    public string? SprintTaskPriority => null;
+    public Guid? SprintTaskRelatedTaskId => null;
+
+    #endregion
 
     #region ISoftDeletableEntityProperties
 
@@ -54,7 +65,8 @@ public class Epic : Entity<EpicId>, ISoftDeletableEntity
     /// <param name="projectId">Epic project id.</param>
     /// <param name="statusId">Epic status id.</param>
     /// <returns>Created <see cref="Epic"/> or <see cref="Result"/> with errors.</returns>
-    public static Result<Epic> Create(string name, string description, ProjectId projectId, ProjectTaskStatusId statusId)
+    public static Result<Epic> Create(string name, string description, ProjectId projectId,
+        ProjectTaskStatusId statusId)
     {
         var resultName = EpicName.Create(name);
         var resultDescription = EpicDescription.Create(description);
