@@ -70,7 +70,8 @@ app.MapControllers();
 app.MigrateDatabase();
 
 var deploymentDate = DateTime.UtcNow.ToString("R");
-var helloString = $"Deployment date: {deploymentDate}" + (!string.IsNullOrEmpty(buildDate)  ? $"\nBuild date: {buildDate}" : "");
+var helloString = $"Deployment date: {deploymentDate}" +
+                  (!string.IsNullOrEmpty(buildDate)  ? $"\nBuild date: {buildDate}" : "");
 app.MapGet("", () => helloString);
 
 app.Run();
