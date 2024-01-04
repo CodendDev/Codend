@@ -1,14 +1,11 @@
-using Codend.Domain.Core.Primitives;
+using Codend.Domain.Core.Abstractions;
 
 namespace Codend.Domain.Entities;
 
-public sealed record ProjectId : EntityId<Guid>
+public record ProjectId(Guid Value) : IEntityId<Guid, ProjectId>
 {
-    public ProjectId()
+    public static ProjectId Create(Guid value)
     {
-    }
-
-    public ProjectId(Guid value) : base(value)
-    {
+        return new ProjectId(value);
     }
 }

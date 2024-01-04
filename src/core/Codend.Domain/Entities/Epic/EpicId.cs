@@ -1,15 +1,8 @@
 using Codend.Domain.Core.Abstractions;
-using Codend.Domain.Core.Primitives;
 
 namespace Codend.Domain.Entities;
 
-public sealed record EpicId : EntityId<Guid>, ISprintTaskId
+public sealed record EpicId(Guid Value) : IEntityId<Guid, EpicId>, ISprintTaskId
 {
-    public EpicId()
-    {
-    }
-
-    public EpicId(Guid value) : base(value)
-    {
-    }
+    public static EpicId Create(Guid value) => new(value);
 }

@@ -1,14 +1,9 @@
-using Codend.Domain.Core.Primitives;
+using Codend.Domain.Core.Abstractions;
 
 namespace Codend.Domain.Entities;
 
-public sealed record ProjectTaskStatusId : EntityId<Guid>
-{
-    public ProjectTaskStatusId()
-    {
-    }
+public sealed record ProjectTaskStatusId(Guid Value) : IEntityId<Guid, ProjectTaskStatusId>
 
-    public ProjectTaskStatusId(Guid value) : base(value)
-    {
-    }
+{
+    public static ProjectTaskStatusId Create(Guid value) => new(value);
 }
