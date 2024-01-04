@@ -3,6 +3,7 @@
 namespace Codend.Domain.Core.Primitives;
 
 public abstract class Entity<TKey> : IEntity<TKey>, ICreatableEntity
+    where TKey : IEntityId
 {
     protected Entity(TKey id)
     {
@@ -10,6 +11,6 @@ public abstract class Entity<TKey> : IEntity<TKey>, ICreatableEntity
     }
 
     public TKey Id { get; private set; }
-    
+
     public DateTime CreatedOn { get; private set; }
 }

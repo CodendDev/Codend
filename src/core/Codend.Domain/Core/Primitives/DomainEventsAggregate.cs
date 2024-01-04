@@ -4,6 +4,7 @@ namespace Codend.Domain.Core.Primitives;
 
 /// <inheritdoc cref="Codend.Domain.Core.Abstractions.IDomainEventsAggregate"/> implementation.
 public abstract class DomainEventsAggregate<TKey> : Entity<TKey>, IDomainEventsAggregate
+    where TKey : IEntityId
 {
     /// <inheritdoc />
     protected DomainEventsAggregate(TKey id) : base(id)
