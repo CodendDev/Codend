@@ -27,14 +27,6 @@ public class UpdateSprintValidator : AbstractValidator<UpdateSprintCommand>
                 .MaximumLength(SprintName.MaxLength)
                 .WithError(new StringPropertyTooLong(nameof(UpdateSprintCommand.Name), StoryName.MaxLength));
         });
-        
-        RuleFor(x => x.StartDate)
-            .NotEmpty()
-            .WithError(new PropertyNullOrEmpty(nameof(UpdateSprintCommand.StartDate)));
-
-        RuleFor(x => x.EndDate)
-            .NotEmpty()
-            .WithError(new PropertyNullOrEmpty(nameof(UpdateSprintCommand.EndDate)));
 
         When(x => x.Goal is { ShouldUpdate: true, Value: not null }, () =>
         {
