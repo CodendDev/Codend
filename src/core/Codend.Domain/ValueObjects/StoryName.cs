@@ -1,24 +1,16 @@
-using Codend.Domain.Core.Extensions;
 using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
 
 namespace Codend.Domain.ValueObjects;
 
-public class StoryName : StringValueObject, IStringValueObject<StoryName>
+public class StoryName : StringValueObject<StoryName>, IStringMaxLengthValueObject
 {
     private StoryName(string value) : base(value)
     {
     }
 
-    public static Result<StoryName> Create(string value)
-    {
-        return Result
-            .Ok(new StoryName(value))
-            .Ensure(() => !string.IsNullOrEmpty(value), new NullOrEmpty<StoryName>())
-            .Ensure(() => value.Length < MaxLength, new TooLong<StoryName>());
-    }
+    public static Result<StoryName> Create(string value) => Validate(new StoryName(value));
 
     public static int MaxLength => 100;
 }

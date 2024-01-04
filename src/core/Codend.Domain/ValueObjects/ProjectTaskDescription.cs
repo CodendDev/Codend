@@ -1,17 +1,15 @@
 ﻿using Codend.Domain.Core.Errors;
-using Codend.Domain.Core.Extensions;
 using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
 
 namespace Codend.Domain.ValueObjects;
 
 /// <summary>
 /// [Optional] ProjectTask description value object.
 /// </summary>
-public sealed class ProjectTaskDescription : NullableStringValueObject,
-    INullableStringValueObject<ProjectTaskDescription>
+public sealed class ProjectTaskDescription
+    : NullableStringValueObject<ProjectTaskDescription>, IStringMaxLengthValueObject
 {
     /// <summary>
     /// Maximum description length.
@@ -28,11 +26,5 @@ public sealed class ProjectTaskDescription : NullableStringValueObject,
     /// </summary>
     /// <param name="value">Value for the new <see cref="ProjectTaskDescription"/>.</param>
     /// <returns>The <see cref="Result"/> of creation. Contains <see cref="ProjectTaskDescription"/> or an <see cref="DomainErrors.DomainError"/>.</returns>
-    public static Result<ProjectTaskDescription> Create(string? value)
-    {
-        return Result
-            .Ok(new ProjectTaskDescription(value))
-            .Ensure(() => value is null || value.Length < MaxLength,
-                new TooLong<ProjectTaskDescription>());
-    }
+    public static Result<ProjectTaskDescription> Create(string? value) => Validate(new ProjectTaskDescription(value));
 }
