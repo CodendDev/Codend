@@ -49,7 +49,7 @@ public interface ILexorankSystem
     /// More than 0 - ch1 is this many places before ch1.
     /// </remarks>
     /// <returns><see cref="int"/> number of indexes splitting char 1 from char 2.</returns>
-    public int DiffBetweenChars(char ch1, char ch2);
+    public int DistanceBetweenCharacters(char ch1, char ch2);
 
     /// <summary>
     /// Changes 'char' int(ascii) value to its alphabet numeric value, which is its position in alphabet char list.
