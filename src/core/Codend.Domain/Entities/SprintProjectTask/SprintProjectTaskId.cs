@@ -1,14 +1,8 @@
-using Codend.Domain.Core.Primitives;
+using Codend.Domain.Core.Abstractions;
 
 namespace Codend.Domain.Entities;
 
-public sealed record SprintProjectTaskId : EntityId<Guid>
+public sealed record SprintProjectTaskId(Guid Value) : IEntityId<Guid, SprintProjectTaskId>
 {
-    public SprintProjectTaskId()
-    {
-    }
-
-    public SprintProjectTaskId(Guid value) : base(value)
-    {
-    }
+    public static SprintProjectTaskId Create(Guid value) => new(value);
 }

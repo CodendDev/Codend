@@ -130,7 +130,7 @@ public class Lexorank : IComparable, IComparable<Lexorank>, IEquatable<Lexorank>
                 nextChar = endChar;
             }
         }
-        else if (lexorankSystem.DiffBetweenChars(prevChar, nextChar) == 1) // found consecutive chars eg. 'c' && 'd'
+        else if (lexorankSystem.DistanceBetweenCharacters(prevChar, nextChar) == 1) // found consecutive chars eg. 'c' && 'd'
         {
             resultStr += prevChar;
             nextChar = endChar;

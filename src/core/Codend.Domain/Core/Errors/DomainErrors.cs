@@ -66,7 +66,7 @@ public static partial class DomainErrors
     public static class StringValueObject
     {
         public class NullOrEmpty<T> : DomainError
-            where T : ValueObjects.Primitives.StringValueObject
+            where T : ValueObjects.Primitives.StringValueObject<T>, IStringMaxLengthValueObject
         {
             public NullOrEmpty() : base($"StringValueObject.NullOrEmpty.{typeof(T).Name}",
                 $"Field {typeof(T).Name} cannot be null nor empty.")

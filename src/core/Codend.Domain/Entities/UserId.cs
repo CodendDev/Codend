@@ -1,14 +1,8 @@
-﻿using Codend.Domain.Core.Primitives;
+﻿using Codend.Domain.Core.Abstractions;
 
 namespace Codend.Domain.Entities;
 
-public sealed record UserId : EntityId<Guid>
+public sealed record UserId(Guid Value) : IEntityId<Guid, UserId>
 {
-    public UserId()
-    {
-    }
-
-    public UserId(Guid value) : base(value)
-    {
-    }
+    public static UserId Create(Guid value) => new(value);
 }

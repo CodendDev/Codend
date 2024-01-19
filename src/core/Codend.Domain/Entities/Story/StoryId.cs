@@ -1,15 +1,8 @@
 using Codend.Domain.Core.Abstractions;
-using Codend.Domain.Core.Primitives;
 
 namespace Codend.Domain.Entities;
 
-public sealed record StoryId : EntityId<Guid>, ISprintTaskId
+public sealed record StoryId(Guid Value) : IEntityId<Guid, StoryId>, ISprintTaskId
 {
-    public StoryId()
-    {
-    }
-
-    public StoryId(Guid value) : base(value)
-    {
-    }
+    public static StoryId Create(Guid value) => new(value);
 }

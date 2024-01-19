@@ -23,7 +23,7 @@ public class LexorankSystem36 : ILexorankSystem
     public char EndOfAlphabet => '|';
 
     /// <inheritdoc />
-    public int DiffBetweenChars(char ch1, char ch2) => ToDigit(ch2) - ToDigit(ch1);
+    public int DistanceBetweenCharacters(char ch1, char ch2) => ToDigit(ch2) - ToDigit(ch1);
 
     /// <inheritdoc />
     public int ToDigit(char ch)
