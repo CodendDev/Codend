@@ -149,7 +149,7 @@ public class ProjectTaskController : ApiController
     ///         "estimatedTime":{
     ///             "minutes": 45,
     ///             "hours": 3,
-    ///             "days": 1,
+    ///             "days": 1
     ///         },
     ///         "dueDate": "2023-12-30T15:30:56.123Z",
     ///         "storyPoints": 35,
@@ -303,7 +303,7 @@ public class ProjectTaskController : ApiController
     ///         "estimatedTime":{
     ///             "minutes": 45,
     ///             "hours": 3,
-    ///             "days": 1,
+    ///             "days": 1
     ///         },
     ///         "dueDate": "2023-12-30T15:30:56.123Z",
     ///         "storyPoints": 35,

@@ -1,17 +1,15 @@
 ﻿using Codend.Domain.Core.Errors;
-using Codend.Domain.Core.Extensions;
 using Codend.Domain.ValueObjects.Abstractions;
 using Codend.Domain.ValueObjects.Primitives;
 using FluentResults;
-using static Codend.Domain.Core.Errors.DomainErrors.StringValueObject;
 
 namespace Codend.Domain.ValueObjects;
 
 /// <summary>
 /// [Optional] Project version changelog value object.
 /// </summary>
-public sealed class ProjectVersionChangelog : NullableStringValueObject,
-    INullableStringValueObject<ProjectVersionChangelog>
+public sealed class ProjectVersionChangelog
+    : NullableStringValueObject<ProjectVersionChangelog>, IStringMaxLengthValueObject
 {
     /// <summary>
     /// Maximum description length.
@@ -27,11 +25,5 @@ public sealed class ProjectVersionChangelog : NullableStringValueObject,
     /// </summary>
     /// <param name="value">Changelog value.</param>
     /// <returns>The <see cref="Result"/> of creation. Contains <see cref="ProjectVersionChangelog"/> or an <see cref="DomainErrors.DomainError"/>.</returns>
-    public static Result<ProjectVersionChangelog> Create(string? value)
-    {
-        return Result
-            .Ok(new ProjectVersionChangelog(value))
-            .Ensure(() => value is null || value.Length < MaxLength,
-                new TooLong<ProjectVersionChangelog>());
-    }
+    public static Result<ProjectVersionChangelog> Create(string? value) => Validate(new ProjectVersionChangelog(value));
 }

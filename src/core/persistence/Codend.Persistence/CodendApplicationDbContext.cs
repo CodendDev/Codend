@@ -132,6 +132,11 @@ public abstract class CodendApplicationDbContext : DbContext, IUnitOfWork, IMigr
         return await base.SaveChangesAsync(cancellationToken);
     }
 
+    public void Migrate()
+    {
+        Database.Migrate();
+    }
+
     public IQueryable<T> Queryable<T>()
         where T : class, IEntity
         => base.Set<T>().AsNoTracking();

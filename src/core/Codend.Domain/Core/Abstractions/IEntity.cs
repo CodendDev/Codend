@@ -1,15 +1,16 @@
 namespace Codend.Domain.Core.Abstractions;
 
 /// <summary>
-/// Base entity interface, with <typeparamref name="TKey"/> type as Id.
+/// Base entity interface, with <typeparamref name="TStrongKey"/> type as Id.
 /// </summary>
-/// <typeparam name="TKey">Type of entity identifier.</typeparam>
-public interface IEntity<TKey> : IEntity
+/// <typeparam name="TStrongKey">Type of entity identifier.</typeparam>
+public interface IEntity<TStrongKey> : IEntity
+    where TStrongKey : IEntityId
 {
     /// <summary>
     /// Entity identifier.
     /// </summary>
-    public TKey Id { get; }
+    public TStrongKey Id { get; }
 }
 
 /// <summary>
