@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Codend.Persistence.Configurations;
 
-public class StoryConfiguration : IEntityTypeConfiguration<Story>
+internal sealed class StoryConfiguration : IEntityTypeConfiguration<Story>
 {
     public void Configure(EntityTypeBuilder<Story> builder)
     {

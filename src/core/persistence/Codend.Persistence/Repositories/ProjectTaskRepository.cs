@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
 
-public class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, BaseProjectTask>, IProjectTaskRepository
+internal class ProjectTaskRepository : GenericRepository<ProjectTaskId, Guid, BaseProjectTask>, IProjectTaskRepository
 {
     public ProjectTaskRepository(CodendApplicationDbContext context) : base(context)
     {
