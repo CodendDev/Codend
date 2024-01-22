@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Codend.Persistence.Extensions;
 
-public static class OwnedNavigationBuilderExtensions
+internal static class OwnedNavigationBuilderExtensions
 {
     internal static void ConfigureStringValueObject<TOwner, TOwned>(
         this OwnedNavigationBuilder<TOwner, TOwned> builder, string columnName)

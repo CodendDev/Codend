@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
 
-public class EpicRepository : GenericRepository<EpicId, Guid, Epic>, IEpicRepository
+internal class EpicRepository : GenericRepository<EpicId, Guid, Epic>, IEpicRepository
 {
     public EpicRepository(CodendApplicationDbContext context) : base(context)
     {

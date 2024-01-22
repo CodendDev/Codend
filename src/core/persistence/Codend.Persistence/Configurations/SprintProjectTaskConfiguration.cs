@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Codend.Persistence.Configurations;
 
-public class SprintProjectTaskConfiguration : IEntityTypeConfiguration<SprintProjectTask>
+internal sealed class SprintProjectTaskConfiguration : IEntityTypeConfiguration<SprintProjectTask>
 {
     public void Configure(EntityTypeBuilder<SprintProjectTask> builder)
     {

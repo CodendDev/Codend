@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
 
-public class StoryRepository : GenericRepository<StoryId, Guid, Story>, IStoryRepository
+internal class StoryRepository : GenericRepository<StoryId, Guid, Story>, IStoryRepository
 {
     public StoryRepository(CodendApplicationDbContext context) : base(context)
     {
