@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
 
-public abstract class GenericRepository<TKey, TKeyPrimitive, TEntity>
+internal abstract class GenericRepository<TKey, TKeyPrimitive, TEntity>
     where TKeyPrimitive : IComparable
     where TKey : IEntityId<TKeyPrimitive>
     where TEntity : Entity<TKey>

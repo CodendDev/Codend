@@ -1,10 +1,11 @@
 ﻿using Codend.Application.Core.Abstractions.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Codend.Persistence.SqlServer;
 
-public sealed class SqlServerCodendDbContext : CodendApplicationDbContext
+public sealed class SqlServerCodendDbContext : CodendApplicationDbContext, IInjectableDatabase<SqlServerCodendDbContext>
 {
     public SqlServerCodendDbContext()
     {
@@ -22,4 +23,7 @@ public sealed class SqlServerCodendDbContext : CodendApplicationDbContext
     }
 
     public override string Provider => "SqlServer";
+
+    public static IServiceCollection AddDatabase(IServiceCollection services, string connectionString) =>
+        services.AddDatabase<SqlServerCodendDbContext>(options => options.UseSqlServer(connectionString));
 }

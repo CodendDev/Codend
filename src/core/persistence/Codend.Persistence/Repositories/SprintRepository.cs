@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
 
-public class SprintRepository : GenericRepository<SprintId, Guid, Sprint>, ISprintRepository
+internal class SprintRepository : GenericRepository<SprintId, Guid, Sprint>, ISprintRepository
 {
     public SprintRepository(CodendApplicationDbContext context) : base(context)
     {

@@ -1,10 +1,11 @@
 ﻿using Codend.Application.Core.Abstractions.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Codend.Persistence.Postgres;
 
-public sealed class PostgresCodendDbContext : CodendApplicationDbContext
+public sealed class PostgresCodendDbContext : CodendApplicationDbContext, IInjectableDatabase<PostgresCodendDbContext>
 {
     public PostgresCodendDbContext()
     {
@@ -22,4 +23,7 @@ public sealed class PostgresCodendDbContext : CodendApplicationDbContext
     }
 
     public override string Provider => "PostgreSQL";
+
+    public static IServiceCollection AddDatabase(IServiceCollection services, string connectionString) =>
+        services.AddDatabase<PostgresCodendDbContext>(options => options.UseNpgsql(connectionString));
 }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
 
-public class ProjectTaskStatusRepository
+internal class ProjectTaskStatusRepository
     : GenericRepository<ProjectTaskStatusId, Guid, ProjectTaskStatus>,
         IProjectTaskStatusRepository
 {

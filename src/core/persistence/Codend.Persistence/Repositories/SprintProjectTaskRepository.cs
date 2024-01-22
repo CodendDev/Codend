@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codend.Persistence.Repositories;
 
-public class SprintProjectTaskRepository
+internal class SprintProjectTaskRepository
     : GenericRepository<SprintProjectTaskId, Guid, SprintProjectTask>,
         ISprintProjectTaskRepository
 {

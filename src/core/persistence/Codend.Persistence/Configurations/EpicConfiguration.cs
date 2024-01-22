@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Codend.Persistence.Configurations;
 
-public class EpicConfiguration : IEntityTypeConfiguration<Epic>
+internal sealed class EpicConfiguration : IEntityTypeConfiguration<Epic>
 {
     public void Configure(EntityTypeBuilder<Epic> builder)
     {
