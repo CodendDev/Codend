@@ -17,5 +17,5 @@ public class ProjectTaskUserAssigned : UserEmailNotificationAbstractHandler<Proj
         "[Codend] You have been assigned to new task!📝";
 
     protected override string GetEmailMessage(ProjectTaskUserAssignedEvent notification, UserDetails receiver) =>
-        $"Hi ${receiver.FirstName}!\r\n\r\nYou've been assigned to new task, and it might be important 🚨. Please take a moment to check it out. \r\n\r\nBest regards, \r\n Codend";
+        $"Hi {receiver.FirstName}!\r\n\r\nYou've been assigned to new task, and it might be important 🚨. Please take a moment to check it out. \r\n\r\nBest regards, \r\n Codend";
 }
